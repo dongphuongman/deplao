@@ -398,6 +398,10 @@ export function registerZaloIpc() {
         s.getGroupLinkInfo(p.link, p.memberPage)
     );
 
+    wrap('zalo:joinGroupLink', (s, p) =>
+        s.joinGroupLink(p.link)
+    );
+
     wrap('zalo:enableGroupLink', (s, p) =>
         s.enableGroupLink(p.groupId)
     );

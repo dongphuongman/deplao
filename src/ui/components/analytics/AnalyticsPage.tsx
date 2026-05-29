@@ -443,7 +443,7 @@ export default function AnalyticsPage() {
       const tt = threadType === -1 ? undefined : threadType;
       const [overviewRes, volumeRes, heatmapRes, segRes, campRes, frRes, growthRes, wfRes, aiRes, rtRes, luRes] = await Promise.all([
         ipc?.dashboardOverview({ zaloId: selectedAccountId }),
-        ipc?.messageVolume({ zaloId: selectedAccountId, sinceTs: from, untilTs: to, granularity: periodDays <= 7 ? 'hour' : 'day', threadType: tt }),
+        ipc?.messageVolume({ zaloId: selectedAccountId, sinceTs: from, untilTs: to, granularity: periodDays <= 2 ? 'hour' : 'day', threadType: tt }),
         ipc?.peakHours({ zaloId: selectedAccountId, sinceTs: from, untilTs: to, threadType: tt }),
         ipc?.contactSegmentation({ zaloId: selectedAccountId }),
         ipc?.campaignComparison({ zaloId: selectedAccountId }),
@@ -681,7 +681,7 @@ function OverviewTab({ loading, overview, todayTrend, friendReqs, workflowData, 
 
       {/* Charts row */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <Section title={`📈 Tin nhắn ${periodDays <= 7 ? 'theo giờ' : `${periodDays} ngày qua`}`}>
+        <Section title={`📈 Tin nhắn ${periodDays <= 2 ? 'theo giờ' : `${periodDays} ngày qua`}`}>
           {volume.length === 0 ? (
             <p className="text-xs text-gray-500 text-center py-8">Chưa có dữ liệu</p>
           ) : (
@@ -989,7 +989,7 @@ function MessagesTab({ loading, volume, heatmap, periodDays, overview, responseT
         </Section>
       )}
 
-      <Section title={`📈 Lượng tin nhắn ${periodDays <= 7 ? 'theo giờ' : `${periodDays} ngày qua`}`}>
+      <Section title={`📈 Lượng tin nhắn ${periodDays <= 2 ? 'theo giờ' : `${periodDays} ngày qua`}`}>
         {volume.length === 0 ? (
           <p className="text-xs text-gray-500 text-center py-8">Chưa có dữ liệu</p>
         ) : (

@@ -1118,6 +1118,15 @@ export default class ZaloService {
         }
     }
 
+    public async joinGroupLink(link: string): Promise<any> {
+        if (!this.api) throw new Error("API not initialized. Please ensure you've called initialize() first.");
+        try {
+            return await (this.api as any).joinGroupLink(link);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async enableGroupLink(groupId: string): Promise<EnableGroupLinkResponse> {
         if (!this.api) {
             throw new Error("API not initialized. Please ensure you've called initialize() first.");

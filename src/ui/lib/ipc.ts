@@ -86,6 +86,7 @@ declare global {
         updateGroupSettings: (params: any) => Promise<any>;
         getGroupLinkDetail: (params: any) => Promise<any>;
         getGroupLinkInfo: (params: any) => Promise<any>;
+        joinGroupLink: (params: any) => Promise<any>;
         enableGroupLink: (params: any) => Promise<any>;
         disableGroupLink: (params: any) => Promise<any>;
         getPendingGroupMembers: (params: any) => Promise<any>;

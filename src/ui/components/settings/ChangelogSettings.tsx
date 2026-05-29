@@ -14,6 +14,31 @@ interface VersionEntry {
 // ─── Changelog data — thêm entry mới vào ĐẦU mảng khi có bản cập nhật ────────
 const CHANGELOG: VersionEntry[] = [
   {
+    version: '26.4.2',
+    date: '05/2026',
+    type: 'patch',
+    highlights: [
+      '👥 Nâng cấp CRM: rời nhiều nhóm cùng lúc và tham gia nhóm từ link mời',
+      '🐛 Sửa lỗi quét thành viên nhóm và thống kê tin nhắn theo giờ',
+    ],
+    changes: [
+      {
+        category: 'new',
+        items: [
+          'Thêm hành động rời nhiều nhóm hàng loạt trong tab Liên hệ CRM',
+          'Thêm nút tham gia nhóm trực tiếp từ kết quả quét link nhóm',
+        ],
+      },
+      {
+        category: 'fixed',
+        items: [
+          'Sửa lỗi phân trang khi quét thành viên từ link nhóm — giờ quét đủ toàn bộ thành viên thay vì chỉ dừng ở 100',
+          'Sửa lỗi biểu đồ Tin nhắn theo giờ trong Báo cáo không hiển thị số liệu',
+        ],
+      },
+    ],
+  },
+  {
     version: '26.4.1',
     date: '05/2026',
     type: 'patch',

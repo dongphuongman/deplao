@@ -5064,7 +5064,7 @@ class DatabaseService {
                 GROUP BY hour_idx
                 ORDER BY hour_idx`;
                 const rows = this.query<any>(sql, [sinceTs, zaloId, sinceTs, untilTs, ...threadParams]);
-                const totalHours = Math.min(24, Math.ceil((untilTs - sinceTs) / 3600000));
+                const totalHours = Math.ceil((untilTs - sinceTs) / 3600000);
                 const result: Array<{ bucket: string; sent: number; received: number; total: number }> = [];
                 const rowMap = new Map(rows.map((r: any) => [r.hour_idx, r]));
                 for (let i = 0; i < totalHours; i++) {

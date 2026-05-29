@@ -137,6 +137,9 @@ export default function GroupMembersTab() {
   const [linkScanError, setLinkScanError] = useState('');
   const [linkScanResult, setLinkScanResult] = useState<{ groupId: string; name: string } | null>(null);
   const linkScanStopRef = useRef(false);
+  const [linkJoinLoading, setLinkJoinLoading] = useState(false);
+  const [linkJoinStatus, setLinkJoinStatus] = useState<'idle' | 'success' | 'pending' | 'already' | 'error'>('idle');
+  const [linkJoinMsg, setLinkJoinMsg] = useState('');
 
   const selectedGroup = groups.find(g => g.contact_id === selectedGroupId) ?? null;
 
@@ -280,19 +283,43 @@ export default function GroupMembersTab() {
     linkScanStopRef.current = false;
 
     try {
-      // ── Step 1: getGroupLinkInfo ─────────────────────────────────────────
-      const res = await ipc.zalo?.getGroupLinkInfo({ auth, link: linkScanInput.trim() });
-      if (!res?.success) {
-        setLinkScanError(res?.error || 'Không thể lấy thông tin nhóm. Kiểm tra lại đường dẫn.');
+      // ── Step 1: getGroupLinkInfo — phân trang đến khi hết (hasMoreMember = 0) ──
+      let groupId = '';
+      let name = '';
+      let avatar = '';
+      let creatorId = '';
+      let adminIds: string[] = [];
+      const currentMems: any[] = [];
+      let page = 1;
+
+      while (true) {
+        if (linkScanStopRef.current) break;
+        const res = await ipc.zalo?.getGroupLinkInfo({ auth, link: linkScanInput.trim(), memberPage: page });
+        if (!res?.success) {
+          setLinkScanError(res?.error || 'Không thể lấy thông tin nhóm. Kiểm tra lại đường dẫn.');
+          return;
+        }
+        const data = res.response;
+        if (page === 1) {
+          groupId   = data.groupId || '';
+          name      = data.name || data.groupId || '';
+          avatar    = data.fullAvt || data.avt || '';
+          creatorId = (data.creatorId || '').replace(/_0$/, '');
+          adminIds  = (data.adminIds || []).map((a: string) => a.replace(/_0$/, ''));
+        }
+        const pageMems: any[] = data.currentMems || [];
+        currentMems.push(...pageMems);
+
+        if (!data.hasMoreMember) break;
+        page++;
+        // polite delay between pages to avoid rate limit
+        await new Promise(r => setTimeout(r, 300));
+      }
+
+      if (!groupId) {
+        setLinkScanError('Không tìm thấy thông tin nhóm từ link này.');
         return;
       }
-      const data = res.response;
-      const groupId: string = data.groupId;
-      const name: string = data.name || groupId;
-      const avatar: string = data.fullAvt || data.avt || '';
-      const creatorId: string = (data.creatorId || '').replace(/_0$/, '');
-      const adminIds: string[] = (data.adminIds || []).map((a: string) => a.replace(/_0$/, ''));
-      const currentMems: any[] = data.currentMems || [];
 
       // ── Step 2: Save group contact to DB ─────────────────────────────────
       await ipc.db?.updateContactProfile({
@@ -382,7 +409,42 @@ export default function GroupMembersTab() {
     }
   }, [activeAccountId, linkScanInput, loadGroupsFromDB, loadMembersFromDB]);
 
-  // ── Member selection helpers ──────────────────────────────────────────────
+  // ── Join group via link ───────────────────────────────────────────────────
+  const joinGroupByLink = useCallback(async () => {
+    if (!activeAccountId || !linkScanInput.trim()) return;
+    const acc = useAccountStore.getState().getActiveAccount();
+    if (!acc) return;
+    const auth = { cookies: acc.cookies, imei: acc.imei, userAgent: acc.user_agent };
+
+    setLinkJoinLoading(true);
+    setLinkJoinStatus('idle');
+    setLinkJoinMsg('');
+    try {
+      const res = await ipc.zalo?.joinGroupLink({ auth, link: linkScanInput.trim() });
+      // error code 178 = already member, 240 = pending approval
+      const errCode = res?.errorCode ?? res?.error_code ?? (res?.response?.error);
+      if (errCode === 178 || res?.response?.msg?.includes('already')) {
+        setLinkJoinStatus('already');
+        setLinkJoinMsg('Bạn đã là thành viên của nhóm này.');
+      } else if (errCode === 240 || res?.response?.msg?.includes('pending') || res?.response?.msg?.includes('approval')) {
+        setLinkJoinStatus('pending');
+        setLinkJoinMsg('Nhóm bật chế độ duyệt thành viên. Yêu cầu của bạn đã được gửi, chờ admin duyệt.');
+      } else if (!res?.success && errCode) {
+        setLinkJoinStatus('error');
+        setLinkJoinMsg(res?.error || `Lỗi (${errCode}): Không thể tham gia nhóm.`);
+      } else {
+        setLinkJoinStatus('success');
+        setLinkJoinMsg('Đã tham gia nhóm thành công!');
+        // Refresh group list to show new group
+        await loadGroupsFromDB();
+      }
+    } catch (err: any) {
+      setLinkJoinStatus('error');
+      setLinkJoinMsg(err?.message || 'Lỗi không xác định khi tham gia nhóm.');
+    } finally {
+      setLinkJoinLoading(false);
+    }
+  }, [activeAccountId, linkScanInput, loadGroupsFromDB]);
   const toggleMember = (id: string) => {
     setSelectedMemberIds(prev => {
       const next = new Set(prev);
@@ -514,7 +576,7 @@ export default function GroupMembersTab() {
                   <span>Tải toàn bộ nhóm từ Zalo</span>
                 </button>
                 <button
-                  onClick={() => { setShowLinkScanModal(true); setLinkScanInput(''); setLinkScanError(''); setLinkScanResult(null); setShowGroupMenu(false); }}
+                  onClick={() => { setShowLinkScanModal(true); setLinkScanInput(''); setLinkScanError(''); setLinkScanResult(null); setLinkJoinStatus('idle'); setLinkJoinMsg(''); setShowGroupMenu(false); }}
                   className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-200 hover:bg-gray-700 transition-colors text-left">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
@@ -874,7 +936,7 @@ export default function GroupMembersTab() {
               <label className="text-xs text-gray-400 mb-1.5 block">Đường dẫn nhóm</label>
               <input
                 value={linkScanInput}
-                onChange={e => setLinkScanInput(e.target.value)}
+                onChange={e => { setLinkScanInput(e.target.value); setLinkJoinStatus('idle'); setLinkJoinMsg(''); }}
                 onKeyDown={e => { if (e.key === 'Enter' && !linkScanLoading) scanGroupByLink(); }}
                 placeholder="https://zalo.me/g/..."
                 disabled={linkScanLoading}
@@ -926,8 +988,24 @@ export default function GroupMembersTab() {
               </div>
             )}
 
+            {/* Join status */}
+            {linkJoinStatus !== 'idle' && (
+              <div className={`mb-4 px-3 py-2 rounded-xl text-xs border ${
+                linkJoinStatus === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400' :
+                linkJoinStatus === 'pending' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400' :
+                linkJoinStatus === 'already' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' :
+                'bg-red-500/10 border-red-500/30 text-red-400'
+              }`}>
+                {linkJoinStatus === 'success' && '✅ '}
+                {linkJoinStatus === 'pending' && '⏳ '}
+                {linkJoinStatus === 'already' && 'ℹ️ '}
+                {linkJoinStatus === 'error' && '⚠️ '}
+                {linkJoinMsg}
+              </div>
+            )}
+
             {/* Actions */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setShowLinkScanModal(false)}
                 disabled={linkScanLoading && linkScanProgress !== null}
@@ -942,9 +1020,19 @@ export default function GroupMembersTab() {
                   {linkScanLoading ? <>{SpinIcon} Đang quét...</> : '🔍 Quét nhóm'}
                 </button>
               )}
+              {/* Join button — shown after scan success or standalone */}
+              {linkScanInput.trim() && !linkScanLoading && linkJoinStatus !== 'success' && linkJoinStatus !== 'already' && (
+                <button
+                  onClick={joinGroupByLink}
+                  disabled={linkJoinLoading || !linkScanInput.trim()}
+                  title="Yêu cầu tài khoản đang hoạt động tham gia nhóm này"
+                  className="flex-1 py-2 rounded-xl bg-teal-600 text-white text-sm hover:bg-teal-700 disabled:opacity-40 transition-colors flex items-center justify-center gap-1.5">
+                  {linkJoinLoading ? <>{SpinIcon} Đang join...</> : '🚪 Join nhóm'}
+                </button>
+              )}
               {linkScanResult && !linkScanLoading && (
                 <button
-                  onClick={() => { setLinkScanInput(''); setLinkScanResult(null); setLinkScanError(''); }}
+                  onClick={() => { setLinkScanInput(''); setLinkScanResult(null); setLinkScanError(''); setLinkJoinStatus('idle'); setLinkJoinMsg(''); }}
                   className="flex-1 py-2 rounded-xl bg-purple-600 text-white text-sm hover:bg-purple-700 transition-colors">
                   Quét link khác
                 </button>
