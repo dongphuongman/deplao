@@ -1525,7 +1525,7 @@ class WorkflowEngineService {
           const totalTokens = (res.data.usage?.input_tokens || 0) + (res.data.usage?.output_tokens || 0);
           return { result, totalTokens, model };
         } else {
-          // OpenAI-compatible API (OpenAI, Deepseek, Grok/xAI, Mistral)
+          // OpenAI-compatible API (OpenAI, Deepseek, Grok/xAI, Mistral, OpenRouter)
           const apiUrl = this.getOpenAICompatibleUrl(platform);
           const tokenParam = platform === 'openai'
             ? { max_completion_tokens: maxTokens }
@@ -1620,7 +1620,7 @@ class WorkflowEngineService {
           const category = res.data.content?.[0]?.text?.trim() || '';
           return { category, input: cfg.input };
         } else {
-          // OpenAI-compatible API (OpenAI, Deepseek, Grok/xAI, Mistral)
+          // OpenAI-compatible API (OpenAI, Deepseek, Grok/xAI, Mistral, OpenRouter)
           const apiUrl = this.getOpenAICompatibleUrl(platform);
           const tokenParam = platform === 'openai'
             ? { max_completion_tokens: 30 }
@@ -2419,11 +2419,12 @@ class WorkflowEngineService {
   /** Get the OpenAI-compatible chat/completions URL for a given platform */
   private getOpenAICompatibleUrl(platform: string): string {
     switch (platform) {
-      case 'deepseek': return 'https://api.deepseek.com/v1/chat/completions';
-      case 'grok':     return 'https://api.x.ai/v1/chat/completions';
-      case 'mistral':  return 'https://api.mistral.ai/v1/chat/completions';
+      case 'deepseek':   return 'https://api.deepseek.com/v1/chat/completions';
+      case 'grok':       return 'https://api.x.ai/v1/chat/completions';
+      case 'mistral':    return 'https://api.mistral.ai/v1/chat/completions';
+      case 'openrouter': return 'https://openrouter.ai/api/v1/chat/completions';
       case 'openai':
-      default:         return 'https://api.openai.com/v1/chat/completions';
+      default:           return 'https://api.openai.com/v1/chat/completions';
     }
   }
 
@@ -2547,4 +2548,3 @@ class WorkflowEngineService {
 }
 
 export default WorkflowEngineService;
-
