@@ -13,7 +13,8 @@
     "build:renderer": "vite build",
     "production": "npm run build:bridge-e2ee && tsc -p tsconfig.electron.prod.json && node scripts/strip-console.js && npm run build:renderer && electron-builder --publish never"
   },
-  "author": "babyvibe <babyvibe@users.noreply.github.com>",
+  "author": "trungtien9x@gmail.com",
+  "homepage": "https://deplaoapp.com",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.7.8",
@@ -181,7 +182,7 @@
       "category": "Network"
     },
     "deb": {
-      "maintainer": "babyvibe <babyvibe@users.noreply.github.com>"
+      "maintainer": "trungtien9x@gmail.com"
     }
   }
 }
