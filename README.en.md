@@ -24,13 +24,13 @@
 [![Support](https://img.shields.io/badge/support-GitHub_Issues-0ea5e9)](https://github.com/babyvibe/deplao-builder/issues)
 
 <p align="center">
-  <a href="#download">📥 Download</a> &nbsp;|&nbsp;
-  <a href="#tech-stack">🛠️ Tech Stack</a> &nbsp;|&nbsp;
+  <a href="#-download">📥 Download</a> &nbsp;|&nbsp;
+  <a href="#-tech-stack">🛠️ Tech Stack</a> &nbsp;|&nbsp;
   <a href="#installation">📦 Install</a> &nbsp;|&nbsp;
-  <a href="#core-feature-groups">✨ Features</a> &nbsp;|&nbsp;
-  <a href="#security--data">🔒 Security</a> &nbsp;|&nbsp;
-  <a href="#license">📝 MIT</a> &nbsp;|&nbsp;
-  <a href="#contact--support">📞 Contact</a>
+  <a href="#-core-feature-groups">✨ Features</a> &nbsp;|&nbsp;
+  <a href="#-security-data">🔒 Security</a> &nbsp;|&nbsp;
+  <a href="#-license">📝 MIT</a> &nbsp;|&nbsp;
+  <a href="#-contact-support">📞 Contact</a>
 </p>
 
 ---

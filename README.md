@@ -13,7 +13,7 @@
 
 > Phần mềm desktop quản lý Zalo & Facebook cá nhân Đa tài khoản tích hợp CRM, ERP, POS, Workflow và AI Assistant giúp đội nhóm bán hàng, chăm sóc khách hàng và marketing trên Zalo và Facebook vận hành tập trung trong một ứng dụng duy nhất.
 
-[![Version](https://img.shields.io/badge/version-26.6.1-22c55e)](#)
+[![Version](https://img.shields.io/badge/version-26.6.2-22c55e)](#)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-3b82f6)](#-runtime-requirements)
 [![Electron](https://img.shields.io/badge/Electron-41-47848f?logo=electron&logoColor=white)](#)
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)](#)
@@ -26,13 +26,13 @@
 
 
 <p align="center">
-  <a href="#tải-xuống">📥 Tải xuống</a> &nbsp;|&nbsp;
-  <a href="#công-nghệ-ngôn-ngữ-sử-dụng">🛠️ Công nghệ</a> &nbsp;|&nbsp;
+  <a href="#-tải-xuống">📥 Tải xuống</a> &nbsp;|&nbsp;
+  <a href="#-công-nghệ-ngôn-ngữ-sử-dụng">🛠️ Công nghệ</a> &nbsp;|&nbsp;
   <a href="#cài-đặt">📦 Cài đặt</a> &nbsp;|&nbsp;
-  <a href="#các-nhóm-tính-năng-chính">✨ Tính năng</a> &nbsp;|&nbsp;
-  <a href="#bảo-mật-dữ-liệu">🔒 Bảo mật</a> &nbsp;|&nbsp;
-  <a href="#giấy-phép">📝 MIT</a> &nbsp;|&nbsp;
-  <a href="#liên-hệ">📞 Liên hệ</a>
+  <a href="#-các-nhóm-tính-năng-chính">✨ Tính năng</a> &nbsp;|&nbsp;
+  <a href="#-bảo-mật-dữ-liệu">🔒 Bảo mật</a> &nbsp;|&nbsp;
+  <a href="#-giấy-phép">📝 MIT</a> &nbsp;|&nbsp;
+  <a href="#-liên-hệ">📞 Liên hệ</a>
 </p>
 
 ---
@@ -42,25 +42,25 @@
 <table>
 <tr>
 <td align="center" width="33%">
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-Setup-26.6.1.exe">
-<img src="https://img.shields.io/badge/🪟_Windows-v26.6.1-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-Setup-26.6.2.exe">
+<img src="https://img.shields.io/badge/🪟_Windows-v26.6.2-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows" />
 </a>
 <br>
-<sub>Deplao-Setup-26.6.1.exe</sub>
+<sub>Deplao-Setup-26.6.2.exe</sub>
 </td>
 <td align="center" width="33%">
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.1-arm64.dmg">
-<img src="https://img.shields.io/badge/🍎_macOS_M1+-v26.6.1-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.2-arm64.dmg">
+<img src="https://img.shields.io/badge/🍎_macOS_M1+-v26.6.2-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon" />
 </a>
 <br>
-<sub>Deplao-26.6.1-arm64.dmg</sub>
+<sub>Deplao-26.6.2-arm64.dmg</sub>
 </td>
 <td align="center" width="33%">
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.1.dmg">
-<img src="https://img.shields.io/badge/🍎_macOS_Intel-v26.6.1-333333?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.2.dmg">
+<img src="https://img.shields.io/badge/🍎_macOS_Intel-v26.6.2-333333?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel" />
 </a>
 <br>
-<sub>Deplao-26.6.1.dmg</sub>
+<sub>Deplao-26.6.2.dmg</sub>
 </td>
 </tr>
 </table>
@@ -111,7 +111,8 @@ Khi mở file `.dmg`, macOS có thể báo **"cannot be opened because it is fro
 
 Deplao hiện được xây dựng trên các công nghệ chính sau:
 
-- **Thư viện:** zca-js - https://github.com/RFS-ADRENO/zca-js
+- **Thư viện chính:** zca-js & fbchat-v2
+- **AI Gateway:** 9router
 - **Ngôn ngữ:** TypeScript, JavaScript, SQL, HTML, CSS
 - **Ứng dụng desktop:** Electron, React, Vite
 - **Giao diện:** Tailwind CSS, PostCSS, React Router
@@ -450,7 +451,7 @@ Deplao phù hợp cho:
 
 ### 4) Workflow tự động hóa
 - workflow kéo-thả không cần code
-- tích hợp trợ lý AI hỗ trợ tạo node chỉ bằng vài dòng prompt không cần kéo-thả
+- tích hợp trợ lý AI tạo node và workflow bằng câu lệnh (xem mục 7)
 - hỗ trợ trigger từ tin nhắn, nhãn, react, lịch cron, sự kiện nhóm...
 - action gửi tin, gửi ảnh/file, tìm user, quản lý nhóm, mute, forward, recall...
 - tích hợp logic, Google Sheets, AI, Telegram, Discord, Email, Notion và HTTP Request
@@ -459,7 +460,7 @@ Deplao phù hợp cho:
 ### 5) Tích hợp phục vụ bán hàng
 - POS: KiotViet, Haravan, Sapo, Nhanh.vn, Pancake POS
 - vận chuyển: GHN, GHTK
-- AI Assistant dùng để gợi ý câu trả lời, chat nhanh trực tiếp khi trò chuyện hoặc workflow
+- AI Assistant gợi ý trả lời, hỏi đáp trực tiếp trong hội thoại (xem mục 7)
 - dễ kết hợp thành quy trình bán hàng và chăm sóc khách hàng khép kín
 
 ### 6) Báo cáo, ERP và nhân viên
@@ -467,6 +468,13 @@ Deplao phù hợp cho:
 - ERP nội bộ gồm Task, Calendar, Notes
 - mô hình boss ↔ nhân viên và phân quyền module
 - hỗ trợ theo dõi hiệu suất làm việc theo từng người và từng giai đoạn
+
+### 7) 🤖 Trợ lý AI (AI Assistant)
+- gợi ý trả lời thông minh trong hội thoại Zalo và Facebook
+- hỏi đáp trực tiếp với AI ngay trong khung chat
+- tạo workflow tự động bằng câu lệnh tiếng Việt mà không cần kéo-thả
+- dùng node AI trong workflow để xây dựng chatbot trả lời tự động 24/7
+- hỗ trợ đa nền tảng AI: OpenAI, Claude, Gemini và 9router (AI gateway local)
 
 ## 🔒 Bảo mật & dữ liệu
 
@@ -491,8 +499,10 @@ Deplao ưu tiên kiến trúc chạy cục bộ trên máy người dùng:
 
 ## 🙏 Lời cảm ơn
 
-Deplao xin gửi lời cảm ơn đến dự án:  👉 https://github.com/RFS-ADRENO/zca-js
-Nhờ những đóng góp và nền tảng từ dự án này, Deplao mới có thể được hoàn thiện và ra mắt như ngày hôm nay. Rất trân trọng những giá trị mà cộng đồng open-source mang lại 💙
+Deplao xin gửi lời cảm ơn đến dự án:  
+👉 https://github.com/RFS-ADRENO/zca-js
+👉 https://github.com/m008v/fbchat-v2
+Nhờ những đóng góp và nền tảng từ dự án này 💙
 
 ---
 
