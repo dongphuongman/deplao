@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ipc from '@/lib/ipc';
 import GroupAvatar from '../common/GroupAvatar';
+import AddFriendModal from '../common/AddFriendModal';
 import { channelSupports } from '@/../configs/channelConfig';
 
 // ─── Vietnamese-aware normalization for fuzzy matching ────────────────────────
@@ -320,6 +321,10 @@ export default function GlobalSearchPanel({
   const [phoneSearching, setPhoneSearching] = useState(false);
   const [phonePendingAccounts, setPhonePendingAccounts] = useState(false); // merged mode: need to pick account
 
+  // Add friend modal state
+  const [addFriendModal, setAddFriendModal] = useState<{ userId: string; displayName: string; avatar: string } | null>(null);
+  const [sendingFriendReq, setSendingFriendReq] = useState(false);
+
   // Friends list from DB (includes friends without conversations)
   const [friendsList, setFriendsList] = useState<any[]>([]);
 
@@ -577,7 +582,15 @@ export default function GlobalSearchPanel({
             result={phoneResult}
             searching={phoneSearching}
             onOpen={() => phoneResult && handleOpenPhone(phoneResult)}
-            onAddFriend={() => {/* handled externally if needed */}}
+            onAddFriend={() => {
+              if (phoneResult && !phoneResult._notFound) {
+                setAddFriendModal({
+                  userId: phoneResult.uid,
+                  displayName: phoneResult.display_name || phoneResult.zalo_name || phoneResult.uid,
+                  avatar: phoneResult.avatar || '',
+                });
+              }
+            }}
           />
         )}
 
@@ -700,6 +713,35 @@ export default function GlobalSearchPanel({
           </div>
         )}
       </div>
+
+      {/* Add-friend compose modal */}
+      {addFriendModal && (
+        <AddFriendModal
+          displayName={addFriendModal.displayName}
+          avatar={addFriendModal.avatar}
+          sending={sendingFriendReq}
+          onConfirm={async (msg) => {
+            const targetZaloId = phoneResult?._searchZaloId || activeAccountId;
+            const acc = allAccounts.find(a => a.zalo_id === targetZaloId);
+            if (!acc) return;
+            setSendingFriendReq(true);
+            try {
+              await ipc.zalo?.sendFriendRequest({
+                auth: { cookies: acc.cookies, imei: acc.imei, userAgent: acc.user_agent },
+                userId: addFriendModal.userId,
+                msg,
+              });
+              setPhoneResult((p: any) => p?.uid === addFriendModal.userId ? { ...p, _sentRequest: true } : p);
+              setAddFriendModal(null);
+            } catch (err: any) {
+              alert('Gửi lời mời thất bại: ' + (err?.message || err));
+            } finally {
+              setSendingFriendReq(false);
+            }
+          }}
+          onClose={() => !sendingFriendReq && setAddFriendModal(null)}
+        />
+      )}
     </div>
   );
 }

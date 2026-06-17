@@ -8,6 +8,7 @@ import WorkspaceManager from '../../src/utils/WorkspaceManager';
 import Logger from '../../src/utils/Logger';
 import EventBroadcaster from '../../src/services/event/EventBroadcaster';
 import FileStorageService from '../../src/services/file/FileStorageService';
+import { uploadEmployeeMedia } from './proxyHelper';
 
 /**
  * Registry of IPC handler functions.
@@ -25,36 +26,69 @@ function resolveZaloId(auth: any): string {
     try {
         const authObj = typeof auth === 'string' ? JSON.parse(auth) : auth;
         const cookies = authObj?.cookies || '';
-        if (!cookies) return '';
-        const cookiesB64 = Buffer.from(cookies).toString('base64');
 
-        // Primary: exact match by cookies base64
-        for (const [id, conn] of ConnectionManager.getAllConnections()) {
-            if (conn.authKey === cookiesB64) return id;
+        if (cookies) {
+            const cookiesB64 = Buffer.from(cookies).toString('base64');
+
+            // Primary: exact match by cookies base64
+            for (const [id, conn] of ConnectionManager.getAllConnections()) {
+                if (conn.authKey === cookiesB64) return id;
+            }
+
+            // Fallback: look up zaloId from DB by cookies, then check if connection exists
+            // (handles case where cookies in DB are stale but the account IS connected)
+            try {
+                const rows = (DatabaseService.getInstance() as any).query(
+                    `SELECT zalo_id FROM accounts WHERE cookies = ? LIMIT 1`, [cookies]
+                );
+                const dbZaloId = rows?.[0]?.zalo_id;
+                if (dbZaloId && ConnectionManager.isConnected(dbZaloId)) {
+                    return dbZaloId;
+                }
+            } catch {}
         }
 
-        // Fallback: look up zaloId from DB by cookies, then check if connection exists
-        // (handles case where cookies in DB are stale but the account IS connected)
-        try {
-            const rows = (DatabaseService.getInstance() as any).query(
-                `SELECT zalo_id FROM accounts WHERE cookies = ? LIMIT 1`, [cookies]
-            );
-            const dbZaloId = rows?.[0]?.zalo_id;
-            if (dbZaloId && ConnectionManager.isConnected(dbZaloId)) {
-                return dbZaloId;
-            }
-        } catch {}
-
         // Last resort: if only 1 connection exists, use it
-        // (common case: boss has single Zalo account)
+        // (handles both: cookies mismatch AND cookies missing from auth object)
+        // Trường hợp auth không có cookies (VD: gửi tin nhắn nhanh), vẫn gửi được
+        // nếu chỉ có 1 tài khoản Zalo đang kết nối.
         const allConns = ConnectionManager.getAllConnections();
         if (allConns.size === 1) {
             const [onlyId] = allConns.keys();
-            Logger.log(`[zaloIpc] resolveZaloId: cookies mismatch but using only connection: ${onlyId}`);
+            Logger.log(`[zaloIpc] resolveZaloId: using only connection: ${onlyId}${cookies ? ' (cookies mismatch)' : ' (no cookies in auth)'}`);
             return onlyId;
         }
     } catch {}
     return '';
+}
+
+/**
+ * Upload local media files from Employee machine to Boss storage before proxying.
+ * Employee's local file paths are invalid on Boss — reads each file on the
+ * Employee side, sends as base64 via uploadEmployeeMedia(), returns Boss-resolved paths.
+ * In standalone/boss mode (no-op) returns original params unchanged.
+ */
+async function prepareLocalFilesForProxy(params: any): Promise<any> {
+    const singleFields = ['filePath', 'videoPath', 'thumbPath', 'voicePath', 'avatarPath', 'mediaPath'];
+    let result = { ...params };
+
+    for (const field of singleFields) {
+        if (result[field] && typeof result[field] === 'string' && result[field].length > 0) {
+            const bossPaths = await uploadEmployeeMedia([result[field]]);
+            if (bossPaths && bossPaths[0]) {
+                result[field] = bossPaths[0];
+            }
+        }
+    }
+
+    if (result.filePaths && Array.isArray(result.filePaths) && result.filePaths.length > 0) {
+        const bossPaths = await uploadEmployeeMedia(result.filePaths);
+        if (bossPaths && bossPaths.length > 0) {
+            result.filePaths = bossPaths;
+        }
+    }
+
+    return result;
 }
 
 function wrap(channel: string, fn: (service: ZaloService, params: any) => Promise<any>) {
@@ -65,7 +99,10 @@ function wrap(channel: string, fn: (service: ZaloService, params: any) => Promis
             const activeWs = WorkspaceManager.getInstance().getActiveWorkspace();
             if (activeWs?.type === 'remote' && !params?._fromRelay) {
                 try {
-                    return await HttpConnectionManager.getInstance().proxyAction(activeWs.id, channel, params);
+                    // Upload local files (images, videos, voice) from Employee to Boss
+                    // before proxying — Employee's file paths don't exist on Boss machine.
+                    const preparedParams = await prepareLocalFilesForProxy(params);
+                    return await HttpConnectionManager.getInstance().proxyAction(activeWs.id, channel, preparedParams);
                 } catch (proxyErr: any) {
                     Logger.error(`[zaloIpc] Proxy error (${channel}): ${proxyErr.message}`);
                     return { success: false, error: `Proxy: ${proxyErr.message}` };

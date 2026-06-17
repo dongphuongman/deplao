@@ -77,41 +77,40 @@ export class FacebookSendService {
   /**
    * Gửi tin nhắn text + tự động save DB + emit UI.
    * Dùng chung cho cả IPC handler và workflow engine.
+   *
+   * Lưu ý routing:
+   * - 1:1 E2EE: FacebookService.sendMessage() tự động route qua bridge nếu thread
+   *   nằm trong danh sách e2eeThreads.
+   * - Group: bridge MQTT route, fallback REST.
+   * - KHÔNG auto-detect user/group từ thread ID format vì cả user và group Facebook
+   *   đều dùng numeric ID, không phân biệt được bằng regex.
    */
   static async sendTextMessage(params: FBSendTextParams): Promise<FBSendResult> {
     const accountId = FacebookSendService.resolveAccountId(params.accountId);
     const service = await FacebookSendService.getService(accountId);
     const threadId = String(params.threadId);
     const body = String(params.body || '');
-    const isUserMessage = params.typeChat === 'user' || FacebookSendService.isUserThread(threadId);
 
-    // ── Route: E2EE bridge (1:1) hoặc REST API ──
+    // ── Delegate to FacebookService.sendMessage() ──────────────────────────
+    // FacebookService.sendMessage() đã có routing đúng:
+    //   - 1:1 E2EE → bridge E2EE (dựa trên e2eeThreads tracking)
+    //   - Group → bridge MQTT (fallback REST)
+    // KHÔNG tự route ở đây vì isUserThread() không phân biệt được user vs group.
+    const isUserMessage = params.typeChat === 'user';
+    const SEND_TIMEOUT_MS = 45000;
     let result: any;
-    if (isUserMessage) {
-      if (!service.isE2EEConnected()) {
-        try { await service.retryE2EE(); } catch {}
-      }
-      if (service.isE2EEConnected()) {
-        const { normalizeChatJid } = require('./FacebookUtils');
-        const chatJid = normalizeChatJid(threadId);
-        result = await service.sendE2EEMessage(chatJid, body, { replyToMessageId: params.replyToMessageId } as any);
-      } else {
-        result = await service.sendMessage(threadId, body, {
-          typeChat: 'user',
+    try {
+      result = await Promise.race([
+        service.sendMessage(threadId, body, {
+          typeChat: params.typeChat ?? undefined,
           replyToMessageId: params.replyToMessageId,
-        } as any);
-        if (!result.success) {
-          result = {
-            success: false,
-            error: 'Không thể gửi tin nhắn 1:1 trên Facebook: E2EE bridge chưa kết nối. ' +
-              (result.error ? `REST fallback cũng thất bại: ${result.error}` : ''),
-          };
-        }
-      }
-    } else {
-      result = await service.sendMessage(threadId, body, {
-        replyToMessageId: params.replyToMessageId,
-      } as any);
+        } as any),
+        new Promise<any>((_, reject) =>
+          setTimeout(() => reject(new Error(`Gửi tin nhắn timeout sau ${SEND_TIMEOUT_MS / 1000}s`)), SEND_TIMEOUT_MS)
+        ),
+      ]);
+    } catch (err: any) {
+      return { success: false, error: err.message };
     }
 
     // ── Save DB + emit UI ──

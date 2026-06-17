@@ -408,9 +408,9 @@ function MediaBubble({ msg, isSelf, onView }: { msg: any; isSelf: boolean; onVie
   );
 }
 
-// ── VideoBubble ───────────────────────────────────────────────────────────────
-function VideoBubble({ msg }: { msg: any }) {
-  const [showPlayer, setShowPlayer] = React.useState(false);
+// ── ZaloVideoBubble ──────────────────────────────────────────────────────────
+// Zalo videos have thumbnail preview from msg.content.thumb, play in external player
+function ZaloVideoBubble({ msg }: { msg: any }) {
   let remoteThumb = '';
   let videoLocalPath = '';
   let thumbLocalPath = '';
@@ -421,31 +421,14 @@ function VideoBubble({ msg }: { msg: any }) {
   try {
     const lp: Record<string, string> = typeof msg.local_paths === 'string'
       ? JSON.parse(msg.local_paths || '{}') : (msg.local_paths || {});
-    const isFbVideo = msg.channel === 'facebook';
-    // For Facebook E2EE: lp.main IS the video file, not a thumbnail
-    thumbLocalPath = lp.thumb || (isFbVideo ? '' : lp.main) || '';
-    videoLocalPath = lp.file || lp.video || (isFbVideo ? lp.main : '') || '';
-    // Fallback: read video from attachments when local_paths not populated
-    if (!videoLocalPath && isFbVideo) {
-      try {
-        const atts = JSON.parse(msg.attachments || '[]');
-        if (atts[0]?.localPath) videoLocalPath = atts[0].localPath;
-      } catch {}
-    }
-
-    console.log('[VideoBubble] DEBUG', {
-      channel: msg.channel,
-      msg_id: msg.msg_id,
-      local_paths: msg.local_paths,
-      thumbLocalPath,
-      videoLocalPath,
-      lp,
-      attachments_raw: msg.attachments,
-    });
+    // Zalo stores: { thumb: "thumbnail_path", file: "video_path" }
+    thumbLocalPath = lp.thumb || lp.main || '';
+    videoLocalPath = lp.file || lp.video || '';
   } catch {}
 
   try {
     const parsed = JSON.parse(msg.content || '{}');
+    // Zalo video content: { href, thumb, params: { duration, video_width, video_height } }
     remoteThumb = parsed.thumb || '';
     const params = typeof parsed.params === 'string' ? JSON.parse(parsed.params) : (parsed.params || {});
     duration = params.duration ? Math.round(params.duration / 1000) : 0;
@@ -461,27 +444,11 @@ function VideoBubble({ msg }: { msg: any }) {
 
   const videoUrl = videoLocalPath ? toLocalMediaUrl(videoLocalPath) : '';
 
-  // Zalo: open in external player on click. Facebook: inline video player.
   const handlePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (msg.channel === 'facebook' && videoUrl) {
-      setShowPlayer(true);
-    } else if (videoLocalPath) {
-      ipc.file?.openPath(videoLocalPath);
-    }
+    // Zalo: open in external player (VLC, etc.)
+    if (videoLocalPath) ipc.file?.openPath(videoLocalPath);
   };
-
-  // Inline Facebook video player
-  if (showPlayer && msg.channel === 'facebook' && videoUrl) {
-    return (
-      <div className="rounded-xl overflow-hidden bg-black ring-1 ring-black/[0.12]"
-        style={{ width: '17.5rem', maxHeight: '25rem' }}>
-        <video src={videoUrl} controls autoPlay
-          className="w-full" style={{ maxHeight: '25rem' }}
-          onError={() => setShowPlayer(false)} />
-      </div>
-    );
-  }
 
   return (
     <div className="relative group/video cursor-pointer rounded-xl overflow-hidden bg-black ring-1 ring-black/[0.12]"
@@ -510,6 +477,74 @@ function VideoBubble({ msg }: { msg: any }) {
       </div>
     </div>
   );
+}
+
+// ── FacebookVideoBubble ──────────────────────────────────────────────────────
+// Facebook videos have NO thumbnail, play inline <video> player
+function FacebookVideoBubble({ msg }: { msg: any }) {
+  const [showPlayer, setShowPlayer] = React.useState(false);
+  let videoLocalPath = '';
+
+  try {
+    const lp: Record<string, string> = typeof msg.local_paths === 'string'
+      ? JSON.parse(msg.local_paths || '{}') : (msg.local_paths || {});
+    // FB stores video in: lp.main (E2EE), lp.file (download), or att_N keys
+    videoLocalPath = lp.file || lp.video || lp.main || '';
+    // Fallback: scan att_* keys (from downloadNonE2EEAttachments)
+    if (!videoLocalPath) {
+      const attKey = Object.keys(lp).find(k => k.startsWith('att_'));
+      if (attKey) videoLocalPath = lp[attKey];
+    }
+    // Fallback: localPath inside attachments (during temp sending state)
+    if (!videoLocalPath) {
+      try {
+        const atts = JSON.parse(msg.attachments || '[]');
+        if (atts[0]?.localPath) videoLocalPath = atts[0].localPath;
+      } catch {}
+    }
+  } catch {}
+
+  const videoUrl = videoLocalPath ? toLocalMediaUrl(videoLocalPath) : '';
+
+  // Inline player mode
+  if (showPlayer && videoUrl) {
+    return (
+      <div className="rounded-xl overflow-hidden bg-black ring-1 ring-black/[0.12]"
+        style={{ width: '17.5rem', maxHeight: '25rem' }}>
+        <video src={videoUrl} controls autoPlay
+          className="w-full" style={{ maxHeight: '25rem' }}
+          onError={() => setShowPlayer(false)} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative group/video cursor-pointer rounded-xl overflow-hidden bg-black ring-1 ring-black/[0.12]"
+      style={{ width: '17.5rem', height: 160 }} onClick={() => { if (videoUrl) setShowPlayer(true); }}>
+      {/* No thumbnail for FB — always show video placeholder */}
+      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-600">
+          <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+        </svg>
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50"/>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-14 h-14 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center group-hover/video:bg-black/80 transition-colors shadow-lg">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+      </div>
+      <div className="absolute bottom-2 left-2">
+        {!videoUrl && <span className="text-[11px] text-yellow-300 bg-black/50 px-1.5 py-0.5 rounded">Đang tải...</span>}
+      </div>
+    </div>
+  );
+}
+
+// ── VideoBubble (router) ─────────────────────────────────────────────────────
+// Routes to correct implementation based on channel
+function VideoBubble({ msg }: { msg: any }) {
+  if (msg.channel === 'facebook') return <FacebookVideoBubble msg={msg} />;
+  return <ZaloVideoBubble msg={msg} />;
 }
 
 // ── VoiceBubble ───────────────────────────────────────────────────────────────

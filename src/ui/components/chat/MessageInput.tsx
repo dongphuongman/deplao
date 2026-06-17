@@ -1200,7 +1200,21 @@ export default function MessageInput() {
           // Send images batch
           if (imagePaths.length > 0 && tempImgId) {
             try {
-              await ipc.zalo?.sendImages({ auth, threadId, type: threadType, filePaths: imagePaths });
+              const ch = activeContact?.channel || 'zalo';
+              if (ch === 'facebook') {
+                // FB: send multiple images via channelIpc
+                for (const imgPath of imagePaths) {
+                  await channelIpc.sendAttachment('facebook', {
+                    accountId,
+                    threadId,
+                    threadType: threadType as any,
+                    filePath: imgPath,
+                    body: '',
+                  });
+                }
+              } else {
+                await ipc.zalo?.sendImages({ auth, threadId, type: threadType, filePaths: imagePaths });
+              }
               removeMessage(accountId, threadId, tempImgId);
               markReplied(accountId, threadId);
             } catch (e: any) {
@@ -1271,7 +1285,17 @@ export default function MessageInput() {
           // Send text
           if (msgTitle && tempTextId) {
             try {
-              await ipc.zalo?.sendMessage({ auth, threadId, type: threadType, message: msgTitle });
+              const ch = activeContact?.channel || 'zalo';
+              if (ch === 'facebook') {
+                await channelIpc.sendMessage('facebook', {
+                  accountId,
+                  threadId,
+                  threadType: threadType as any,
+                  body: msgTitle,
+                });
+              } else {
+                await ipc.zalo?.sendMessage({ auth, threadId, type: threadType, message: msgTitle });
+              }
               removeMessage(accountId, threadId, tempTextId);
               markReplied(accountId, threadId);
             } catch (e: any) {

@@ -14,6 +14,58 @@ interface VersionEntry {
 // ─── Changelog data — thêm entry mới vào ĐẦU mảng khi có bản cập nhật ────────
 const CHANGELOG: VersionEntry[] = [
   {
+    version: '26.6.3',
+    date: '06/2026',
+    type: 'minor',
+    highlights: [
+      '🐧 Hỗ trợ Ubuntu Linux (.AppImage + .deb) — CI/CD build tự động',
+      '📡 Kết nối Facebook ổn định hơn — tự động reconnect khi mất kết nối, timeout guard 15s',
+      '🤖 Workflow Zalo & Facebook gửi tin đến nhiều hội thoại cùng lúc, AI gợi ý thông minh hơn',
+      '📹 Xem video Facebook inline ngay trong chat — tách riêng với video Zalo',
+      '📤 Zalo nhân viên: tự động upload file ảnh/video/voice lên boss trước khi proxy',
+      '🐛 Sửa lỗi gửi tin Facebook 1:1, E2EE bridge timeout, video Zalo hiển thị sai',
+    ],
+    changes: [
+      {
+        category: 'new',
+        items: [
+          '🐧 Hỗ trợ Ubuntu/Linux — build AppImage + .deb, CI/CD tự động trên GitHub Actions, hướng dẫn cài đặt cho Linux trong README',
+          '📹 Xem video Facebook inline ngay trong khung chat (FacebookVideoBubble) — không cần mở ứng dụng ngoài, hỗ trợ E2EE video',
+          '➕ Kết bạn Zalo trực tiếp từ kết quả tra cứu số điện thoại trong thanh tìm kiếm toàn cục',
+          '📦 Script build bridge E2EE đa nền tảng (build-bridge-e2ee.js) — tự động clone mautrix/meta, build cho Windows/Linux/macOS',
+        ],
+      },
+      {
+        category: 'improved',
+        items: [
+          '📡 Facebook: tự động reconnect khi service bị mất khỏi ConnectionManager (getFBServiceOrReconnect) — không còn lỗi "Account not connected" khi mạng drop rồi online lại',
+          '⏱️ Facebook: timeout guard 15s cho gửi tin nhắn qua IPC — UI không bị treo vô hạn khi MQTT/API treo',
+          '🔄 Facebook gửi tin nhắn: routing thông minh — 1:1 ưu tiên E2EE bridge, group ưu tiên bridge MQTT, REST fallback',
+          '✅ Facebook ensureConnected() trước khi gửi — tránh gửi request qua kết nối đã chết',
+          '📤 Workflow Facebook: gửi text/ảnh đến nhiều hội thoại cùng lúc (threadIds array), hỗ trợ continueOnError',
+          '📤 Workflow Zalo: gửi message/image/file đến nhiều hội thoại cùng lúc (threadIds), hỗ trợ continueOnError',
+          '🤖 AI gợi ý tin nhắn: prompt instruction rõ ràng hơn, thêm fallback split câu nếu AI trả sai format',
+          '🔧 9Router AI: base URL placeholder sửa đúng (bỏ /v1) — tương thích với proxy 9Router',
+          '🔄 Workflow: phát hiện cycle trong topological sort — log cảnh báo node bị skip',
+          '🌐 Zalo IPC: resolveZaloId fallback khi auth không có cookies — gửi tin nhắn nhanh vẫn hoạt động',
+          '📤 Zalo IPC Employee: tự động upload file media (ảnh, video, voice) từ máy nhân viên lên boss trước khi proxy — file cục bộ của nhân viên không tồn tại trên boss',
+          '📦 Bridge E2EE: cập nhật dependencies (mautrix v0.28.1, libsignal v0.2.2, whatsmeow mới nhất)',
+        ],
+      },
+      {
+        category: 'fixed',
+        items: [
+          'Sửa lỗi gửi tin nhắn Facebook 1:1 không qua E2EE bridge khi thread chưa được đánh dấu E2EE',
+          'Sửa lỗi Facebook E2EE bridge connect timeout quá dài (120s → 30s) — không block group messaging',
+          'Sửa lỗi upload attachment Facebook timeout (120s → 60s) — giảm thời gian chờ khi upload',
+          'Sửa lỗi workflow Facebook sendImage không gửi được ảnh đến nhiều thread (thiếu vòng lặp)',
+          'Sửa lỗi video Zalo bị ảnh hưởng bởi logic Facebook video — tách riêng ZaloVideoBubble và FacebookVideoBubble',
+          'Sửa lỗi MessageInput không gửi được text và ảnh Facebook (chỉ hỗ trợ Zalo)',
+        ],
+      },
+    ],
+  },
+  {
     version: '26.6.2',
     date: '06/2026',
     type: 'minor',

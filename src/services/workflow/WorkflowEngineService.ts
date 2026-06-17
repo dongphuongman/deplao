@@ -921,7 +921,9 @@ class WorkflowEngineService {
       case 'zalo.sendMessage': {
         const api = this.getApi(ctx.pageId);
         const threadType = Number(cfg.threadType) === 1 ? 1 : 0;   // guard NaN → 0
-        Logger.info(`[WorkflowEngine] sendMessage: message="${(cfg.message || '').substring(0, 300)}", threadId=${cfg.threadId}, threadType=${threadType}, isEmpty=${!cfg.message?.trim()}`);
+        const targetThreadIds = this.resolveTargetThreadIds(cfg, ctx.trigger?.threadId);
+        const continueOnError = cfg.continueOnError === true;
+        Logger.info(`[WorkflowEngine] sendMessage: message="${(cfg.message || '').substring(0, 300)}", threadIds=${JSON.stringify(targetThreadIds)}, threadType=${threadType}, isEmpty=${!cfg.message?.trim()}`);
 
         // ─── Structured AI response handling ─────────────────────────────
         // Detect AI structured JSON: [{type:"text",content:"..."}, {type:"image",content:["url",...]}]
@@ -929,51 +931,66 @@ class WorkflowEngineService {
         if (segments) {
           Logger.info(`[WorkflowEngine] Structured AI response: ${segments.length} segments`);
           let lastMsgId = '';
-          for (let i = 0; i < segments.length; i++) {
-            const seg = segments[i];
-            if (seg.type === 'text' && seg.content) {
-              // Small delay between messages to simulate natural typing
-              if (i > 0) await new Promise(r => setTimeout(r, 600));
-              try {
-                const destType = threadType === 0 ? 3 : undefined;
-                await api.sendTypingEvent(cfg.threadId, threadType, destType);
-              } catch {}
-              // Wait a bit for typing effect
-              const typingDelay = Math.min(Math.max(String(seg.content).length * 30, 800), 3000);
-              await new Promise(r => setTimeout(r, typingDelay));
-              const res = await api.sendMessage({ msg: String(seg.content) }, cfg.threadId, threadType);
-              lastMsgId = (res as any)?.message?.msgId || lastMsgId;
-            } else if (seg.type === 'image') {
-              const urls = Array.isArray(seg.content) ? seg.content : [seg.content];
-              for (const url of urls) {
-                if (!url || typeof url !== 'string') continue;
-                if (i > 0 || urls.indexOf(url) > 0) await new Promise(r => setTimeout(r, 500));
-                try {
-                  const tempPath = await this.downloadUrlToTempFile(String(url));
+          for (const tid of targetThreadIds) {
+            try {
+              for (let i = 0; i < segments.length; i++) {
+                const seg = segments[i];
+                if (seg.type === 'text' && seg.content) {
+                  if (i > 0) await new Promise(r => setTimeout(r, 600));
                   try {
-                    const res = await api.sendMessage({ msg: '', attachments: [tempPath] }, cfg.threadId, threadType);
-                    lastMsgId = (res as any)?.attachment?.[0]?.msgId || (res as any)?.message?.msgId || lastMsgId;
-                  } finally {
-                    try { fs.unlinkSync(tempPath); } catch {}
+                    const destType = threadType === 0 ? 3 : undefined;
+                    await api.sendTypingEvent(tid, threadType, destType);
+                  } catch {}
+                  const typingDelay = Math.min(Math.max(String(seg.content).length * 30, 800), 3000);
+                  await new Promise(r => setTimeout(r, typingDelay));
+                  const res = await api.sendMessage({ msg: String(seg.content) }, tid, threadType);
+                  lastMsgId = (res as any)?.message?.msgId || lastMsgId;
+                } else if (seg.type === 'image') {
+                  const urls = Array.isArray(seg.content) ? seg.content : [seg.content];
+                  for (const url of urls) {
+                    if (!url || typeof url !== 'string') continue;
+                    if (i > 0 || urls.indexOf(url) > 0) await new Promise(r => setTimeout(r, 500));
+                    try {
+                      const tempPath = await this.downloadUrlToTempFile(String(url));
+                      try {
+                        const res = await api.sendMessage({ msg: '', attachments: [tempPath] }, tid, threadType);
+                        lastMsgId = (res as any)?.attachment?.[0]?.msgId || (res as any)?.message?.msgId || lastMsgId;
+                      } finally {
+                        try { fs.unlinkSync(tempPath); } catch {}
+                      }
+                    } catch (e: any) {
+                      Logger.warn(`[WorkflowEngine] Failed to send image ${url}: ${e.message}`);
+                      await api.sendMessage({ msg: String(url) }, tid, threadType);
+                    }
                   }
-                } catch (e: any) {
-                  Logger.warn(`[WorkflowEngine] Failed to send image ${url}: ${e.message}`);
-                  // Fallback: send as text link
-                  await api.sendMessage({ msg: String(url) }, cfg.threadId, threadType);
                 }
               }
+            } catch (err: any) {
+              Logger.warn(`[WorkflowEngine] sendMessage to ${tid} failed: ${err.message}`);
+              if (!continueOnError) throw err;
             }
           }
           return { msgId: lastMsgId, success: true, structured: true, segmentCount: segments.length };
         }
 
-        // ─── Plain text (original behavior) ──────────────────────────────
-        const result = await api.sendMessage(
-          { msg: cfg.message },
-          cfg.threadId,
-          threadType
-        );
-        return { msgId: (result as any)?.message?.msgId || '', success: true };
+        // ─── Plain text: loop qua nhiều thread ────────────────────────────
+        let lastResult: any = { success: false, error: 'Không gửi được đến hội thoại nào' };
+        for (const tid of targetThreadIds) {
+          try {
+            const result = await api.sendMessage({ msg: cfg.message }, tid, threadType);
+            lastResult = result;
+            Logger.log(`[WorkflowEngine] zalo.sendMessage to ${tid}: success=true, msgId=${(result as any)?.message?.msgId}`);
+          } catch (err: any) {
+            Logger.warn(`[WorkflowEngine] zalo.sendMessage to ${tid} failed: ${err.message}`);
+            lastResult = { success: false, error: err.message };
+            if (!continueOnError) throw err;
+          }
+        }
+        return {
+          msgId: (lastResult as any)?.message?.msgId || '',
+          success: true,
+          _targetCount: targetThreadIds.length,
+        };
       }
 
       case 'zalo.sendTyping': {
@@ -996,15 +1013,48 @@ class WorkflowEngineService {
       case 'zalo.sendImage': {
         const api = this.getApi(ctx.pageId);
         const threadType = Number(cfg.threadType) === 1 ? 1 : 0;
-        const result = await api.sendMessage({ msg: cfg.message || '', attachments: [cfg.filePath] }, cfg.threadId, threadType);
-        return { msgId: (result as any)?.attachment?.[0]?.msgId || '', success: true };
+        const targetThreadIds = this.resolveTargetThreadIds(cfg, ctx.trigger?.threadId);
+        const continueOnError = cfg.continueOnError === true;
+        let lastResult: any = { success: false, error: 'Không gửi được ảnh đến hội thoại nào' };
+        for (const tid of targetThreadIds) {
+          try {
+            const result = await api.sendMessage({ msg: cfg.message || '', attachments: [cfg.filePath] }, tid, threadType);
+            lastResult = result;
+            Logger.log(`[WorkflowEngine] zalo.sendImage to ${tid}: success=true`);
+          } catch (err: any) {
+            Logger.warn(`[WorkflowEngine] zalo.sendImage to ${tid} failed: ${err.message}`);
+            lastResult = { success: false, error: err.message };
+            if (!continueOnError) throw err;
+          }
+        }
+        return {
+          msgId: (lastResult as any)?.attachment?.[0]?.msgId || '',
+          success: true,
+          _targetCount: targetThreadIds.length,
+        };
       }
 
       case 'zalo.sendFile': {
         const api = this.getApi(ctx.pageId);
         const threadType = Number(cfg.threadType) === 1 ? 1 : 0;
-        await api.sendMessage({ msg: '', attachments: [cfg.filePath] }, cfg.threadId, threadType);
-        return { success: true };
+        const targetThreadIds = this.resolveTargetThreadIds(cfg, ctx.trigger?.threadId);
+        const continueOnError = cfg.continueOnError === true;
+        let lastResult: any = { success: false, error: 'Không gửi được file đến hội thoại nào' };
+        for (const tid of targetThreadIds) {
+          try {
+            const result = await api.sendMessage({ msg: '', attachments: [cfg.filePath] }, tid, threadType);
+            lastResult = result;
+            Logger.log(`[WorkflowEngine] zalo.sendFile to ${tid}: success=true`);
+          } catch (err: any) {
+            Logger.warn(`[WorkflowEngine] zalo.sendFile to ${tid} failed: ${err.message}`);
+            lastResult = { success: false, error: err.message };
+            if (!continueOnError) throw err;
+          }
+        }
+        return {
+          success: true,
+          _targetCount: targetThreadIds.length,
+        };
       }
 
       case 'zalo.findUser': {
@@ -2018,20 +2068,33 @@ class WorkflowEngineService {
         if (!rawAccountId) throw new Error('[fb.action.sendMessage] accountId required');
         const accountId = this.resolveFBAccountId(rawAccountId);
         if (!cfg.message) throw new Error('[fb.action.sendMessage] message required');
-        const threadId = cfg.threadId || ctx.trigger?.threadId;
-        if (!threadId) throw new Error('[fb.action.sendMessage] threadId required');
+        const targetThreadIds = this.resolveTargetThreadIds(cfg, ctx.trigger?.threadId);
+        if (!targetThreadIds.length) throw new Error('[fb.action.sendMessage] threadId/threadIds required');
 
-        const result = await FacebookSendService.sendTextMessage({
-          accountId,
-          threadId: String(threadId),
-          body: String(cfg.message || ''),
-          typeChat: cfg.typeChat,
-          replyToMessageId: cfg.replyToMessageId,
-        });
+        const continueOnError = cfg.continueOnError === true;
+        let lastResult: any = { success: false, error: 'Không gửi được đến hội thoại nào' };
+        for (const tid of targetThreadIds) {
+          try {
+            const result = await FacebookSendService.sendTextMessage({
+              accountId,
+              threadId: tid,
+              body: String(cfg.message || ''),
+              typeChat: cfg.typeChat,
+              replyToMessageId: cfg.replyToMessageId,
+            });
+            lastResult = result;
+            Logger.log(`[WorkflowEngine] fb.action.sendMessage to ${tid}: success=${result.success}, msgId=${result.messageId}`);
+          } catch (err: any) {
+            Logger.warn(`[WorkflowEngine] fb.action.sendMessage to ${tid} failed: ${err.message}`);
+            lastResult = { success: false, error: err.message };
+            if (!continueOnError) throw err;
+          }
+        }
         return {
-          success: result.success,
-          messageId: result.messageId,
-          ...(result.error ? { error: result.error } : {}),
+          success: lastResult.success,
+          messageId: lastResult.messageId,
+          ...(lastResult.error ? { error: lastResult.error } : {}),
+          _targetCount: targetThreadIds.length,
         };
       }
 
@@ -2060,42 +2123,49 @@ class WorkflowEngineService {
         if (!rawAccountId) throw new Error('[fb.action.sendImage] accountId required');
         const accountId = this.resolveFBAccountId(rawAccountId);
         const service = await FacebookService.getInstance(accountId);
-        const threadId = cfg.threadId || ctx.trigger?.threadId;
-        if (!threadId) throw new Error('[fb.action.sendImage] threadId required');
+        const targetThreadIds = this.resolveTargetThreadIds(cfg, ctx.trigger?.threadId);
+        if (!targetThreadIds.length) throw new Error('[fb.action.sendImage] threadId/threadIds required');
         const filePath = String(cfg.filePath);
         const caption = cfg.body || cfg.message || '';
-        const isUser = /^\d+$/.test(String(threadId));
+        const continueOnError = cfg.continueOnError === true;
 
-        // E2EE 1:1: try bridge first (handles upload internally)
-        if (isUser && service.isE2EEConnected()) {
-          const { normalizeChatJid } = require('../facebook/FacebookUtils');
-          const chatJid = normalizeChatJid(String(threadId));
-          const e2eeResult = await service.sendE2EEImage(chatJid, filePath, caption);
-          if (e2eeResult.success && e2eeResult.messageId) {
-            const fbSenderId = service.getRealFacebookId() || accountId;
-            const fileName = require('path').basename(filePath);
-            await FacebookSendService.persistSentMessage({
-              accountId, threadId: String(threadId),
-              messageId: e2eeResult.messageId,
-              body: caption || null,
-              fbSenderId,
-              timestamp: e2eeResult.timestamp || Date.now(),
-              type: 'image',
-              isUserMessage: true,
-              attachments: JSON.stringify([{ type: 'image', name: fileName }]),
-            });
-            return { success: true, messageId: e2eeResult.messageId };
-          }
-        }
+        let lastResult: any = { success: false, error: 'Không gửi được đến hội thoại nào' };
+        for (const threadId of targetThreadIds) {
+          try {
+            const isUser = /^\d+$/.test(String(threadId));
 
-        // REST fallback: upload + send with attachment
-        const att = await service.uploadAttachment(filePath);
-        if (!att) throw new Error('[fb.action.sendImage] Upload failed');
-        let result = await service.sendMessage(String(threadId), caption, { attachmentId: att.attachmentId });
+            // E2EE 1:1: try bridge first (handles upload internally)
+            if (isUser && service.isE2EEConnected()) {
+              const { normalizeChatJid } = require('../facebook/FacebookUtils');
+              const chatJid = normalizeChatJid(String(threadId));
+              const e2eeResult = await service.sendE2EEImage(chatJid, filePath, caption);
+              if (e2eeResult.success && e2eeResult.messageId) {
+                const fbSenderId = service.getRealFacebookId() || accountId;
+                const fileName = require('path').basename(filePath);
+                await FacebookSendService.persistSentMessage({
+                  accountId, threadId: String(threadId),
+                  messageId: e2eeResult.messageId,
+                  body: caption || null,
+                  fbSenderId,
+                  timestamp: e2eeResult.timestamp || Date.now(),
+                  type: 'image',
+                  isUserMessage: true,
+                  attachments: JSON.stringify([{ type: 'image', name: fileName }]),
+                });
+                lastResult = { success: true, messageId: e2eeResult.messageId };
+                Logger.log(`[WorkflowEngine] fb.action.sendImage to ${threadId}: success via E2EE, msgId=${e2eeResult.messageId}`);
+                continue;
+              }
+            }
 
-        // E2EE error detection → retry via bridge for 1:1
-        if (!result.success && isUser && /disabled|vô hiệu hoá|encrypted/i.test(result.error || '')) {
-          Logger.warn(`[Workflow:fb.action.sendImage] E2EE error, retrying via bridge for thread=${threadId}`);
+            // REST fallback: upload + send with attachment
+            const att = await service.uploadAttachment(filePath);
+            if (!att) throw new Error('[fb.action.sendImage] Upload failed');
+            let result = await service.sendMessage(String(threadId), caption, { attachmentId: att.attachmentId });
+
+            // E2EE error detection → retry via bridge for 1:1
+            if (!result.success && isUser && /disabled|vô hiệu hoá|encrypted/i.test(result.error || '')) {
+              Logger.warn(`[Workflow:fb.action.sendImage] E2EE error, retrying via bridge for thread=${threadId}`);
           if (!service.isE2EEConnected()) {
             try { await service.retryE2EE(); } catch {}
           }
@@ -2116,7 +2186,8 @@ class WorkflowEngineService {
                 isUserMessage: true,
                 attachments: JSON.stringify([{ type: 'image', name: fileName }]),
               });
-              return { success: true, messageId: e2eeResult.messageId };
+              lastResult = { success: true, messageId: e2eeResult.messageId };
+              continue;
             }
           }
         }
@@ -2124,7 +2195,6 @@ class WorkflowEngineService {
         // ── Save DB + emit cho REST path ──
         if (result.success && result.messageId) {
           const fbSenderId = service.getRealFacebookId() || accountId;
-          const fileName = require('path').basename(filePath);
           await FacebookSendService.persistSentMessage({
             accountId, threadId: String(threadId),
             messageId: result.messageId,
@@ -2132,12 +2202,28 @@ class WorkflowEngineService {
             fbSenderId,
             timestamp: result.timestamp || Date.now(),
             type: 'image',
-            isUserMessage: isUser,
-            attachments: JSON.stringify([{ type: 'image', name: fileName, id: String(att.attachmentId) }]),
+            isUserMessage: false,
+            attachments: JSON.stringify([{ type: 'image', name: require('path').basename(filePath), id: String(att.attachmentId) }]),
           });
+          lastResult = { success: true, messageId: result.messageId };
+        } else {
+          lastResult = { success: false, error: result.error || 'Send failed' };
+          if (!continueOnError) throw new Error(lastResult.error);
         }
+        Logger.log(`[WorkflowEngine] fb.action.sendImage to ${threadId}: success=${lastResult.success}`);
 
-        return { success: result.success, messageId: result.messageId };
+        } catch (err: any) {
+          Logger.warn(`[WorkflowEngine] fb.action.sendImage to ${threadId} failed: ${err.message}`);
+          lastResult = { success: false, error: err.message };
+          if (!continueOnError) throw err;
+        }
+      }
+      return {
+        success: lastResult.success,
+        messageId: lastResult.messageId,
+        ...(lastResult.error ? { error: lastResult.error } : {}),
+        _targetCount: targetThreadIds.length,
+      };
       }
 
       case 'fb.action.sendTyping': {
@@ -2334,7 +2420,23 @@ class WorkflowEngineService {
         if (d === 0) queue.push(next);
       }
     }
+    // ⚠️ Nếu graph có cycle, topological sort không thể xử lý
+    // Chỉ trả về nodes có thể sort được (không cycle)
+    Logger.warn(`[WorkflowEngine] topologicalSort: ${result.length}/${wf.nodes.length} nodes sorted, ${wf.nodes.length - result.length} nodes skipped due to cycle(s)`);
     return result;
+  }
+
+  /** Resolve target thread IDs từ cfg, hỗ trợ cả threadIds (mảng JSON) và threadId (string cũ) */
+  private resolveTargetThreadIds(cfg: Record<string, any>, triggerThreadId?: string): string[] {
+    if (cfg.threadIds) {
+      try {
+        const parsed = JSON.parse(cfg.threadIds);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.map(String);
+      } catch {}
+    }
+    if (cfg.threadId) return [String(cfg.threadId)];
+    if (triggerThreadId) return [triggerThreadId];
+    return [];
   }
 
   private renderConfig(config: Record<string, any>, ctx: ExecutionContext): Record<string, any> {

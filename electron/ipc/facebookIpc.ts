@@ -14,6 +14,7 @@ import { secureGet, secureSet, secureDelete } from '../../src/services/secure/Se
 import FileStorageService from '../../src/services/file/FileStorageService';
 import EventBroadcaster from '../../src/services/event/EventBroadcaster';
 import Logger from '../../src/utils/Logger';
+import FacebookService from "../../src/services/facebook/FacebookService";
 
 // ─── Cookie secure storage helpers ───────────────────────────────────────────
 
@@ -48,6 +49,39 @@ function resolveRealFacebookId(internalId: string, service: any): string {
 
 /** Open-source build: giữ hàm để không vỡ import ở main process. */
 export function setFBMainWindow(_win: any) {}
+
+/**
+ * Lấy FacebookService từ ConnectionManager, tự động reconnect nếu chưa có.
+ * Tất cả handlers gọi hàm này thay vì FacebookConnectionManager.get() trực tiếp.
+ * Tránh lỗi "Account not connected" khi mạng drop rồi online lại nhưng
+ * ConnectionManager chưa kịp đồng bộ.
+ */
+async function getFBServiceOrReconnect(internalId: string): Promise<FacebookService | null> {
+  let service = FacebookConnectionManager.get(internalId);
+  if (service) return service;
+
+  Logger.warn(`[facebookIpc] Service ${internalId} not in ConnectionManager — attempting auto-reconnect...`);
+  const account = DatabaseService.getInstance().getFBAccount(internalId);
+  if (!account) return null;
+
+  const cookie = secureGet(fbCookieKey(internalId)) || account.cookie_encrypted;
+  if (!cookie) return null;
+
+  let proxyId: number | null | undefined;
+  try {
+    const accRow = DatabaseService.getInstance().queryOne<any>('SELECT proxy_id FROM accounts WHERE zalo_id = ?', [account.facebook_id || internalId]);
+    proxyId = accRow?.proxy_id ?? null;
+  } catch { proxyId = null; }
+
+  try {
+    service = await FacebookConnectionManager.getOrCreate(internalId, cookie, proxyId);
+    Logger.log(`[facebookIpc] Auto-reconnect success for ${internalId}`);
+    return service;
+  } catch (err: any) {
+    Logger.warn(`[facebookIpc] Auto-reconnect failed for ${internalId}: ${err.message}`);
+    return null;
+  }
+}
 
 // ─── Handlers ────────────────────────────────────────────────────────────────
 
@@ -467,20 +501,34 @@ export function registerFacebookIpc(): void {
     try {
       const internalId = resolveInternalId(params.accountId);
       Logger.log(`[facebookIpc] fb:sendMessage accountId=${params.accountId} → internalId=${internalId} threadId=${params.threadId} body="${params.body?.slice(0,50)}"`);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+
+      // Auto-reconnect nếu service chưa có trong ConnectionManager
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) {
+        return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
+      }
 
       const { FacebookSendService } = require('../../src/services/facebook/FacebookSendService');
-      const result = await FacebookSendService.sendTextMessage({
-        accountId: internalId,
-        threadId: params.threadId,
-        body: params.body,
-        typeChat: params.options?.typeChat,
-        replyToMessageId: params.options?.replyToMessageId,
-      });
+
+      // ── Timeout guard: prevent UI hanging forever ──────────────────────
+      // 15s cho hầu hết trường hợp, nếu group MQTT treo cũng không chờ quá lâu.
+      const TIMEOUT_MS = 15000;
+      const result = (await Promise.race([
+        FacebookSendService.sendTextMessage({
+          accountId: internalId,
+          threadId: params.threadId,
+          body: params.body,
+          typeChat: params.options?.typeChat,
+          replyToMessageId: params.options?.replyToMessageId,
+        }),
+        new Promise<any>((_, reject) =>
+          setTimeout(() => reject(new Error(`Gửi tin nhắn timeout sau ${TIMEOUT_MS / 1000}s. Vui lòng thử lại.`)), TIMEOUT_MS)
+        ),
+      ])) as any;
 
       return result;
     } catch (err: any) {
+      Logger.error(`[facebookIpc] fb:sendMessage error: ${err.message}`);
       return { success: false, error: err.message };
     }
   });
@@ -494,8 +542,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
 
       // C2: 1:1 → gửi qua E2EE bridge
       const isUserMessage = params.typeChat === 'user';
@@ -702,8 +750,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
 
       // C2: 1:1 → gửi qua E2EE bridge
       const isUserMessage = params.typeChat === 'user';
@@ -902,8 +950,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       const result = await service.unsendMessage(params.messageId);
       if (result.success) {
         DatabaseService.getInstance().updateFBMessageUnsent(params.messageId);
@@ -922,8 +970,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
 
       let success = false;
 
@@ -983,8 +1031,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       return await service.editMessage(params.messageId, params.text);
     } catch (err: any) {
       return { success: false, error: err.message };
@@ -1069,8 +1117,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       const ok = await service.changeThreadName(params.threadId, params.name);
       return { success: ok };
     } catch (err: any) {
@@ -1086,8 +1134,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       const ok = await service.changeThreadEmoji(params.threadId, params.emoji);
       return { success: ok };
     } catch (err: any) {
@@ -1103,8 +1151,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       const ok = await service.changeNickname(params.threadId, params.userId, params.nickname);
       return { success: ok };
     } catch (err: any) {
@@ -1136,8 +1184,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
 
       const sender = service.getE2EESender();
       if (!sender) return { success: false, error: 'E2EE bridge not connected' };
@@ -1205,8 +1253,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
 
       if (params.enable) {
         // E2EE is auto-started during connect — manual reconnect nếu cần
@@ -1227,8 +1275,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
 
       await service.sendTyping(params.threadId, params.isTyping, params.isGroup || false);
       return { success: true };
@@ -1246,8 +1294,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
 
       await service.markReadOnServer(params.threadId);
       return { success: true };
@@ -1264,8 +1312,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       return await service.forwardMessage(params.messageId, params.targetThreadId, params.isGroup || false);
     } catch (err: any) {
       return { success: false, error: err.message };
@@ -1280,8 +1328,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       return await service.pinMessage(params.messageId, params.threadId);
     } catch (err: any) {
       return { success: false, error: err.message };
@@ -1296,8 +1344,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       return await service.unpinMessage(params.messageId, params.threadId);
     } catch (err: any) {
       return { success: false, error: err.message };
@@ -1312,8 +1360,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       return await service.createPoll(params.threadId, params.question, params.options);
     } catch (err: any) {
       return { success: false, error: err.message };
@@ -1328,8 +1376,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       return await service.votePoll(params.pollId, params.optionIds);
     } catch (err: any) {
       return { success: false, error: err.message };
@@ -1346,8 +1394,8 @@ export function registerFacebookIpc(): void {
   }) => {
     try {
       const internalId = resolveInternalId(params.accountId);
-      const service = FacebookConnectionManager.get(internalId);
-      if (!service) return { success: false, error: 'Account not connected' };
+      const service = await getFBServiceOrReconnect(internalId);
+      if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
       const result = await service.fetchThreadMessages(params.threadId, params.limit, params.beforeCursor);
       // Lưu tin nhắn vào DB để dùng offline
       if (result.success && result.messages?.length) {
@@ -1783,8 +1831,8 @@ ipcMain.handle('fb:blockUser', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.blockUser(params.userId);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1799,8 +1847,8 @@ ipcMain.handle('fb:unblockUser', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.unblockUser(params.userId);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1815,8 +1863,8 @@ ipcMain.handle('fb:changeThreadTheme', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.changeThreadTheme(params.threadId, params.theme);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1831,8 +1879,8 @@ ipcMain.handle('fb:createNote', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.createNote(params.text, params.backgroundColor, params.textColor);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1849,8 +1897,8 @@ ipcMain.handle('fb:addGroupAdmin', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.addGroupAdmin(params.threadId, params.userId);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1865,8 +1913,8 @@ ipcMain.handle('fb:removeGroupAdmin', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.removeGroupAdmin(params.threadId, params.userId);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1881,8 +1929,8 @@ ipcMain.handle('fb:changeApprovalMode', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.changeApprovalMode(params.threadId, params.approved);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1897,8 +1945,8 @@ ipcMain.handle('fb:approvePendingMember', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.approvePendingMember(params.threadId, params.userId, params.approve);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1913,8 +1961,8 @@ ipcMain.handle('fb:getGroupLink', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.getGroupLink(params.threadId);
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -1929,8 +1977,8 @@ ipcMain.handle('fb:setGroupLink', async (_event, params: {
 }) => {
   try {
     const internalId = resolveInternalId(params.accountId);
-    const service = FacebookConnectionManager.get(internalId);
-    if (!service) return { success: false, error: 'Account not connected' };
+    const service = await getFBServiceOrReconnect(internalId);
+    if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
     return await service.setGroupLink(params.threadId, params.enable);
   } catch (err: any) {
     return { success: false, error: err.message };

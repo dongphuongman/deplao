@@ -12,8 +12,8 @@
 
 > A multi-account Zalo & Facebook desktop app with integrated CRM, ERP, POS, Workflow automation and AI Assistant — helping sales, customer care teams and marketing operate centrally on Zalo and Facebook in one single application.
 
-[![Version](https://img.shields.io/badge/version-26.6.2-22c55e)](#)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-3b82f6)](#-runtime-requirements)
+[![Version](https://img.shields.io/badge/version-26.6.3-22c55e)](#)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-3b82f6)](#-runtime-requirements)
 [![Electron](https://img.shields.io/badge/Electron-41-47848f?logo=electron&logoColor=white)](#)
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](#)
@@ -39,26 +39,44 @@
 
 <table>
 <tr>
-<td align="center" width="33%">
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-Setup-26.6.2.exe">
-<img src="https://img.shields.io/badge/🪟_Windows-v26.6.2-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows" />
+<td align="center" width="50%">
+
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-Setup-26.6.3.exe">
+<img src="https://img.shields.io/badge/🪟_Windows_10/11-v26.6.3-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows" />
 </a>
-<br>
-<sub>Deplao-Setup-26.6.2.exe</sub>
+
+<big><strong>Deplao-Setup-26.6.3.exe</strong></big>
+
 </td>
-<td align="center" width="33%">
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.2-arm64.dmg">
-<img src="https://img.shields.io/badge/🍎_macOS_M1+-v26.6.2-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon" />
+<td align="center" width="50%">
+
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.3-arm64.dmg">
+<img src="https://img.shields.io/badge/🍎_macOS_M1+-v26.6.3-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon" />
 </a>
-<br>
-<sub>Deplao-26.6.2-arm64.dmg</sub>
+
+<big><strong>Deplao-26.6.3-arm64.dmg</strong></big>
+
 </td>
-<td align="center" width="33%">
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.2.dmg">
-<img src="https://img.shields.io/badge/🍎_macOS_Intel-v26.6.2-333333?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel" />
+</tr>
+<tr>
+<td align="center" width="50%">
+
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.3.AppImage">
+<img src="https://img.shields.io/badge/🐧_Ubuntu_Linux-v26.6.3-e95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Download Ubuntu" />
 </a>
-<br>
-<sub>Deplao-26.6.2.dmg</sub>
+
+<big><strong>Deplao-26.6.3.AppImage</strong></big><br>
+<big>works on any distro — <code>chmod +x</code> & run</big>
+
+</td>
+<td align="center" width="50%">
+
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.3.dmg">
+<img src="https://img.shields.io/badge/🍎_macOS_Intel-v26.6.3-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel" />
+</a>
+
+<big><strong>Deplao-26.6.3.dmg</strong></big>
+
 </td>
 </tr>
 </table>
@@ -68,7 +86,7 @@
 </p>
 
 <details>
-<summary>⚠️ Security warning on first launch (blocked by Windows / macOS)</summary>
+<summary>⚠️ Security warning on first launch (blocked by Windows / macOS / Linux)</summary>
 
 Deplao is not code-signed (we're bootstrapped), so your OS may show a warning when opening the installer.
 
@@ -98,6 +116,27 @@ macOS may show **"cannot be opened because it is from an unidentified developer"
 1. Go to **System Settings → Privacy & Security**
 2. Scroll down to Security
 3. Click **Open Anyway**
+
+---
+
+### 🐧 Ubuntu Linux (.AppImage)
+
+After downloading the `.AppImage` file:
+
+```bash
+chmod +x Deplao-*.AppImage
+./Deplao-*.AppImage
+```
+
+> If you get "FUSE: fuse2 not available", install `libfuse2`:
+> ```bash
+> sudo apt install libfuse2
+> ```
+
+Or install the `.deb` package:
+```bash
+sudo dpkg -i Deplao_*_amd64.deb
+```
 
 </details>
 
@@ -146,12 +185,13 @@ flowchart LR
     subgraph PKG["🚀 Package"]
         EB(("electron\nbuilder"))
         WIN("🪟 Windows\n.exe / dir")
-        MAC("🍎 macOS\n.dmg arm64 + x64")
+        MAC("🍎 macOS\n.dmg arm64")
+        LIN("🐧 Linux\n.AppImage · .deb")
     end
 
     E & S --> TSC --> DE
     R --> VITE --> D
-    DE & D --> EB --> WIN & MAC
+    DE & D --> EB --> WIN & MAC & LIN
 ```
 
 ---
@@ -279,7 +319,7 @@ flowchart LR
 
 ### Requirements
 
-- Windows 10/11 or macOS
+- Windows 10/11, macOS (Apple Silicon), or Ubuntu 20.04+
 - Node.js 18+ recommended
 - npm 9+
 

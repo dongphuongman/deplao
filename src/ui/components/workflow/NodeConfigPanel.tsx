@@ -47,6 +47,12 @@ interface Field {
    */
   contactType?: 'user' | 'group' | 'all';
   /**
+   * Dùng khi type === 'contact-picker':
+   * - 'single' = chọn 1 (giá trị string, mặc định)
+   * - 'multi'  = chọn nhiều (giá trị JSON string array)
+   */
+  contactMode?: 'single' | 'multi';
+  /**
    * Dùng khi type === 'file-picker':
    * - 'image' = chỉ chọn ảnh
    * - 'file'  = chọn mọi loại file
@@ -248,9 +254,10 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       templateVars: ['$trigger.fromName', '$trigger.content', '$trigger.threadId'],
     },
     {
-      key: 'threadId', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      key: 'threadIds', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      contactMode: 'multi',
       placeholder: '{{ $trigger.threadId }}',
-      desc: 'ID hội thoại nhận tin. Giữ mặc định để tự động reply lại người vừa nhắn.',
+      desc: 'Chọn một hoặc nhiều hội thoại để gửi. Nếu không chọn, sẽ dùng hội thoại từ trigger.',
       templateVars: ['$trigger.threadId'],
     },
     {
@@ -308,9 +315,11 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       desc: 'Dòng chữ hiển thị kèm ảnh. Có thể để trống.',
     },
     {
-      key: 'threadId', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      key: 'threadIds', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      contactMode: 'multi',
       placeholder: '{{ $trigger.threadId }}',
-      desc: 'ID hội thoại nhận ảnh.', templateVars: ['$trigger.threadId'], advanced: true,
+      desc: 'Chọn một hoặc nhiều hội thoại để gửi ảnh. Nếu không chọn, sẽ dùng hội thoại từ trigger.',
+      templateVars: ['$trigger.threadId'],
     },
     {
       key: 'threadType', label: 'Loại hội thoại', type: 'select',
@@ -321,6 +330,11 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       ],
       advanced: true,
     },
+    {
+      key: 'continueOnError', label: 'Tiếp tục workflow dù gửi thất bại', type: 'boolean',
+      desc: 'Bật nếu muốn các bước sau vẫn chạy ngay cả khi gửi ảnh lỗi.',
+      advanced: true,
+    },
   ],
   'zalo.sendFile': [
     {
@@ -329,9 +343,11 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       desc: 'Chọn file từ máy tính để gửi.',
     },
     {
-      key: 'threadId', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      key: 'threadIds', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      contactMode: 'multi',
       placeholder: '{{ $trigger.threadId }}',
-      desc: 'ID hội thoại nhận file.', templateVars: ['$trigger.threadId'], advanced: true,
+      desc: 'Chọn một hoặc nhiều hội thoại để gửi file. Nếu không chọn, sẽ dùng hội thoại từ trigger.',
+      templateVars: ['$trigger.threadId'],
     },
     {
       key: 'threadType', label: 'Loại hội thoại', type: 'select',
@@ -340,6 +356,11 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
         { value: '{{ $trigger.threadType }}', label: '🔄 Tự động (theo trigger)' },
         { value: '0', label: '👤 Cá nhân' }, { value: '1', label: '👥 Nhóm' },
       ],
+      advanced: true,
+    },
+    {
+      key: 'continueOnError', label: 'Tiếp tục workflow dù gửi thất bại', type: 'boolean',
+      desc: 'Bật nếu muốn các bước sau vẫn chạy ngay cả khi gửi file lỗi.',
       advanced: true,
     },
   ],
@@ -1688,10 +1709,16 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       templateVars: ['$trigger.fromName', '$trigger.content', '$trigger.threadId'],
     },
     {
-      key: 'threadId', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      key: 'threadIds', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      contactMode: 'multi',
       placeholder: '{{ $trigger.threadId }}',
-      desc: 'ID hội thoại Facebook nhận tin. Giữ mặc định để tự động reply.',
+      desc: 'Chọn một hoặc nhiều hội thoại Facebook để gửi. Nếu không chọn, sẽ dùng hội thoại từ trigger.',
       templateVars: ['$trigger.threadId'],
+    },
+    {
+      key: 'continueOnError', label: 'Tiếp tục workflow dù gửi thất bại', type: 'boolean',
+      desc: 'Bật nếu muốn các bước sau vẫn chạy ngay cả khi tin nhắn này gửi lỗi.',
+      advanced: true,
     },
   ],
   'fb.action.sendImage': [
@@ -1706,10 +1733,16 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       desc: 'Nội dung văn bản đi kèm ảnh (caption). Để trống nếu chỉ gửi ảnh.',
     },
     {
-      key: 'threadId', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      key: 'threadIds', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
+      contactMode: 'multi',
       placeholder: '{{ $trigger.threadId }}',
-      desc: 'ID hội thoại Facebook nhận ảnh.',
+      desc: 'Chọn một hoặc nhiều hội thoại Facebook để gửi ảnh.',
       templateVars: ['$trigger.threadId'],
+    },
+    {
+      key: 'continueOnError', label: 'Tiếp tục workflow dù gửi thất bại', type: 'boolean',
+      desc: 'Bật nếu muốn các bước sau vẫn chạy ngay cả khi gửi ảnh lỗi.',
+      advanced: true,
     },
   ],
   'fb.action.addReaction': [
@@ -2694,6 +2727,7 @@ function ContactPickerModal({
   open,
   onClose,
   contactType,
+  contactMode = 'single',
   value,
   onChange,
   accounts,
@@ -2701,8 +2735,9 @@ function ContactPickerModal({
   open: boolean;
   onClose: () => void;
   contactType: 'user' | 'group' | 'all';
-  value: string;
-  onChange: (v: string) => void;
+  contactMode?: 'single' | 'multi';
+  value: string[];
+  onChange: (v: string[]) => void;
   accounts: { zalo_id: string; full_name: string; display_name?: string; phone?: string; avatar_url: string; cookies: string; imei: string; user_agent: string }[];
 }) {
   const [selectedAccountId, setSelectedAccountId] = React.useState<string>(accounts[0]?.zalo_id || '');
@@ -2843,7 +2878,21 @@ function ContactPickerModal({
   const groupCount = contacts.filter(c => c.type === 'group').length;
 
   const handleSelect = (contact: ContactItem) => {
-    onChange(contact.id);
+    if (contactMode === 'multi') {
+      const alreadySelected = value.includes(contact.id);
+      if (alreadySelected) {
+        onChange(value.filter(id => id !== contact.id));
+      } else {
+        onChange([...value, contact.id]);
+      }
+    } else {
+      onChange([contact.id]);
+      onClose();
+    }
+  };
+
+  const handleClear = () => {
+    onChange([]);
     onClose();
   };
 
@@ -3070,13 +3119,14 @@ function ContactPickerModal({
               ) : (
                 <div className="space-y-1">
                   {filteredContacts.map(contact => {
+                    const isSelected = value.includes(contact.id);
                     return (
                     <button
                       key={`${contact.type}-${contact.id}`}
                       type="button"
                       onClick={() => handleSelect(contact)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-left transition-all ${
-                        value === contact.id
+                        isSelected
                           ? isLight
                             ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-500/30'
                             : 'bg-blue-500/15 border-blue-500/40 ring-2 ring-blue-500/30'
@@ -3085,6 +3135,20 @@ function ContactPickerModal({
                             : 'bg-gray-800/40 border-gray-700/40 hover:border-gray-600 hover:bg-gray-800/60'
                       }`}
                     >
+                      {/* Checkbox for multi mode */}
+                      {contactMode === 'multi' && (
+                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                          isSelected
+                            ? 'bg-blue-500 border-blue-500'
+                            : isLight ? 'border-gray-300' : 'border-gray-600'
+                        }`}>
+                          {isSelected && (
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          )}
+                        </div>
+                      )}
                       {/* Avatar - use GroupAvatar for groups, like CRM */}
                       {contact.type === 'group' ? (
                         <GroupAvatar
@@ -3138,8 +3202,16 @@ function ContactPickerModal({
                         </div>
                       </div>
 
-                      {/* Selected indicator */}
-                      {value === contact.id && (
+                      {/* Selected chip count for multi */}
+                      {contactMode === 'multi' && isSelected && (
+                        <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${
+                          isLight ? 'bg-blue-500 text-white' : 'bg-blue-500 text-white'
+                        }`}>
+                          {(value.indexOf(contact.id) + 1)}
+                        </span>
+                      )}
+                      {/* Selected checkmark for single */}
+                      {contactMode !== 'multi' && value[0] === contact.id && (
                         <svg className="w-5 h-5 flex-shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
@@ -3157,21 +3229,55 @@ function ContactPickerModal({
         <div className={`flex items-center justify-between px-5 py-4 border-t ${
           isLight ? 'bg-gray-50 border-gray-200' : 'bg-gray-800/50 border-gray-700'
         }`}>
-          <div className={`text-xs ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
-            {filteredContacts.length} {contactType === 'group' ? 'nhóm' : contactType === 'user' ? 'liên hệ' : 'mục'}
+          <div className="flex items-center gap-2">
+            <span className={`text-xs ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
+              {filteredContacts.length} {contactType === 'group' ? 'nhóm' : contactType === 'user' ? 'liên hệ' : 'mục'}
+            </span>
+            {contactMode === 'multi' && value.length > 0 && (
+              <span className={`text-xs font-medium ${isLight ? 'text-blue-600' : 'text-blue-400'}`}>
+                · Đã chọn {value.length}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors ${
-                isLight
-                  ? 'text-gray-700 bg-gray-100 hover:bg-gray-200'
-                  : 'text-gray-300 bg-gray-700 hover:bg-gray-600'
-              }`}
-            >
-              Đóng
-            </button>
+            {contactMode === 'multi' && value.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                  isLight
+                    ? 'text-red-600 bg-red-50 hover:bg-red-100'
+                    : 'text-red-400 bg-red-500/10 hover:bg-red-500/20'
+                }`}
+              >
+                Bỏ chọn
+              </button>
+            )}
+            {contactMode === 'multi' ? (
+              <button
+                type="button"
+                onClick={onClose}
+                className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors ${
+                  isLight
+                    ? 'text-white bg-blue-600 hover:bg-blue-500'
+                    : 'text-white bg-blue-600 hover:bg-blue-500'
+                }`}
+              >
+                Xác nhận{value.length > 0 ? ` (${value.length})` : ''}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onClose}
+                className={`px-4 py-2 text-xs font-medium rounded-lg transition-colors ${
+                  isLight
+                    ? 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+                    : 'text-gray-300 bg-gray-700 hover:bg-gray-600'
+                }`}
+              >
+                Đóng
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -3185,12 +3291,14 @@ function ContactPickerField({
   value,
   onChange,
   contactType,
+  contactMode = 'single',
   placeholder,
   templateVars,
 }: {
   value: string;
   onChange: (v: string) => void;
   contactType: 'user' | 'group' | 'all';
+  contactMode?: 'single' | 'multi';
   placeholder?: string;
   templateVars?: string[];
 }) {
@@ -3199,22 +3307,45 @@ function ContactPickerField({
   const theme = useAppStore(s => s.theme);
   const isLight = theme === 'light';
 
+  // Parse giá trị hiện tại: string đơn hoặc JSON array
+  const selectedIds: string[] = React.useMemo(() => {
+    if (!value) return [];
+    try { const p = JSON.parse(value); return Array.isArray(p) ? p : [value]; }
+    catch { return [value]; }
+  }, [value]);
+
+  // Callback nhận mảng từ modal → serialize về string
+  const handleChange = (ids: string[]) => {
+    if (contactMode === 'multi') {
+      onChange(ids.length > 0 ? JSON.stringify(ids) : '');
+    } else {
+      onChange(ids[0] || '');
+    }
+  };
 
   return (
     <div className={`border rounded-xl overflow-hidden ${isLight ? 'border-gray-200 bg-white' : 'border-gray-700 bg-gray-800/30'}`}>
       {/* Current value display */}
       <div className="flex items-center gap-2 p-2">
-        <input
-          type="text"
-          value={value || ''}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder || 'Nhập ID hoặc chọn từ danh bạ'}
-          className={`flex-1 px-2 py-1.5 text-xs rounded-lg border focus:outline-none focus:ring-2 ${
-            isLight
-              ? 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-blue-500/30'
-              : 'bg-gray-900/50 border-gray-600 text-white placeholder-gray-500 focus:ring-blue-500/30'
-          }`}
-        />
+        <div className="flex-1 flex flex-wrap gap-1 min-h-[32px] items-center">
+          {selectedIds.length > 0 ? (
+            selectedIds.map(id => (
+              <span key={id} className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-full font-medium ${
+                isLight ? 'bg-blue-100 text-blue-700' : 'bg-blue-500/20 text-blue-300'
+              }`}>
+                {id}
+                {contactMode === 'multi' && (
+                  <button type="button" onClick={() => handleChange(selectedIds.filter(x => x !== id))}
+                    className="hover:text-white transition-colors">&times;</button>
+                )}
+              </span>
+            ))
+          ) : (
+            <span className={`text-xs ${isLight ? 'text-gray-400' : 'text-gray-500'}`}>
+              {placeholder || 'Nhập ID hoặc chọn từ danh bạ'}
+            </span>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => setShowModal(true)}
@@ -3245,7 +3376,7 @@ function ContactPickerField({
               <button
                 key={v}
                 type="button"
-                onClick={() => onChange(`{{ ${v} }}`)}
+                onClick={() => handleChange([`{{ ${v} }}`])}
                 className={`px-2 py-1 text-[10px] font-mono rounded transition-colors ${
                   value === `{{ ${v} }}`
                     ? isLight ? 'bg-blue-100 text-blue-700' : 'bg-blue-500/30 text-blue-300'
@@ -3264,8 +3395,9 @@ function ContactPickerField({
         open={showModal}
         onClose={() => setShowModal(false)}
         contactType={contactType}
-        value={value}
-        onChange={onChange}
+        contactMode={contactMode}
+        value={selectedIds}
+        onChange={handleChange}
         accounts={accounts}
       />
     </div>

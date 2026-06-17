@@ -64,6 +64,10 @@ function resolveApiUrl(platform: string, model: string, apiKey: string, baseUrl:
     } else if (platform === 'claude') {
       return `${base}/v1/messages`;
     }
+    // Nếu baseUrl đã có version prefix (vd /v1), thêm trực tiếp /chat/completions
+    if (base.match(/\/v\d+$/)) {
+      return `${base}/chat/completions`;
+    }
     return `${base}/v1/chat/completions`;
   }
   if (platform === 'gemini') {
@@ -448,11 +452,23 @@ VÍ DỤ ĐẦU RA ĐÚNG:
     if (!assistant || !assistant.enabled) return [];
 
     const contextCount = assistant.contextMessageCount || 30;
-    const systemPrompt = await this.buildSystemPrompt(assistant);
+    // KHÔNG dùng buildSystemPrompt() ở đây vì assistant system prompt có thể lấn át
+    // instruction suggest (đặc biệt với model FREE). Chỉ dùng instruction thuần.
     const messages: ChatMessage[] = [
       {
         role: 'system',
-        content: `${systemPrompt}\n\n[Hướng dẫn] Dựa trên lịch sử hội thoại bên dưới, hãy gợi ý đúng 5 câu trả lời ngắn gọn, tự nhiên và phù hợp nhất cho người bán/hỗ trợ viên.\nBẮT BUỘC trả về đúng định dạng JSON array gồm 5 phần tử string, KHÔNG thêm bất kỳ text nào khác.\nVí dụ: ["Câu 1","Câu 2","Câu 3","Câu 4","Câu 5"]`
+        content: `Bạn là trợ lý gợi ý tin nhắn cho người bán hàng / chăm sóc khách hàng.
+
+NHIỆM VỤ: Dựa vào lịch sử hội thoại bên dưới, hãy gợi ý ĐÚNG 5 câu trả lời ngắn gọn, tự nhiên, phù hợp nhất.
+
+YÊU CẦU BẮT BUỘC:
+- Trả về JSON array gồm ĐÚNG 5 string, KHÔNG thêm text nào khác
+- Mỗi câu phải ngắn gọn (dưới 100 ký tự), tự nhiên như chat thật
+- Câu gợi ý phải khớp ngữ cảnh cuộc hội thoại
+- KHÔNG giải thích, KHÔNG thêm markdown, KHÔNG thêm lời chào dư thừa
+
+ĐỊNH DẠNG CHUẨN (chỉ trả về đúng format này, không thêm gì khác):
+["Câu gợi ý 1","Câu gợi ý 2","Câu gợi ý 3","Câu gợi ý 4","Câu gợi ý 5"]`
       },
       ...chatHistory.slice(-contextCount).map(m => ({
         role: m.role as 'user' | 'assistant',
@@ -486,6 +502,15 @@ VÍ DỤ ĐẦU RA ĐÚNG:
           .map(s => s.replace(/^["']|["']$/g, ''))       // remove surrounding quotes
           .map(s => s.trim())
           .filter(s => s.length > 0);
+
+        // Fallback #2: nếu line-split không ra (vd text 1 đoạn), thử split theo câu
+        if (suggestions.length === 0 && result.length > 20) {
+          suggestions = result
+            .split(/[.!?]\s*/)
+            .map(s => s.trim())
+            .filter(s => s.length > 20)
+            .slice(0, 5);
+        }
       }
 
       Logger.info(`[AIAssistant] getSuggestions parsed ${suggestions.length} suggestions: ${JSON.stringify(suggestions)}`);

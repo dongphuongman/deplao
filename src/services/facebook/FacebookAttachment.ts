@@ -112,7 +112,7 @@ export async function uploadAttachment(
         'User-Agent': userAgent,
         'Cookie': dataFB.cookieFacebook,
       },
-      timeout: 120000,
+      timeout: 60000,
       maxBodyLength: 100 * 1024 * 1024, // 100MB max
       maxContentLength: 100 * 1024 * 1024, // 100MB max
       ...(httpsAgent ? { httpsAgent } : {}),

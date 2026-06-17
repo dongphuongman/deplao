@@ -785,10 +785,11 @@ export class FacebookService {
         e2eeMemoryOnly: true,
       });
 
-      const info = await this.e2eeBridge.connect(120000);
+      // Timeout ngắn để không block group messaging nếu bridge không respond
+      const info = await this.e2eeBridge.connect(30000);
       Logger.log(`[FacebookService:${this.accountId}] E2EE bridge connected: user=${JSON.stringify((info as any)?.user?.id ?? '?')}`);
 
-      await this.e2eeBridge.connectE2EE(60000);
+      await this.e2eeBridge.connectE2EE(20000);
       Logger.log(`[FacebookService:${this.accountId}] E2EE pairing complete`);
 
       this.setE2EEStatus('connected');
@@ -1499,17 +1500,83 @@ export class FacebookService {
     const agent = this.httpsAgent;
     const is1on1 = opts?.typeChat === 'user';
 
-    // Known E2EE thread → skip REST, send via bridge directly
-    if (is1on1 && this.e2eeThreads.has(threadId)) {
-      Logger.log(`[FacebookService:${this.accountId}] Known E2EE thread=${threadId}, routing directly via bridge`);
-      return this.sendE2EEWithFallback(threadId, body, opts);
+    // ── Ensure connection is alive before sending ─────────────────────────
+    // Kiểm tra listener thực sự còn alive, nếu không thì auto-reconnect.
+    // Tránh gửi request qua 1 kết nối đã chết → treo 30s + mất kết nối.
+    const ready = await this.ensureConnected();
+    if (!ready) {
+      return { success: false, error: 'Mất kết nối Facebook. Vui lòng kết nối lại tài khoản.' };
+    }
+    // ───────────────────────────────────────────────────────────────────────
+
+    // ── 1:1 messages: try E2EE bridge FIRST ─────────────────────────────
+    // Facebook Messenger 1:1 luôn yêu cầu E2EE. Gửi qua REST sẽ thất bại
+    // hoặc gửi không mã hoá. Luôn ưu tiên bridge, chỉ fallback REST khi
+    // bridge không available.
+    if (is1on1) {
+      if (this.e2eeBridge?.isAlive()) {
+        try {
+          const bridgeResult = await this.e2eeBridge.sendE2EEMessage({
+            chatJid: normalizeChatJid(threadId),
+            text: body,
+            replyToId: opts?.replyToMessageId || '',
+          });
+          if (bridgeResult?.messageId) {
+            Logger.log(`[FacebookService:${this.accountId}] 1:1 message sent via bridge E2EE: msgId=${bridgeResult.messageId}`);
+            this.e2eeThreads.add(threadId);
+            return {
+              success: true,
+              messageId: bridgeResult.messageId,
+              timestamp: bridgeResult.timestampMs,
+            };
+          }
+          Logger.warn(`[FacebookService:${this.accountId}] Bridge E2EE send returned no messageId, falling back to REST`);
+        } catch (bridgeErr: any) {
+          Logger.warn(`[FacebookService:${this.accountId}] Bridge E2EE send failed, falling back to REST: ${bridgeErr.message}`);
+        }
+      }
+      // Bridge not alive — retry E2EE rồi thử lại
+      if (!this.isE2EEConnected()) {
+        try { await this.retryE2EE(); } catch {}
+      }
+      if (this.isE2EEConnected()) {
+        try {
+          return await this.sendE2EEMessage(normalizeChatJid(threadId), body, opts);
+        } catch (err: any) {
+          Logger.warn(`[FacebookService:${this.accountId}] E2EE retry also failed: ${err.message}`);
+        }
+      }
     }
 
-    // Try REST first
+    // ── Group messages (non-E2EE): send via bridge MQTT first ────────────
+    // Bridge's MQTT path ổn định hơn REST API. REST API có thể treo hoặc bị
+    // Facebook rate-limit dẫn đến mất kết nối.
+    if (!is1on1 && this.e2eeBridge?.isAlive()) {
+      try {
+        const bridgeResult = await this.e2eeBridge.sendMessage({
+          threadId,
+          text: body,
+          replyToId: opts?.replyToMessageId || '',
+        });
+        if (bridgeResult?.messageId) {
+          Logger.log(`[FacebookService:${this.accountId}] Group message sent via bridge MQTT: msgId=${bridgeResult.messageId}`);
+          return {
+            success: true,
+            messageId: bridgeResult.messageId,
+            timestamp: bridgeResult.timestampMs,
+          };
+        }
+        Logger.warn(`[FacebookService:${this.accountId}] Bridge sendMessage returned no messageId, falling back to REST`);
+      } catch (bridgeErr: any) {
+        Logger.warn(`[FacebookService:${this.accountId}] Bridge sendMessage failed, falling back to REST: ${bridgeErr.message}`);
+      }
+    }
+    // ───────────────────────────────────────────────────────────────────────
+
+    // Try REST as fallback (cho cả 1:1 và group)
     const result = await sendMessageREST(this.requireSession(), threadId, body, opts, agent);
 
-    // Check for E2EE-related error and auto-retry (check regardless of is1on1,
-    // since typeChat may not be set but thread could still be E2EE-encrypted)
+    // Check for E2EE-related error and auto-retry
     if (!result.success && result.error && this.isE2EEDisabledError(result.error)) {
       Logger.warn(`[FacebookService:${this.accountId}] E2EE disabled error for thread=${threadId}, marking as E2EE and retrying via bridge`);
       this.e2eeThreads.add(threadId);

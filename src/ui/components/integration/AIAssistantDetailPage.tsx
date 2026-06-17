@@ -954,7 +954,7 @@ export default function AIAssistantDetailPage({ assistantId, onBack }: Props) {
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Base URL (tuỳ chọn)</label>
                 <input type="text" value={baseUrl} onChange={e => setBaseUrl(e.target.value)}
-                  placeholder={platform === '9router' ? 'http://localhost:20128/v1' : platform === 'openrouter' ? 'https://openrouter.ai/api' : 'https://api.custom-proxy.com'}
+                  placeholder={platform === '9router' ? 'http://localhost:20128' : platform === 'openrouter' ? 'https://openrouter.ai/api' : 'https://api.custom-proxy.com'}
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"/>
                 <p className="text-[10px] text-gray-500 mt-1">
                   Ghi đè endpoint API. Để trống để dùng URL mặc định. Hữu ích khi dùng proxy như 9Router, OpenRouter, hoặc các API gateway khác.
