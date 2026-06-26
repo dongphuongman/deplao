@@ -21,8 +21,8 @@ interface WorkspaceSnapshot {
 }
 
 /**
- * HttpConnectionManager — manages one HttpClientService instance per workspace.
- * Replaces SocketConnectionManager — uses HTTP instead of Socket.IO.
+ * HttpConnectionManager - manages one HttpClientService instance per workspace.
+ * Replaces SocketConnectionManager - uses HTTP instead of Socket.IO.
  */
 class HttpConnectionManager {
     private static instance: HttpConnectionManager;
@@ -59,7 +59,7 @@ class HttpConnectionManager {
         }
 
         if (this.clients.has(workspaceId)) {
-            Logger.warn(`[HttpConnectionManager] ⚠️ connect() replacing EXISTING client for "${workspaceId}" — old SSE will be destroyed`);
+            Logger.warn(`[HttpConnectionManager] ⚠️ connect() replacing EXISTING client for "${workspaceId}" - old SSE will be destroyed`);
             this.clients.get(workspaceId)!.service.disconnect();
             this.clients.delete(workspaceId);
         }
@@ -120,10 +120,10 @@ class HttpConnectionManager {
 
         // Auto delta sync + snapshot refresh when SSE reconnects after a disconnect
         service.setOnSSEReconnected(async () => {
-            // Always refresh snapshot first — fixes stale listener_dead state
+            // Always refresh snapshot first - fixes stale listener_dead state
             // when Boss's Zalo listeners came online after employee connected
             try {
-                Logger.log(`[HttpConnectionManager] 🔄 SSE reconnected for "${workspaceId}" — refreshing snapshot`);
+                Logger.log(`[HttpConnectionManager] 🔄 SSE reconnected for "${workspaceId}" - refreshing snapshot`);
                 await service.requestSnapshot();
             } catch (err: any) {
                 Logger.warn(`[HttpConnectionManager] Snapshot refresh failed for "${workspaceId}": ${err.message}`);
@@ -132,10 +132,10 @@ class HttpConnectionManager {
             // Then delta sync to catch up missed messages
             const syncTs = service.getLastSyncTs();
             if (!syncTs) {
-                Logger.log(`[HttpConnectionManager] SSE reconnected for "${workspaceId}" — no lastSyncTs, skipping delta sync`);
+                Logger.log(`[HttpConnectionManager] SSE reconnected for "${workspaceId}" - no lastSyncTs, skipping delta sync`);
                 return;
             }
-            Logger.log(`[HttpConnectionManager] 🔄 SSE reconnected for "${workspaceId}" — running delta sync since ${new Date(syncTs).toISOString()}`);
+            Logger.log(`[HttpConnectionManager] 🔄 SSE reconnected for "${workspaceId}" - running delta sync since ${new Date(syncTs).toISOString()}`);
             try {
                 const result = await service.performDeltaSync(syncTs);
                 if (result.success && result.syncTs) {
@@ -265,12 +265,12 @@ class HttpConnectionManager {
             const wm = WorkspaceManager.getInstance();
             for (const [wsId, client] of this.clients) {
                 const status = client.service.getStatus();
-                if (status.connected) continue; // Already connected — skip
+                if (status.connected) continue; // Already connected - skip
 
                 const ws = wm.getWorkspaceById(wsId);
                 if (!ws || ws.type !== 'remote' || !ws.bossUrl || !ws.token) continue;
 
-                Logger.log(`[HttpConnectionManager] Health check: "${wsId}" disconnected — attempting reconnect`);
+                Logger.log(`[HttpConnectionManager] Health check: "${wsId}" disconnected - attempting reconnect`);
                 try {
                     await this.connect(wsId, ws.bossUrl, ws.token);
                 } catch (err: any) {

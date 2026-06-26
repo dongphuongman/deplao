@@ -473,7 +473,7 @@ function PollBoardCard({ poll, zaloId, threadId }: { poll: NonNullable<BoardItem
         {totalVotes > 0 && <p className="text-xs text-blue-400 font-semibold mt-0.5">{totalVotes} lượt bình chọn</p>}
       </div>
 
-      {/* Expanded detail — shared component */}
+      {/* Expanded detail - shared component */}
       {expanded && (
         loading && !detail ? (
           <div className="flex justify-center py-3 px-4">

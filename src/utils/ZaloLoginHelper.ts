@@ -46,16 +46,16 @@ class ZaloLoginHelper {
             // node-fetch v2 properly forwards the agent to proxy-agent (which handles all proxy types).
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const nodeFetch = require('node-fetch');
-            // Capture proxyAgent in closure so ALL requests — login, sendMessage, getUserInfo,
-            // WebSocket upgrade, file upload, etc. — always go through the proxy.
+            // Capture proxyAgent in closure so ALL requests - login, sendMessage, getUserInfo,
+            // WebSocket upgrade, file upload, etc. - always go through the proxy.
             // We explicitly spread `agent: proxyAgent` into every request's options so that
             // even if zca-js doesn't forward cfg.agent in a particular request, the proxy
             // is always applied by the polyfill itself.
             const capturedAgent = proxyAgent;
             cfg.polyfill = async (url: string, options: any) => {
-                // Always inject the proxy agent — do NOT rely on zca-js forwarding cfg.agent
+                // Always inject the proxy agent - do NOT rely on zca-js forwarding cfg.agent
                 const res = await nodeFetch(url, { ...options, agent: capturedAgent });
-                // Patch each response to expose getSetCookie() — zca-js uses this to correctly parse
+                // Patch each response to expose getSetCookie() - zca-js uses this to correctly parse
                 // cookies with commas in values (e.g. Expires dates in checkSession redirect).
                 // node-fetch v2 Headers lacks getSetCookie(); fallback split(", ") breaks those cookies.
                 if (typeof res.headers.getSetCookie !== 'function') {
@@ -173,7 +173,7 @@ class ZaloLoginHelper {
         // 3. Kết nối và start listener
         await this.connectZaloUser(auth, api);
 
-        // 4. Fetch phone + bizPkg từ API rồi cập nhật DB — TRƯỚC khi broadcast success
+        // 4. Fetch phone + bizPkg từ API rồi cập nhật DB - TRƯỚC khi broadcast success
         //    Để khi renderer + loginIpc gọi getAccounts/registerPage → đã có đủ phone
         try {
             const accountInfo = await api.fetchAccountInfo();
@@ -223,7 +223,7 @@ class ZaloLoginHelper {
     private static reconnectAttempts: Map<string, number> = new Map();
     // Timer handles để có thể cancel
     private static reconnectTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
-    // Set lưu các account đã bị xóa chủ động — KHÔNG reconnect
+    // Set lưu các account đã bị xóa chủ động - KHÔNG reconnect
     private static removedAccounts: Set<string> = new Set();
     /** Callback được gọi khi QR login thành công */
     private static onQRSuccessCallback: ((zaloId: string, isNewAccount: boolean) => void) | null = null;
@@ -232,14 +232,14 @@ class ZaloLoginHelper {
         ZaloLoginHelper.onQRSuccessCallback = cb;
     }
 
-    /** Callback được gọi sau khi fetch phone/bizPkg hoàn tất — dùng để sync phone lên Sheets */
+    /** Callback được gọi sau khi fetch phone/bizPkg hoàn tất - dùng để sync phone lên Sheets */
     private static onProfileReadyCallback: ((zaloId: string, name: string, phone: string) => void) | null = null;
 
     public static setProfileReadyCallback(cb: (zaloId: string, name: string, phone: string) => void): void {
         ZaloLoginHelper.onProfileReadyCallback = cb;
     }
 
-    /** Đánh dấu account đã bị xóa — ngăn reconnect khi listener ngắt kết nối */
+    /** Đánh dấu account đã bị xóa - ngăn reconnect khi listener ngắt kết nối */
     public static markRemoved(zaloId: string): void {
         ZaloLoginHelper.removedAccounts.add(zaloId);
         ZaloLoginHelper.cancelReconnect(zaloId);
@@ -262,7 +262,7 @@ class ZaloLoginHelper {
      */
     public static scheduleReconnect(zaloId: string, auth: any, attempt: number): void {
         if (attempt >= MAX_RECONNECT_ATTEMPTS) {
-            Logger.error(`[ZaloLoginHelper] ${zaloId} max reconnect attempts (${MAX_RECONNECT_ATTEMPTS}) reached — marking listener_active=0`);
+            Logger.error(`[ZaloLoginHelper] ${zaloId} max reconnect attempts (${MAX_RECONNECT_ATTEMPTS}) reached - marking listener_active=0`);
             DatabaseService.getInstance().setListenerActive(zaloId, false);
             EventBroadcaster.broadcastListenerDead(zaloId, 'max_retries');
             ZaloLoginHelper.reconnectAttempts.delete(zaloId);
@@ -285,14 +285,14 @@ class ZaloLoginHelper {
             // Nếu listener đã được khôi phục trong khi chờ (ví dụ: user đăng nhập lại QR)
             // → không cần reconnect nữa
             if (ConnectionManager.isListenerStarted(zaloId)) {
-                Logger.log(`[ZaloLoginHelper] ${zaloId} already reconnected while waiting — cancelling attempt ${attempt + 1}`);
+                Logger.log(`[ZaloLoginHelper] ${zaloId} already reconnected while waiting - cancelling attempt ${attempt + 1}`);
                 ZaloLoginHelper.reconnectAttempts.delete(zaloId);
                 return;
             }
 
             // Nếu account đã bị xoá trong khi timer đang chờ → không reconnect
             if (ZaloLoginHelper.removedAccounts.has(zaloId)) {
-                Logger.log(`[ZaloLoginHelper] ${zaloId} was removed — cancelling reconnect attempt ${attempt + 1}`);
+                Logger.log(`[ZaloLoginHelper] ${zaloId} was removed - cancelling reconnect attempt ${attempt + 1}`);
                 ZaloLoginHelper.reconnectAttempts.delete(zaloId);
                 return;
             }
@@ -376,14 +376,14 @@ class ZaloLoginHelper {
             const creatorId: string = groupData.creatorId || groupData.creator || '';
             const adminIds: string[] = groupData.adminIds || groupData.subAdmins || [];
 
-            // Cập nhật tên nhóm nếu chưa có — luôn write vào boss DB
+            // Cập nhật tên nhóm nếu chưa có - luôn write vào boss DB
             if (!hasRealName) {
                 EventBroadcaster.runOnBossDb((bossDb) => bossDb.updateContactProfile(zaloId, groupId, name, avatar));
                 Logger.log(`[ZaloLoginHelper] ✅ Fetched group info for ${groupId}: "${name}"`);
                 EventBroadcaster.broadcastGroupInfoUpdate(zaloId, groupId, name, avatar, groupData);
             }
 
-            // Lưu members nếu chưa có — luôn write vào boss DB
+            // Lưu members nếu chưa có - luôn write vào boss DB
             if (!hasMembers) {
                 const rawMembers: any[] = groupData.memVerList || groupData.memberList ||
                     groupData.members || groupData.currentMems || [];
@@ -467,7 +467,7 @@ class ZaloLoginHelper {
                 return;
             }
 
-            // Normalize và lưu vào bảng friends (batch — single disk write)
+            // Normalize và lưu vào bảng friends (batch - single disk write)
             const normalized = list.map((f: any) => ({
                 userId: f.userId || f.uid || '',
                 displayName: f.displayName || f.zaloName || f.display_name || '',
@@ -846,11 +846,11 @@ class ZaloLoginHelper {
         listener.on("undo", (undo: any) => {
             try {
                 // Undo structure (zca-js Undo class):
-                //   undo.data        — TUndo object
-                //   undo.data.content — TUndoContent { globalMsgId, cliMsgId, deleteMsg, srcId, destId }
-                //   undo.threadId    — thread containing the recalled message
-                //   undo.isSelf      — true nếu mình thu hồi
-                //   undo.isGroup     — true nếu là group
+                //   undo.data        - TUndo object
+                //   undo.data.content - TUndoContent { globalMsgId, cliMsgId, deleteMsg, srcId, destId }
+                //   undo.threadId    - thread containing the recalled message
+                //   undo.isSelf      - true nếu mình thu hồi
+                //   undo.isGroup     - true nếu là group
                 //
                 // ID cần dùng: content.globalMsgId (ID tin nhắn bị thu hồi)
                 // KHÔNG dùng undo.data.msgId (đó là ID của action undo, không phải tin nhắn gốc)
@@ -963,7 +963,7 @@ class ZaloLoginHelper {
                     return { displayName, avatar, phone };
                 };
 
-                // ── FriendEventType.REQUEST (2) — req_v2 event, direction depends on isSelf ──
+                // ── FriendEventType.REQUEST (2) - req_v2 event, direction depends on isSelf ──
                 if (eventType === 2 && d && typeof d === 'object') {
                     const friendId = isSelf
                         ? resolveFriendUserId(d, 'to')
@@ -996,7 +996,7 @@ class ZaloLoginHelper {
                     return;
                 }
 
-                // ── FriendEventType.ADD(0) — Đã trở thành bạn bè ─────────────────
+                // ── FriendEventType.ADD(0) - Đã trở thành bạn bè ─────────────────
                 if (eventType === 0 && d) {
                     const friendId = resolveFriendUserId(d);
                     if (friendId) {
@@ -1011,7 +1011,7 @@ class ZaloLoginHelper {
                     return;
                 }
 
-                // ── FriendEventType.REMOVE (1) — Friend removed ──────────────────
+                // ── FriendEventType.REMOVE (1) - Friend removed ──────────────────
                 if (eventType === 1 && d) {
                     const friendId: string = typeof d === 'string' ? d : (d.fromUid || d.uid || '');
                     if (friendId) {
@@ -1042,7 +1042,7 @@ class ZaloLoginHelper {
                 }
 
                 // ── Other types: SEEN(5), BLOCK(6), UNBLOCK(7), etc. ────────────
-                // Just log — no user-facing notification needed
+                // Just log - no user-facing notification needed
                 Logger.log(`[ZaloLoginHelper] friend_event type=${eventType} (no action needed)`);
             } catch (error: any) {
                 Logger.error(`[ZaloLoginHelper] friend_event error: ${error.message}`);
@@ -1068,8 +1068,8 @@ class ZaloLoginHelper {
                 ConnectionManager.removeConnection(zaloId);
             } else if (currentConnection && currentConnection !== connection) {
                 // Connection bị thay thế bởi fresh login (QR/cookies) trong khi listener cũ vẫn chạy
-                // → listener cũ đang đóng, không reconnect — connection mới đang hoạt động
-                Logger.log(`[ZaloLoginHelper] ${zaloId} stale connection closed (replaced by newer) — skipping reconnect`);
+                // → listener cũ đang đóng, không reconnect - connection mới đang hoạt động
+                Logger.log(`[ZaloLoginHelper] ${zaloId} stale connection closed (replaced by newer) - skipping reconnect`);
                 return;
             }
 
@@ -1078,7 +1078,7 @@ class ZaloLoginHelper {
             // Hiện tại thì retry tất cả cho chắc
             const fatalCodes = new Set([]);
             if (fatalCodes.has(code)) {
-                Logger.warn(`[ZaloLoginHelper] ${zaloId} fatal disconnect (${CloseReason[code]}) — marking listener_active=0`);
+                Logger.warn(`[ZaloLoginHelper] ${zaloId} fatal disconnect (${CloseReason[code]}) - marking listener_active=0`);
                 DatabaseService.getInstance().setListenerActive(zaloId, false);
                 EventBroadcaster.broadcastListenerDead(zaloId, `fatal_${CloseReason[code] || code}`);
                 return;
@@ -1086,7 +1086,7 @@ class ZaloLoginHelper {
 
             // Nếu account đã bị xóa chủ động → không reconnect
             if (ZaloLoginHelper.removedAccounts.has(zaloId)) {
-                Logger.log(`[ZaloLoginHelper] ${zaloId} was removed — skipping reconnect`);
+                Logger.log(`[ZaloLoginHelper] ${zaloId} was removed - skipping reconnect`);
                 ZaloLoginHelper.removedAccounts.delete(zaloId);
                 return;
             }

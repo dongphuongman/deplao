@@ -123,7 +123,7 @@ function UserConversationInfo() {
   // ── Auto-fetch user info khi vào hội thoại chưa có thông tin ──────────
   useEffect(() => {
     if (!activeAccountId || !activeThreadId) return;
-    if (activeThreadType === 1) return; // Group — không áp dụng
+    if (activeThreadType === 1) return; // Group - không áp dụng
 
     const ctList = useChatStore.getState().contacts[activeAccountId] || [];
     const ct = ctList.find((c) => c.contact_id === activeThreadId);
@@ -191,7 +191,7 @@ function UserConversationInfo() {
               || res?.response?.data?.[activeThreadId];
             if (profile) {
               const { displayName: newName, avatar: newAvatar, phone: newPhone, gender, birthday, alias: newAlias } = extractUserProfile(profile);
-              // Only patch fields that have actual values — never spread undefined
+              // Only patch fields that have actual values - never spread undefined
               const patch: any = { contact_id: activeThreadId };
               if (newName) patch.display_name = newName;
               if (newAvatar) patch.avatar_url = newAvatar;
@@ -227,7 +227,7 @@ function UserConversationInfo() {
     setMuted(activeAccountId, activeThreadId, until);
     showNotification('Đã tắt thông báo', 'success');
     setMuteDropdownOpen(false);
-    // Gọi API đồng bộ lên Zalo (fire-and-forget) — chỉ khi kênh hỗ trợ
+    // Gọi API đồng bộ lên Zalo (fire-and-forget) - chỉ khi kênh hỗ trợ
     if (channelCap.supportsMuteSync) {
       const auth = getAuth();
       if (auth) {
@@ -241,7 +241,7 @@ function UserConversationInfo() {
     if (!activeAccountId || !activeThreadId) return;
     clearMuted(activeAccountId, activeThreadId);
     showNotification('Đã bật thông báo', 'success');
-    // Gọi API đồng bộ lên Zalo (fire-and-forget) — chỉ khi kênh hỗ trợ
+    // Gọi API đồng bộ lên Zalo (fire-and-forget) - chỉ khi kênh hỗ trợ
     if (channelCap.supportsMuteSync) {
       const auth = getAuth();
       if (auth) {
@@ -310,7 +310,7 @@ function UserConversationInfo() {
     }
   };
 
-  /** Reload alias + user info từ API — lưu toàn bộ alias + cập nhật thông tin hội thoại hiện tại */
+  /** Reload alias + user info từ API - lưu toàn bộ alias + cập nhật thông tin hội thoại hiện tại */
   const handleRefreshAlias = async () => {
     if (!activeThreadId || !activeAccountId) return;
     setAliasRefreshing(true);
@@ -529,7 +529,7 @@ function UserConversationInfo() {
     );
   }
 
-  // Media detail — thay thế toàn bộ panel
+  // Media detail - thay thế toàn bộ panel
   if (mediaDetailTab !== null && activeThreadId) {
     return (
       <MediaDetailPanel
@@ -621,7 +621,7 @@ function UserConversationInfo() {
         )}
       </div>
 
-      {/* Contact detail info — editable phone, birthday, gender */}
+      {/* Contact detail info - editable phone, birthday, gender */}
       <div className="border-b border-gray-700 divide-y divide-gray-700/50">
         <ContactInfoRow
           icon="📞"

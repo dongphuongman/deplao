@@ -189,7 +189,7 @@ export default function GroupMembersTab() {
     setMembersLastFetched(merged.length > 0 ? Math.max(...merged.map((m: any) => m.updated_at || 0)) : 0);
   }, [activeAccountId]);
 
-  // ── Fetch groups from API — delegates to syncZaloGroups (full-sync mode) ──
+  // ── Fetch groups from API - delegates to syncZaloGroups (full-sync mode) ──
   const fetchGroupsFromAPI = useCallback(async () => {
     if (!activeAccountId) return;
     const acc = useAccountStore.getState().getActiveAccount();
@@ -228,7 +228,7 @@ export default function GroupMembersTab() {
     }
   }, [activeAccountId, loadGroupsFromDB]);
 
-  // ── Fetch members — delegates to syncZaloGroups (single-group mode) ───────
+  // ── Fetch members - delegates to syncZaloGroups (single-group mode) ───────
   const fetchMembersFromAPI = useCallback(async () => {
     if (!activeAccountId || !selectedGroupId) return;
     const acc = useAccountStore.getState().getActiveAccount();
@@ -283,7 +283,7 @@ export default function GroupMembersTab() {
     linkScanStopRef.current = false;
 
     try {
-      // ── Step 1: getGroupLinkInfo — phân trang đến khi hết (hasMoreMember = 0) ──
+      // ── Step 1: getGroupLinkInfo - phân trang đến khi hết (hasMoreMember = 0) ──
       let groupId = '';
       let name = '';
       let avatar = '';
@@ -747,7 +747,7 @@ export default function GroupMembersTab() {
                           {member.display_name
                             ? <p className="text-sm text-white truncate font-medium">{member.display_name}</p>
                             : <p className="text-sm text-gray-500 truncate italic">
-                                Chưa có tên —{' '}
+                                Chưa có tên -{' '}
                                 {member.phone
                                   ? <PhoneDisplay phone={member.phone} className="text-gray-400" />
                                   : member.member_id}
@@ -1021,7 +1021,7 @@ export default function GroupMembersTab() {
                   {linkScanLoading ? <>{SpinIcon} Đang quét...</> : '🔍 Quét nhóm'}
                 </button>
               )}
-              {/* Join button — shown after scan success or standalone */}
+              {/* Join button - shown after scan success or standalone */}
               <button
                 onClick={joinGroupByLink}
                 disabled={linkJoinLoading || !linkScanInput.trim()}

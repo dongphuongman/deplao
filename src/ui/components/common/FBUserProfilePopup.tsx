@@ -1,5 +1,5 @@
 /**
- * FBUserProfilePopup — Popup thông tin người dùng Facebook
+ * FBUserProfilePopup - Popup thông tin người dùng Facebook
  * Thiết kế riêng, khác biệt với Zalo UserProfilePopup.
  * Reusable: dùng được trong ChatWindow, ConversationInfo, ...
  */

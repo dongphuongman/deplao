@@ -487,7 +487,7 @@ export default class ErpTaskService {
       condition = 'AND t.due_date > ?';
       params.push(weekEnd.getTime());
     } else if (filter === 'all') {
-      // No date filter — show every assigned task that's still active.
+      // No date filter - show every assigned task that's still active.
       condition = `AND t.status != 'cancelled'`;
     }
 

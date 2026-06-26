@@ -246,10 +246,10 @@ export default function CRMDashboard() {
                 sub={`${customApplied.from} → ${customApplied.to}`} color="blue" />
               <MiniStat icon="📨" label="Tổng tin nhắn" value={customStats.messageCount} color="purple" />
               <MiniStat icon="📤" label="Đã gửi" value={customStats.sentCount}
-                sub={customStats.messageCount > 0 ? `${Math.round(customStats.sentCount / customStats.messageCount * 100)}% tổng` : '—'}
+                sub={customStats.messageCount > 0 ? `${Math.round(customStats.sentCount / customStats.messageCount * 100)}% tổng` : '-'}
                 color="green" />
               <MiniStat icon="📥" label="Đã nhận" value={customStats.receivedCount}
-                sub={customStats.messageCount > 0 ? `${Math.round(customStats.receivedCount / customStats.messageCount * 100)}% tổng` : '—'}
+                sub={customStats.messageCount > 0 ? `${Math.round(customStats.receivedCount / customStats.messageCount * 100)}% tổng` : '-'}
                 color="yellow" />
             </div>
           ) : (
@@ -273,7 +273,7 @@ export default function CRMDashboard() {
           prevDate: fmtMonthYear(getMonthRange(-1).from) };
 
     const pct = (cur: number, prev: number) => {
-      if (prev === 0) return '—';
+      if (prev === 0) return '-';
       const v = Math.round((cur - prev) / prev * 100);
       return v >= 0 ? `+${v}%` : `${v}%`;
     };
@@ -712,7 +712,7 @@ export default function CRMDashboard() {
                               <span className="text-gray-600 text-[11px] ml-1">({failPct}%)</span>
                               <ProgressBar value={failPct} color="#ef4444" />
                             </>
-                          ) : <span className="text-gray-700">—</span>}
+                          ) : <span className="text-gray-700">-</span>}
                         </td>
                         <td className="py-2.5 px-2 text-right">
                           <span className="text-blue-400 font-semibold">{c.replied_count}</span>

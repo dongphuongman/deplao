@@ -5,6 +5,15 @@ import ipc from '@/lib/ipc';
 import TargetSelector from './TargetSelector';
 import CampaignCreateModal from './CampaignCreateModal';
 
+function fmtDelayRange(min: number, max: number): string {
+  const fmt = (s: number) => {
+    if (s < 60) return `${s}s`;
+    if (s < 3600) return `${Math.round(s / 60)}ph`;
+    return `${Math.round(s / 3600)}h`;
+  };
+  return min === max ? fmt(min) : `${fmt(min)}-${fmt(max)}`;
+}
+
 interface LocalLabelItem {
   id: number;
   name: string;
@@ -86,7 +95,7 @@ export default function CampaignDetail({ campaign, zaloId, allLabels, localLabel
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-white text-sm truncate">{campaign.name}</h3>
             <p className="text-xs text-gray-500 mt-0.5">
-              ⏱ {campaign.delay_seconds}s delay · {campaign.total_contacts} liên hệ
+              ⏱ {fmtDelayRange(campaign.delay_min_seconds || Math.max(30, campaign.delay_seconds - 10), campaign.delay_max_seconds || campaign.delay_seconds + 10)} · {campaign.total_contacts} liên hệ
               {campaign.daily_send_limit > 0
                 ? <> · 📊 {campaign.daily_send_limit}/ngày từ {campaign.daily_start_time}</>
                 : <> · 🕐 Chạy từ {campaign.daily_start_time}</>}
@@ -238,6 +247,10 @@ export default function CampaignDetail({ campaign, zaloId, allLabels, localLabel
             campaign_type: campaign.campaign_type,
             mixed_config: campaign.mixed_config || '{}',
             delay_seconds: campaign.delay_seconds,
+            delay_min_seconds: campaign.delay_min_seconds,
+            delay_max_seconds: campaign.delay_max_seconds,
+            per_contact_delay_min_seconds: campaign.per_contact_delay_min_seconds,
+            per_contact_delay_max_seconds: campaign.per_contact_delay_max_seconds,
             daily_send_limit: campaign.daily_send_limit,
             daily_start_time: campaign.daily_start_time,
           }}

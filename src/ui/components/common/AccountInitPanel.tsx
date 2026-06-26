@@ -9,10 +9,10 @@
  *   🏷️ Nhãn hội thoại
  *   ⚡ Tin nhắn nhanh
  *   👥 Nhóm Zalo  ← has a detailed progress bar from syncZaloGroups
- *   📨 Tin nhắn cũ (requestOldMessages — fire-and-forget)
+ *   📨 Tin nhắn cũ (requestOldMessages - fire-and-forget)
  *   📋 Tin nhắn nhóm cũ (getGroupChatHistory per group, chained after groups)
  *
- * The panel is non-blocking — the user can keep using the app.
+ * The panel is non-blocking - the user can keep using the app.
  * It auto-dismisses 4 s after all tasks complete, or can be minimized/closed.
  */
 
@@ -321,7 +321,7 @@ export default function AccountInitPanel({ accountId, onClose }: Props) {
       <div className="px-4 pb-3">
         <p className="text-[10px] text-gray-600 leading-relaxed">
           {allDone
-            ? 'Hoàn tất — panel tự đóng sau vài giây.'
+            ? 'Hoàn tất - panel tự đóng sau vài giây.'
             : 'Bạn có thể tiếp tục dùng ứng dụng trong khi khởi tạo.'}
         </p>
       </div>

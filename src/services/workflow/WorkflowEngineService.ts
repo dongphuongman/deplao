@@ -37,6 +37,7 @@ export type NodeType =
   | 'output.httpRequest' | 'output.log'
   // P0 integrations
   | 'trigger.payment'
+  | 'trigger.webhook'
   | 'kiotviet.lookupCustomer' | 'kiotviet.lookupOrder' | 'kiotviet.createOrder' | 'kiotviet.lookupProduct'
   | 'haravan.lookupCustomer' | 'haravan.lookupOrder' | 'haravan.createOrder' | 'haravan.lookupProduct'
   | 'sapo.lookupCustomer'    | 'sapo.lookupOrder'    | 'sapo.createOrder'    | 'sapo.lookupProduct'    | 'sapo.getInventory'
@@ -117,7 +118,7 @@ interface ExecutionContext {
   pageId: string;
   /** nodeIds that should be skipped because they're on the wrong branch of an IF/switch */
   skippedNodes: Set<string>;
-  /** Full node list — used by renderTemplate to match $node.Label.field by label name */
+  /** Full node list - used by renderTemplate to match $node.Label.field by label name */
   _wfNodes: WorkflowNode[];
   _wfName: string;
 }
@@ -129,9 +130,9 @@ class WorkflowEngineService {
   private workflows: Map<string, Workflow> = new Map();
   private cronJobs: Map<string, cron.ScheduledTask> = new Map();
 
-  /** Debounce timers for trigger.message — key = workflowId:threadId */
+  /** Debounce timers for trigger.message - key = workflowId:threadId */
   private debounceTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
-  /** Buffered message events for debounce — key = workflowId:threadId */
+  /** Buffered message events for debounce - key = workflowId:threadId */
   private debounceBuffers: Map<string, any[]> = new Map();
 
   public static getInstance(): WorkflowEngineService {
@@ -144,7 +145,7 @@ class WorkflowEngineService {
     this.registerZaloEventListeners();
     this.registerFacebookEventListeners();
     this.registerCronJobs();
-    Logger.log(`[WorkflowEngine] Initialized — ${this.workflows.size} workflows loaded`);
+    Logger.log(`[WorkflowEngine] Initialized - ${this.workflows.size} workflows loaded`);
   }
 
   private normalizeWorkflowChannel(channel?: string): WorkflowChannel {
@@ -276,7 +277,7 @@ class WorkflowEngineService {
       });
     }
 
-    // Message event — determine specific trigger type from attachment data
+    // Message event - determine specific trigger type from attachment data
     EventBroadcaster.onBeforeSend('fb:onMessage', (data: any) => {
       // Always trigger the base text-message workflow
       this.triggerWorkflows('fb.trigger.message', data);
@@ -338,7 +339,7 @@ class WorkflowEngineService {
       });
     }, { timezone: tz });
     this.cronJobs.set(wf.id, task);
-    Logger.log(`[WorkflowEngine] Cron registered for "${wf.name}" — ${expr}`);
+    Logger.log(`[WorkflowEngine] Cron registered for "${wf.name}" - ${expr}`);
   }
 
   private unregisterCron(workflowId: string): void {
@@ -436,6 +437,77 @@ class WorkflowEngineService {
     }
   }
 
+  /**
+   * Find an enabled workflow with a trigger.webhook node matching the given token.
+   */
+  private findWorkflowByWebhookToken(token: string): Workflow | null {
+    for (const wf of this.workflows.values()) {
+      if (!wf.enabled) continue;
+      const triggerNode = wf.nodes.find(n => n.type === 'trigger.webhook');
+      if (!triggerNode) continue;
+      if (triggerNode.config?.webhookToken === token) return wf;
+    }
+    return null;
+  }
+
+  /**
+   * Handle an incoming webhook request from WebhookGatewayService.
+   * Looks up the workflow by webhook token, verifies method, then triggers execution.
+   */
+  public async handleWebhook(token: string, req: {
+    method: string;
+    body: any;
+    headers: Record<string, string>;
+    query: Record<string, string>;
+    rawBody: string;
+    remoteIp?: string;
+  }): Promise<{ status: number; body: any }> {
+    const wf = this.findWorkflowByWebhookToken(token);
+    if (!wf) {
+      Logger.warn('[WorkflowEngine] Webhook token not found: ' + token);
+      return { status: 404, body: { success: false, error: 'Webhook not found' } };
+    }
+
+    const triggerNode = wf.nodes.find(n => n.type === 'trigger.webhook')!;
+    const cfg = triggerNode.config || {};
+
+    // Method check
+    const allowedMethod = (cfg.method || 'POST').toUpperCase();
+    if (allowedMethod !== 'ANY' && req.method.toUpperCase() !== allowedMethod) {
+      Logger.warn('[WorkflowEngine] Webhook ' + token + ': method ' + req.method + ' not allowed (expected ' + allowedMethod + ')');
+      return { status: 405, body: { success: false, error: 'Method not allowed' } };
+    }
+
+    // IP whitelist check
+    if (cfg.allowedIps) {
+      const allowedIps = String(cfg.allowedIps).split(',').map(s => s.trim()).filter(Boolean);
+      if (allowedIps.length > 0 && req.remoteIp) {
+        if (!allowedIps.includes(req.remoteIp)) {
+          Logger.warn('[WorkflowEngine] Webhook ' + token + ': IP ' + req.remoteIp + ' not allowed');
+          return { status: 403, body: { success: false, error: 'IP not allowed' } };
+        }
+      }
+    }
+
+    // Build event data for triggerWorkflows
+    const eventData = {
+      webhookToken: token,
+      body: req.body || {},
+      headers: req.headers || {},
+      method: req.method,
+      query: req.query || {},
+      rawBody: req.rawBody || '',
+    };
+
+    // Fire and forget - run workflow async
+    this.triggerWorkflows('trigger.webhook', eventData);
+
+    return {
+      status: 200,
+      body: { success: true, workflowId: wf.id, workflowName: wf.name },
+    };
+  }
+
   private matchesTriggerFilter(triggerNode: WorkflowNode, data: any): boolean {
     const cfg = triggerNode.config;
 
@@ -444,7 +516,7 @@ class WorkflowEngineService {
       //   { type: 0|1, data: TMessage, threadId: string, isSelf: boolean }
       // All payload fields (uidFrom, msgId, ts, dName, content) live inside message.data (msgData)
       const msg  = data.data || data.message || {};           // UserMessage | GroupMessage
-      const msgData = (msg as any).data || {};                // TMessage — uidFrom, content, msgId, ts, dName ...
+      const msgData = (msg as any).data || {};                // TMessage - uidFrom, content, msgId, ts, dName ...
       // type === 1 (ThreadType.Group) is the ONLY reliable group indicator in zca-js
       const isGroup = (msg as any).type === 1 || !!(msg as any).isGroup;
       if (cfg.threadType !== undefined && cfg.threadType !== 'all') {
@@ -492,7 +564,7 @@ class WorkflowEngineService {
         const source = String(data.labelSource || 'zalo');
         if (source !== String(cfg.labelSource)) return false;
       }
-      // New: labelIds array — contains "source:id" strings
+      // New: labelIds array - contains "source:id" strings
       if (Array.isArray(cfg.labelIds) && cfg.labelIds.length > 0) {
         const eventSrc = String(data.labelSource || 'zalo');
         const matches = cfg.labelIds.some((item: string) => {
@@ -526,11 +598,16 @@ class WorkflowEngineService {
       }
     }
 
+    if (triggerNode.type === 'trigger.webhook') {
+      // Method filter - already checked in handleWebhook, but double-check
+      if (cfg.method && cfg.method !== 'ANY' && data.method !== cfg.method) return false;
+    }
+
     // ── Facebook trigger matching ───────────────────────────────────────────
     if (triggerNode.type === 'fb.trigger.message') {
       // Filter by threadId
       if (cfg.threadId && data.threadId !== cfg.threadId) return false;
-      // Filter by threadType (DM vs Group) — Facebook group threads often have '_' in ID
+      // Filter by threadType (DM vs Group) - Facebook group threads often have '_' in ID
       if (cfg.threadType !== undefined && cfg.threadType !== 'all') {
         const isGroup = !!(data.threadId && data.threadId.includes('_'));
         if (String(cfg.threadType) === '0' && isGroup) return false;
@@ -683,7 +760,7 @@ class WorkflowEngineService {
 
         nodeResults.push({ nodeId, nodeType: node.type, label: node.label, status: 'success', input: this.truncateData(renderedConfig), output: this.truncateData(output), durationMs: Date.now() - t0 });
       } catch (err: any) {
-        // logic.stopIf signals a graceful stop — treat as success, halt loop
+        // logic.stopIf signals a graceful stop - treat as success, halt loop
         if (err.message === '__STOP__') {
           nodeResults.push({ nodeId, nodeType: node.type, label: node.label, status: 'success', input: this.truncateData(renderedConfig), output: { stopped: true }, durationMs: Date.now() - t0 });
           break;
@@ -844,6 +921,16 @@ class WorkflowEngineService {
         raw:             tx,
       };
     }
+    if (triggerType === 'trigger.webhook') {
+      return {
+        webhookToken: data.webhookToken || '',
+        body:         data.body || {},
+        headers:      data.headers || {},
+        method:       data.method || 'POST',
+        query:        data.query || {},
+        rawBody:      data.rawBody || '',
+      };
+    }
     if (triggerType === 'fb.trigger.unsend') {
       // fb:onUnsend: { fbAccountId, messageId }
       return {
@@ -907,7 +994,7 @@ class WorkflowEngineService {
   ): Promise<Record<string, any>> {
     switch (node.type) {
 
-      // ── Trigger nodes (just pass-through — already matched) ──────────────
+      // ── Trigger nodes (just pass-through - already matched) ──────────────
       case 'trigger.message':
       case 'trigger.friendRequest':
       case 'trigger.groupEvent':
@@ -916,6 +1003,7 @@ class WorkflowEngineService {
       case 'trigger.schedule':
       case 'trigger.manual':
       case 'trigger.labelAssigned':
+      case 'trigger.webhook':
         return { ...ctx.trigger };
 
       // ── Zalo Actions ─────────────────────────────────────────────────────
@@ -1155,7 +1243,7 @@ class WorkflowEngineService {
           } catch {}
         }
 
-        // Ưu tiên gửi media (ảnh/file/video) trước — giống sendOneForward
+        // Ưu tiên gửi media (ảnh/file/video) trước - giống sendOneForward
         const mediaPath = localPaths.file || localPaths.video || localPaths.main || localPaths.hd || '';
         if (mediaPath) {
           // Gửi media + text (caption) trong 1 lần
@@ -1382,7 +1470,7 @@ class WorkflowEngineService {
             data: body,
             params,
             timeout: Number(cfg.timeout ?? 10000),
-            // Accept all HTTP status codes — 4xx/5xx are valid business responses,
+            // Accept all HTTP status codes - 4xx/5xx are valid business responses,
             // not node errors. Let the workflow logic (e.g. logic.if) decide success/failure.
             validateStatus: () => true,
           });
@@ -1395,7 +1483,7 @@ class WorkflowEngineService {
             _durationMs: Date.now() - startTime,
           };
         } catch (axiosErr: any) {
-          // Network errors (ECONNREFUSED, DNS, timeout) — don't throw, return
+          // Network errors (ECONNREFUSED, DNS, timeout) - don't throw, return
           // structured error response so downstream nodes can always access output.
           const isTimeout = axiosErr.code === 'ECONNABORTED' || axiosErr.message?.includes('timeout');
           const isConnRefused = axiosErr.code === 'ECONNREFUSED';
@@ -1558,7 +1646,7 @@ class WorkflowEngineService {
               }
             }
           } catch {
-            // Ignore parse errors — just proceed without history
+            // Ignore parse errors - just proceed without history
           }
         }
 
@@ -2072,7 +2160,7 @@ class WorkflowEngineService {
         const targetThreadIds = this.resolveTargetThreadIds(cfg, ctx.trigger?.threadId);
         if (!targetThreadIds.length) throw new Error('[fb.action.sendMessage] threadId/threadIds required');
 
-        // Parse structured AI response (giống zalo.sendMessage) — nếu là JSON array segments
+        // Parse structured AI response (giống zalo.sendMessage) - nếu là JSON array segments
         // thì join text lại thành 1 message, tránh gửi raw JSON ra cho khách
         const segments = parseStructuredResponse(cfg.message);
         const finalMessage = segments
@@ -2267,7 +2355,7 @@ class WorkflowEngineService {
         if (!threadId) throw new Error('[fb.action.forward] targetThreadId required');
         const message = cfg.message || ctx.trigger?.content || '';
         if (!message) throw new Error('[fb.action.forward] Missing message content');
-        // Resend như tin nhắn mới — giống behavior chat (sendOneForward), không dùng forwardMessage API riêng
+        // Resend như tin nhắn mới - giống behavior chat (sendOneForward), không dùng forwardMessage API riêng
         const result = await FacebookSendService.sendTextMessage({
           accountId,
           threadId: String(threadId),
@@ -2462,7 +2550,10 @@ class WorkflowEngineService {
     return template.replace(/\{\{\s*([\s\S]*?)\s*\}\}/gu, (_, raw) => {
       try {
         const expr = raw.trim();
-        if (expr.startsWith('$trigger.'))   return String(ctx.trigger?.[expr.slice(9)] ?? '');
+        if (expr.startsWith('$trigger.')) {
+          const val = this.getNestedValue(ctx.trigger, expr.slice(9));
+          return String(val ?? '');
+        }
         if (expr.startsWith('$var.'))       return String(ctx.variables?.[expr.slice(5)] ?? '');
         if (expr === '$pageId')             return ctx.pageId ?? '';
         if (expr === '$date.now')           return new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
@@ -2509,7 +2600,7 @@ class WorkflowEngineService {
                 return String(val ?? '');
               }
             }
-            Logger.warn(`[WorkflowEngine] $node.${nodeRef}.${field} → fallback n${targetIdx + 1} FAILED — no output for node at index ${targetIdx}. Available nodes: ${ctx._wfNodes.map((n, i) => `n${i+1}=${n.label}`).join(', ')}`);
+            Logger.warn(`[WorkflowEngine] $node.${nodeRef}.${field} → fallback n${targetIdx + 1} FAILED - no output for node at index ${targetIdx}. Available nodes: ${ctx._wfNodes.map((n, i) => `n${i+1}=${n.label}`).join(', ')}`);
           }
         }
       } catch {}

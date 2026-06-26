@@ -242,7 +242,7 @@ export default class ErpNoteService {
           ErpNotificationService.getInstance().notify(
             s.employeeId, 'note_shared',
             `Ghi chú được chia sẻ: ${note.title}`,
-            `Bởi ${actorId} — quyền: ${s.permission}`,
+            `Bởi ${actorId} - quyền: ${s.permission}`,
             `erp://note/${noteId}`,
             { noteId, permission: s.permission, channels: ['toast'] }
           );

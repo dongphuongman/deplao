@@ -265,7 +265,7 @@ export default function EmployeeSettings() {
                 <p className="text-blue-500">⚡ Bước tiếp theo: Sau khi tạo nhân viên, bật Relay Server ở mục bên dưới để nhân viên kết nối.</p>
             </div>
 
-            {/* Group management panel — popup modal */}
+            {/* Group management panel - popup modal */}
             {showGroupForm && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setShowGroupForm(false)}>
                     <div className="bg-gray-800 border border-gray-600 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
@@ -381,7 +381,7 @@ export default function EmployeeSettings() {
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-amber-100">🔄 Đang giả lập: {simEmp.display_name}</p>
                                 <p className="text-[11px] text-amber-300/70">
-                                    Bạn đang xem app như nhân viên "{simEmp.display_name}" — chỉ thấy {accCount} TK Zalo, {permCount} modules được phân quyền.
+                                    Bạn đang xem app như nhân viên "{simEmp.display_name}" - chỉ thấy {accCount} TK Zalo, {permCount} modules được phân quyền.
                                 </p>
                             </div>
                             <button
@@ -398,7 +398,7 @@ export default function EmployeeSettings() {
                 );
             })()}
 
-            {/* Employee list — grouped if groups exist */}
+            {/* Employee list - grouped if groups exist */}
             <div className="bg-gray-800 rounded-xl p-4 space-y-3">
                 {loading ? (
                     <p className="text-gray-500 text-sm py-4 text-center">Đang tải...</p>
@@ -407,7 +407,7 @@ export default function EmployeeSettings() {
                 ) : (
                     groupedEmployees.map(({ group, employees: emps }) => (
                         <div key={group?.group_id || '_ungrouped'}>
-                            {/* Group header — only show if there are groups */}
+                            {/* Group header - only show if there are groups */}
                             {groups.length > 0 && (
                                 <div className="flex items-center gap-2 mb-1.5 mt-1">
                                     <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
@@ -576,7 +576,7 @@ function EmployeeFormModal({ employee, accounts, groups, onClose, onSaved }: {
                     </h3>
                 </div>
 
-                {/* Body — scrollable */}
+                {/* Body - scrollable */}
                 <div className="flex-1 overflow-y-auto p-5 space-y-5">
                     {/* Avatar + Basic info */}
                     <div className="space-y-3">
@@ -675,7 +675,7 @@ function EmployeeFormModal({ employee, accounts, groups, onClose, onSaved }: {
                                     value={groupId} onChange={e => setGroupId(e.target.value)}
                                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-gray-200"
                                 >
-                                    <option value="">— Không có nhóm —</option>
+                                    <option value="">- Không có nhóm -</option>
                                     {groups.map(g => (
                                         <option key={g.group_id} value={g.group_id}>{g.name}</option>
                                     ))}
@@ -684,7 +684,7 @@ function EmployeeFormModal({ employee, accounts, groups, onClose, onSaved }: {
                         )}
                     </div>
 
-                    {/* Permissions — grouped */}
+                    {/* Permissions - grouped */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Quyền truy cập module</p>
@@ -723,7 +723,7 @@ function EmployeeFormModal({ employee, accounts, groups, onClose, onSaved }: {
 
                         {/* Settings sub-permissions */}
                         <div className="mt-2 pt-2 border-t border-gray-700/50">
-                            <p className="text-[11px] font-medium text-gray-500 mb-1.5">⚙️ Cài đặt — phân quyền chi tiết</p>
+                            <p className="text-[11px] font-medium text-gray-500 mb-1.5">⚙️ Cài đặt - phân quyền chi tiết</p>
                             <div className="space-y-1">
                                 {settingsModules.map(m => (
                                     <label
@@ -756,12 +756,12 @@ function EmployeeFormModal({ employee, accounts, groups, onClose, onSaved }: {
                                 ))}
                             </div>
                             <p className="text-[10px] text-gray-600 mt-1.5 italic">
-                                💡 Giao diện, Thông báo, Lưu trữ, Giới thiệu, Log phiên bản — luôn truy cập được. Chỉ Quản lý TK Zalo và Nhân viên cần phân quyền riêng.
+                                💡 Giao diện, Thông báo, Lưu trữ, Giới thiệu, Log phiên bản - luôn truy cập được. Chỉ Quản lý TK Zalo và Nhân viên cần phân quyền riêng.
                             </p>
                         </div>
                     </div>
 
-                    {/* Account access — with avatar + phone */}
+                    {/* Account access - with avatar + phone */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tài khoản Zalo được quản lý</p>

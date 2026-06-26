@@ -1,5 +1,5 @@
 /**
- * channelIpc.ts — Channel-aware IPC facade
+ * channelIpc.ts - Channel-aware IPC facade
  * Routes API calls to the correct backend (Zalo or Facebook) based on channel.
  * UI components call this instead of ipc.zalo / ipc.fb directly.
  */
@@ -87,7 +87,7 @@ export async function sendAttachment(channel: Channel, params: {
       ...(replyToMessageId ? { replyToMessageId } : {}),
     }) ?? { success: false, error: 'FB IPC not available' };
   }
-  // Zalo — route to sendImage or sendFile depending on extension
+  // Zalo - route to sendImage or sendFile depending on extension
   return ipc.zalo?.sendFile({
     zaloId: params.accountId,
     threadId: params.threadId,
@@ -240,7 +240,7 @@ export async function getThreads(channel: Channel, params: {
       forceRefresh: params.forceRefresh,
     }) ?? { success: false, error: 'FB IPC not available' };
   }
-  // Zalo doesn't have a getThreads — contacts are synced via events
+  // Zalo doesn't have a getThreads - contacts are synced via events
   return { success: true, threads: [] };
 }
 

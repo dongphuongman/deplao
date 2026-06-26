@@ -1,5 +1,5 @@
 /**
- * NotificationService — handles sound and desktop (OS) notifications
+ * NotificationService - handles sound and desktop (OS) notifications
  */
 
 let audioCtx: AudioContext | null = null;
@@ -85,7 +85,7 @@ function processQueue() {
       body: item.body.length > 120 ? item.body.slice(0, 117) + '…' : item.body,
       icon: item.icon || undefined,
       silent: true,
-      // KHÔNG dùng tag — tag khiến OS replace thay vì stack, làm mất notification
+      // KHÔNG dùng tag - tag khiến OS replace thay vì stack, làm mất notification
     });
 
     activeNotifs[threadKey] = n;

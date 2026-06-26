@@ -109,7 +109,7 @@ export default function ChatWindow() {
   const [reactionContextMenu, setReactionContextMenu] = useState<{ x: number; y: number; msg: any; myEmoji: string | null } | null>(null);
   const [atTop, setAtTop] = useState(false);
   const [atBottom, setAtBottom] = useState(true);
-  // Track khi đang xem tin nhắn cũ (do click vào ghim / quote / search) — cần nút "Về tin mới nhất"
+  // Track khi đang xem tin nhắn cũ (do click vào ghim / quote / search) - cần nút "Về tin mới nhất"
   const [isViewingHistory, setIsViewingHistory] = useState(false);
   const [loadingLatest, setLoadingLatest] = useState(false);
   const [reactionPickerMsgId, setReactionPickerMsgId] = useState<string | null>(null);
@@ -182,7 +182,7 @@ export default function ChatWindow() {
 
   // ─── Thread ready gate: chỉ hiển thị UI khi messages + pins đều đã load ──
   const [threadReady, setThreadReady] = useState(false);
-  // Track threadId đã scroll — tránh race condition giữa useLayoutEffect vs useEffect
+  // Track threadId đã scroll - tránh race condition giữa useLayoutEffect vs useEffect
   const lastScrolledThreadRef = useRef<string | null>(null);
 
   const threadKey = activeAccountId && activeThreadId ? `${activeAccountId}_${activeThreadId}` : '';
@@ -212,7 +212,7 @@ export default function ChatWindow() {
   }, [groupMembers]);
   const getGroupMember = (senderId: string) => groupMemberMap.get(senderId);
 
-  // Check if current user is group owner or deputy — can recall any member's message
+  // Check if current user is group owner or deputy - can recall any member's message
   const isGroupAdmin = React.useMemo(() => {
     if (!activeAccountId || !activeThreadId) return false;
     const cache = groupInfoCache?.[activeAccountId]?.[activeThreadId];
@@ -400,7 +400,7 @@ export default function ChatWindow() {
       // Parse content 1 lần
       const content = (isMedia || isFile || isCard || isEcard || isSticker || isGroupMedia || isRtf || isPoll || isVideo || isVoice)
         ? ''
-        : parseContent(mc);
+        : parseContent(mc, mt);
 
       cache.set(msg.msg_id, {
         isCard, isEcard, isSticker, isRtf, isPoll, isVideo, isVoice,
@@ -421,7 +421,7 @@ export default function ChatWindow() {
     prevLastMsgIdRef.current = '';      // reset để luôn trigger scroll khi load messages
     shouldRestoreScrollRef.current = false;
     isInitialThreadLoadRef.current = true;
-    // Reset thread ready gate — ẩn UI cho đến khi data load xong
+    // Reset thread ready gate - ẩn UI cho đến khi data load xong
     setThreadReady(false);
     prevPinnedBarHeightRef.current = 0;
     // Reset selection mode when switching threads
@@ -436,7 +436,7 @@ export default function ChatWindow() {
   // ─── Thread ready gate (đơn giản): set true ngay khi pinsReady = true ───────
   // pinsReady reset về false mỗi khi thread đổi (trong usePinnedData hook),
   // rồi fire true sau khi IPC getPinnedMessages hoàn thành (~50-100ms).
-  // Không dùng dataReady trung gian nữa — tránh bug RAF bị cancel khi re-render.
+  // Không dùng dataReady trung gian nữa - tránh bug RAF bị cancel khi re-render.
   useEffect(() => {
     if (!pinsReady || !activeThreadId) return;
     setThreadReady(true);
@@ -489,7 +489,13 @@ export default function ChatWindow() {
       const rangeIds = new Set(
         currentMsgs.slice(minIdx, maxIdx + 1).map((m: any) => m.msg_id)
       );
-      setSelectedMsgIds(rangeIds);
+      // Merge với selection hiện tại (accumulate khi kéo nhiều lần)
+      setSelectedMsgIds(prev => {
+        if (prev.size === 0) return rangeIds;
+        const next = new Set(prev);
+        for (const id of rangeIds) next.add(id);
+        return next;
+      });
     };
 
     const handlePointerUp = () => {
@@ -519,6 +525,22 @@ export default function ChatWindow() {
       document.body.style.webkitUserSelect = '';
     };
   }, []);
+
+  // ─── ESC to exit selection mode ─────────────────────────────────────────
+  useEffect(() => {
+    if (!isSelecting) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setIsSelecting(false);
+        setSelectedMsgIds(new Set());
+        document.body.style.userSelect = '';
+        document.body.style.webkitUserSelect = '';
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => document.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, [isSelecting]);
 
   useLayoutEffect(() => {
     if (!threadReady) return;
@@ -726,6 +748,31 @@ export default function ChatWindow() {
     return () => el.removeEventListener('scroll', onScroll);
   }, [activeThreadId]);
 
+  // ─── Auto-load tin nhắn cũ khi scroll lên đầu ───────────────────────────
+  const autoLoadFiredRef = useRef(false);  // true = đã auto-load, chờ user rời top mới reset
+  const loadMoreFnRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    loadMoreFnRef.current = handleLoadMore;
+  });
+  // Reset khi user rời khỏi vùng top → cho phép auto-load lại lần sau
+  useEffect(() => {
+    if (!atTop) autoLoadFiredRef.current = false;
+  }, [atTop]);
+  useEffect(() => {
+    if (!atTop || !hasMore || loadingMore || !activeThreadId) return;
+    // Đã auto-load rồi mà user chưa scroll xuống khỏi top → không load tiếp
+    if (autoLoadFiredRef.current) return;
+    // Delay nhẹ tránh trigger liên tục khi scroll
+    const timer = setTimeout(() => {
+      if (hasMore && !loadingMore && atTop) {
+        autoLoadFiredRef.current = true;
+        loadMoreFnRef.current();
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [atTop, hasMore, loadingMore]);
+
   // ─── Scroll to bottom khi AI suggestions bar xuất hiện/biến mất ──────────
   // Khi thanh gợi ý AI thay đổi, input area đổi chiều cao → tin nhắn bị che.
   // Nếu user đang ở cuối trang → tự động scroll xuống để bù offset.
@@ -742,7 +789,7 @@ export default function ChatWindow() {
   }, [atBottom]);
 
   // Scroll to bottom chỉ khi có tin nhắn MỚI (tin cuối thay đổi), không scroll khi prepend tin cũ
-  // Initial load scroll được xử lý bởi threadReady gate — effect này chỉ handle tin nhắn realtime
+  // Initial load scroll được xử lý bởi threadReady gate - effect này chỉ handle tin nhắn realtime
   useEffect(() => {
     if (!msgs.length) return;
     const lastMsg = msgs[msgs.length - 1];
@@ -758,10 +805,10 @@ export default function ChatWindow() {
         if (isInitial) {
           const realCount = msgs.filter(m => !m.msg_id.startsWith('temp_')).length;
           if (realCount < 50) setHasMore(false);
-          // SKIP scroll ở đây — threadReady gate sẽ xử lý scroll initial
+          // SKIP scroll ở đây - threadReady gate sẽ xử lý scroll initial
           return;
         }
-        // Tin nhắn mới (realtime) — luôn cuộn khi chính mình gửi, còn tin đến thì giữ rule atBottom.
+        // Tin nhắn mới (realtime) - luôn cuộn khi chính mình gửi, còn tin đến thì giữ rule atBottom.
         const isOutgoing =
           lastMsg?.is_sent === 1 ||
           (activeAccountId ? String(lastMsg?.sender_id || '') === String(activeAccountId) : false) ||
@@ -919,7 +966,7 @@ export default function ChatWindow() {
       });
       await ipc.zalo?.undoMessage({ auth, message: messagePayload });
       }
-      // Đánh dấu thu hồi thay vì xóa — hiển thị "Tin nhắn đã thu hồi"
+      // Đánh dấu thu hồi thay vì xóa - hiển thị "Tin nhắn đã thu hồi"
       if (activeAccountId) {
         useChatStore.getState().recallMessage(activeAccountId, msg.msg_id, msg.thread_id);
         ipc.db?.markMessageRecalled?.({ zaloId: activeAccountId, msgId: msg.msg_id }).catch(() => {});
@@ -940,7 +987,7 @@ export default function ChatWindow() {
         type: msg.thread_type,
       });
       await ipc.zalo?.deleteMessage({ auth, message: messagePayload, onlyMe: true });
-      // Đánh dấu đã xoá trong DB (recalled) thay vì xoá hẳn — nhất quán với thu hồi
+      // Đánh dấu đã xoá trong DB (recalled) thay vì xoá hẳn - nhất quán với thu hồi
       if (activeAccountId) {
         useChatStore.getState().recallMessage(activeAccountId, msg.msg_id, msg.thread_id);
         ipc.db?.markMessageRecalled?.({ zaloId: activeAccountId, msgId: msg.msg_id }).catch(() => {});
@@ -1042,7 +1089,7 @@ export default function ChatWindow() {
     } else {
       const contact = getContact(msg.sender_id);
       const groupMember = getGroupMember(msg.sender_id);
-      // Không dùng sender_id (UID dài) làm tên — fallback về 'Người dùng'
+      // Không dùng sender_id (UID dài) làm tên - fallback về 'Người dùng'
       senderName = contact?.alias || contact?.display_name || groupMember?.displayName || 'Người dùng';
     }
     const pin = buildPinFromMsg(msg, senderName);
@@ -1057,8 +1104,8 @@ export default function ChatWindow() {
       const res = await ipc.db?.getPinnedMessages({ zaloId: activeAccountId, threadId: activeThreadId });
       if (res?.success) setPins(res.pins || []);
       if (overLimit) {
-        // Zalo API chỉ hỗ trợ 3 tin ghim — ghim thành công trong ứng dụng nhưng không đồng bộ lên API
-        showNotification('📌 Ghim thành công (chỉ áp dụng trong app — Zalo giới hạn 3 tin ghim)', 'success');
+        // Zalo API chỉ hỗ trợ 3 tin ghim - ghim thành công trong ứng dụng nhưng không đồng bộ lên API
+        showNotification('📌 Ghim thành công (chỉ áp dụng trong app - Zalo giới hạn 3 tin ghim)', 'success');
       } else {
         showNotification('📌 Đã ghim tin nhắn', 'success');
       }
@@ -1102,7 +1149,7 @@ export default function ChatWindow() {
       return;
     }
 
-    // 2. Message not in DOM — fetch its info to get timestamp, then load messages around it
+    // 2. Message not in DOM - fetch its info to get timestamp, then load messages around it
     if (!activeAccountId || !activeThreadId) return;
     try {
       const msgRes = await ipc.db?.getMessageById({ zaloId: activeAccountId, msgId });
@@ -1184,7 +1231,7 @@ export default function ChatWindow() {
     }
   };
 
-  // Tải lại tin nhắn mới nhất và cuộn xuống cuối — dùng khi đang xem tin nhắn cũ (isViewingHistory)
+  // Tải lại tin nhắn mới nhất và cuộn xuống cuối - dùng khi đang xem tin nhắn cũ (isViewingHistory)
   const handleReturnToLatest = async () => {
     if (!activeAccountId || !activeThreadId || loadingLatest) return;
     setLoadingLatest(true);
@@ -1377,6 +1424,7 @@ export default function ChatWindow() {
       const mergedImages = dedupeViewerImages(fullImages);
       if (mergedImages.length > 0) {
         setViewerState(prev => {
+          if (!prev) return null; // User đã đóng viewer trong khi load — không mở lại
           const clickedIdx = findViewerIndex(mergedImages, clickedUrl);
           if (clickedIdx >= 0) {
             return { images: mergedImages, index: clickedIdx };
@@ -1474,7 +1522,7 @@ export default function ChatWindow() {
         </div>
       )}
 
-      {/* ── Loading skeleton — hiển thị khi data chưa sẵn sàng ── */}
+      {/* ── Loading skeleton - hiển thị khi data chưa sẵn sàng ── */}
       {!threadReady && (
         <div className="flex-1 flex flex-col p-4 space-y-3 animate-pulse">
           {/* Skeleton bubbles */}
@@ -1537,7 +1585,7 @@ export default function ChatWindow() {
         </div>
       )}
 
-      {/* ── Pinned messages + notes bar — chỉ hiện khi ready ── */}
+      {/* ── Pinned messages + notes bar - chỉ hiện khi ready ── */}
       {threadReady && activeAccountId && activeThreadId && (
         <div ref={pinnedBarWrapperRef}>
           {(pins.length > 0 || pinnedNotes.length > 0) && (
@@ -1611,7 +1659,7 @@ export default function ChatWindow() {
         </div>
       )}
 
-      {/* Messages — chỉ render khi threadReady */}
+      {/* Messages - chỉ render khi threadReady */}
       {threadReady && (
       <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-1.5">
         {/* Load More Button - Hiển thị trên tin nhắn đầu tiên (cũ nhất) */}
@@ -1641,7 +1689,7 @@ export default function ChatWindow() {
                     <line x1="12" y1="8" x2="12" y2="12"/>
                     <line x1="12" y1="16" x2="12.01" y2="16"/>
                   </svg>
-                  <span>Lỗi — Thử lại</span>
+                  <span>Lỗi - Thử lại</span>
                 </>
               ) : (
                 <>
@@ -1655,7 +1703,7 @@ export default function ChatWindow() {
           </div>
         )}
 
-        {/* Empty state — no messages yet */}
+        {/* Empty state - no messages yet */}
         {msgs.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-12 opacity-60">
             <div className="text-3xl mb-3">💬</div>
@@ -1703,7 +1751,7 @@ export default function ChatWindow() {
               if (Array.isArray(att) && att.length > 0 && att[0]?.id) sysMembers = att;
             } catch {}
 
-            // Build inline content — avatar + tên trước mỗi member
+            // Build inline content - avatar + tên trước mỗi member
             const renderSysContent = () => {
               if (!sysMembers.length) return <>{msg.content}</>;
               let remaining = msg.content as string;
@@ -1753,7 +1801,7 @@ export default function ChatWindow() {
 
           const isLastInRun = !nextMsg || nextMsg.sender_id !== msg.sender_id;
 
-          // Contact/display info — needed for recalled bubble too
+          // Contact/display info - needed for recalled bubble too
           const contact = !isSent ? getContact(msg.sender_id) : null;
           const groupMember = (!isSent && !contact) ? getGroupMember(msg.sender_id) : null;
           const avatarUrl = toLocalMediaUrl(contact?.avatar_url || groupMember?.avatar || '');
@@ -1761,7 +1809,7 @@ export default function ChatWindow() {
 
           const isRecalled = msg.is_recalled === 1 || msg.status === 'recalled' || msg.msg_type === 'recalled';
 
-          // ── Recalled message — dùng RecalledBubble chung với MessageBubbles ─
+          // ── Recalled message - dùng RecalledBubble chung với MessageBubbles ─
           if (isRecalled) {
             const isRevealed = revealedRecallIds.has(msg.msg_id);
             const toggleReveal = () => setRevealedRecallIds(prev => {
@@ -1835,11 +1883,12 @@ export default function ChatWindow() {
           const isVideoMsg = cached?.isVideo ?? isVideoType(msg.msg_type);
           const isVoiceMsg = cached?.isVoice ?? (msg.msg_type === 'chat.voice' || msg.msg_type === 'audio');
           const isBankCardMsg = isBankCardType(msg.msg_type, msg.content);
+          const isLocationMsg = msg.msg_type === 'chat.location.new';
           const isGroupMedia = cached?.isGroupMedia ?? (!isPollMsg && !isVideoMsg && !isVoiceMsg && !!groupedFirstMsgs[msg.msg_id]);
           const groupMediaMsgs = isGroupMedia ? groupedFirstMsgs[msg.msg_id] : null;
-          const isMediaMsg = cached?.isMedia ?? (!isCardMsg && !isEcardMsg && !isStickerMsg && !isGroupMedia && !isRtf && !isPollMsg && !isVideoMsg && !isVoiceMsg && !isBankCardMsg && isMediaType(msg.msg_type, msg.content));
-          const isFileMsg = cached?.isFile ?? (!isCardMsg && !isEcardMsg && !isStickerMsg && !isMediaMsg && !isRtf && !isPollMsg && !isVideoMsg && !isVoiceMsg && !isBankCardMsg && isFileType(msg.msg_type, msg.content));
-          const content = cached?.content ?? (isMediaMsg || isFileMsg || isCardMsg || isEcardMsg || isStickerMsg || isGroupMedia || isRtf || isPollMsg || isVideoMsg || isVoiceMsg || isBankCardMsg ? '' : parseContent(msg.content));
+          const isMediaMsg = cached?.isMedia ?? (!isCardMsg && !isEcardMsg && !isStickerMsg && !isGroupMedia && !isRtf && !isPollMsg && !isVideoMsg && !isVoiceMsg && !isBankCardMsg && !isLocationMsg && isMediaType(msg.msg_type, msg.content));
+          const isFileMsg = cached?.isFile ?? (!isCardMsg && !isEcardMsg && !isStickerMsg && !isMediaMsg && !isRtf && !isPollMsg && !isVideoMsg && !isVoiceMsg && !isBankCardMsg && !isLocationMsg && isFileType(msg.msg_type, msg.content));
+          const content = cached?.content ?? (isMediaMsg || isFileMsg || isCardMsg || isEcardMsg || isStickerMsg || isGroupMedia || isRtf || isPollMsg || isVideoMsg || isVoiceMsg || isBankCardMsg || isLocationMsg ? '' : parseContent(msg.content, msg.msg_type));
 
           // Sticker nhóm: nhiều sticker liền nhau từ cùng người gửi trong 30 phút
           const isGroupedStickerFirst = isStickerMsg && !!groupedStickerFirstMsgs[msg.msg_id];
@@ -1881,7 +1930,7 @@ export default function ChatWindow() {
                 if (Date.now() < clickSuppressUntilRef.current) return;
                 e.stopPropagation(); toggleMsgSelect();
               } : undefined}
-              onPointerDown={!isSelecting && !isEcardMsg ? (e) => {
+              onPointerDown={!isEcardMsg ? (e) => {
                 // Không intercept pointerdown trên interactive elements
                 const target = e.target as HTMLElement;
                 if (target.closest('a, button, img, video, audio, [role="button"], input, textarea, select')) return;
@@ -1902,7 +1951,7 @@ export default function ChatWindow() {
 
               {/* Outer row: bubble + action buttons */}
               <div className={`flex items-end gap-1 ${isEcardMsg ? 'w-full justify-center' : isSent ? 'flex-row-reverse' : 'flex-row'}`} style={{ maxWidth: '100%' }}>
-                {/* Selection checkbox — visible when in selection mode */}
+                {/* Selection checkbox - visible when in selection mode */}
                 {isSelecting && !isEcardMsg && (
                   <div className="w-5 h-5 flex-shrink-0 self-center mb-1">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${isMsgSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-500 bg-transparent'}`}>
@@ -1965,7 +2014,7 @@ export default function ChatWindow() {
                     </div>
                   )}
 
-                  {/* Employee avatar on right side — every message with handled_by_employee */}
+                  {/* Employee avatar on right side - every message with handled_by_employee */}
                   {isSent && !isEcardMsg && (() => {
                     const empId = msg.handled_by_employee;
                     if (!empId) return null;
@@ -1996,7 +2045,7 @@ export default function ChatWindow() {
                         ? 'px-3 py-2 bg-blue-600 text-white rounded-br-sm'
                         : 'px-3 py-2 bg-gray-700 text-gray-200 rounded-bl-sm'
                     }`}>
-                    {/* Quote preview — supports both pre-built quote_data and reply_to_id fallback */}
+                    {/* Quote preview - supports both pre-built quote_data and reply_to_id fallback */}
                     {(msg.quote_data || msg.reply_to_id) && (() => {
                       // Build quote object from quote_data or fallback to reply_to_id + msgs lookup
                       let q: any;
@@ -2136,6 +2185,7 @@ export default function ChatWindow() {
                       isSticker={isStickerMsg}
                       isRtf={isRtf}
                       isBankCard={isBankCardMsg}
+                      isLocation={isLocationMsg}
                       renderGroupMedia={() => <MediaGroupBubble msgs={groupMediaMsgs!} onView={openViewer} isSelecting={isSelecting} selectedMsgIds={selectedMsgIds} onToggleSelect={(id) => {
                         setSelectedMsgIds(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
                       }} />}
@@ -2253,7 +2303,7 @@ export default function ChatWindow() {
                   </div>
 
 
-                  {/* Single reaction button — position absolute at bottom corner (side matching bubble alignment) */}
+                  {/* Single reaction button - position absolute at bottom corner (side matching bubble alignment) */}
                   {channelCap.supportsReaction && !isEcardMsg && !isGroupedStickerFirst && (() => {
                     const rFull = parseReactionsFull(msg.reactions);
                     const myEmoji = activeAccountId
@@ -2269,7 +2319,7 @@ export default function ChatWindow() {
                         onMouseEnter={() => setReactionPickerMsgId(msg.msg_id)}
                         onMouseLeave={() => setReactionPickerMsgId(null)}
                       >
-                        {/* Emoji picker — appears above on hover, always opens toward center */}
+                        {/* Emoji picker - appears above on hover, always opens toward center */}
                         {reactionPickerMsgId === msg.msg_id && (
                           <div className={`absolute bottom-full flex flex-col bg-gray-800 border border-gray-600 rounded-2xl shadow-2xl z-30 p-1.5${isSent ? ' right-0' : ' left-0'}`}>
                             <div className="flex items-center gap-0.5">
@@ -2309,7 +2359,7 @@ export default function ChatWindow() {
                   </div>{/* end flex flex-col (bubble content column) */}
                 </div>{/* end bubble area (flex items-end gap-2) */}
 
-                {/* Hover action buttons — visible on msg hover, outside bubble */}
+                {/* Hover action buttons - visible on msg hover, outside bubble */}
                 {!isEcardMsg && !isGroupedStickerFirst && !isSelecting && (
                 <div className="flex items-center gap-0.5 self-end mb-1 opacity-0 group-hover/msg:opacity-100 transition-opacity duration-100 flex-shrink-0 flex-nowrap">
                   {/* Reply */}
@@ -2384,7 +2434,7 @@ export default function ChatWindow() {
         </div>
       )}
 
-      {/* Typing indicator — hiển thị phía trên input, không chồng lên nội dung */}
+      {/* Typing indicator - hiển thị phía trên input, không chồng lên nội dung */}
       {threadReady && activeAccountId && activeThreadId && typingNow > 0 && (() => {
         const prefix = `${activeAccountId}_${activeThreadId}_`;
         const nowTs = Date.now();
@@ -2600,7 +2650,7 @@ export default function ChatWindow() {
         />
       )}
 
-      {/* Manage group modal — mở từ nút "Quản lý nhóm" trong EcardBubble */}
+      {/* Manage group modal - mở từ nút "Quản lý nhóm" trong EcardBubble */}
       {manageGroupOpen && activeThreadId && activeAccountId && (
         <div
           className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
@@ -2618,7 +2668,7 @@ export default function ChatWindow() {
         </div>
       )}
 
-      {/* Note view modal — mở khi click vào ghi chú đã ghim */}
+      {/* Note view modal - mở khi click vào ghi chú đã ghim */}
       {noteModal && activeThreadId && activeAccountId && (
         <NoteViewModal
           topicId={noteModal.topicId}
@@ -2659,7 +2709,7 @@ export default function ChatWindow() {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 
-/** PollBubble — hiển thị tin nhắn group.poll */
+/** PollBubble - hiển thị tin nhắn group.poll */
 function PollBubble({ msg, isSent, activeAccountId, threadId }: { msg: any; isSent: boolean; activeAccountId: string; threadId: string }) {
   const [pollDetail, setPollDetail] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
@@ -2756,7 +2806,7 @@ function PollBubble({ msg, isSent, activeAccountId, threadId }: { msg: any; isSe
         }
       </button>
 
-      {/* Poll detail — dùng shared component */}
+      {/* Poll detail - dùng shared component */}
       {expanded && pollDetail && (
         <SharedPollDetailView
           detail={pollDetail}
@@ -2779,7 +2829,7 @@ function PollBubble({ msg, isSent, activeAccountId, threadId }: { msg: any; isSe
 }
 
 
-/** CreatePollDialog — tạo cuộc bình chọn mới trong nhóm */
+/** CreatePollDialog - tạo cuộc bình chọn mới trong nhóm */
 export function CreatePollDialog({ groupId, activeAccountId, channel, onClose }: {
   groupId: string; activeAccountId: string; channel?: string; onClose: () => void;
 }) {
@@ -3123,6 +3173,7 @@ function parseQuoteMsg(msg: string, msgType?: string): string {
     if (msgType === 'chat.sticker') return '[Sticker]';
     if (msgType === 'chat.poll') return '[Bình chọn]';
     if (msgType === 'chat.webcontent') return '🏦 [Tài khoản ngân hàng]';
+    if (msgType === 'chat.location.new') return '📍 [Vị trí]';
     return '';
   }
 
@@ -3274,7 +3325,7 @@ function isRtfMsg(msgType: string, content: string): boolean {
   return false;
 }
 
-/** Kiểm tra tin nhắn có phải media (ảnh) không — loại trừ file và card */
+/** Kiểm tra tin nhắn có phải media (ảnh) không - loại trừ file và card */
 function isMediaType(msgType: string, content: string): boolean {
   if (isCardType(msgType, content)) return false;
   if (isBankCardType(msgType, content)) return false;
@@ -3322,7 +3373,7 @@ function isBankCardType(msgType: string, content: string): boolean {
   return false;
 }
 
-/** FileBubble — hiển thị tin nhắn file đính kèm (share.file) */
+/** FileBubble - hiển thị tin nhắn file đính kèm (share.file) */
 function FileBubble({ msg, isSent }: { msg: any; isSent: boolean }) {
   const [opening, setOpening] = React.useState(false);
 
@@ -3481,7 +3532,7 @@ function FileBubble({ msg, isSent }: { msg: any; isSent: boolean }) {
   );
 }
 
-/** Hiển thị bubble ảnh dùng React state — tự retry khi local_paths được cập nhật sau khi tải xong */
+/** Hiển thị bubble ảnh dùng React state - tự retry khi local_paths được cập nhật sau khi tải xong */
 function MediaBubble({ msg, onView, isSent, allContacts, groupMembersList, onMentionClick }: {
   msg: any;
   onView: (src: string) => void;
@@ -3621,7 +3672,7 @@ function MediaBubble({ msg, onView, isSent, allContacts, groupMembersList, onMen
   }
 
   if (!displayUrl) {
-    // Không có cả remote lẫn local — hiển thị placeholder tĩnh (không animation)
+    // Không có cả remote lẫn local - hiển thị placeholder tĩnh (không animation)
     return (
       <div className="flex items-center justify-center max-w-xs w-full h-32 rounded-xl bg-gray-700/40 text-gray-500 select-none">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-30">
@@ -3641,7 +3692,7 @@ function MediaBubble({ msg, onView, isSent, allContacts, groupMembersList, onMen
         onClick={() => onView(viewUrl)}
         onError={handleImgError}
       />
-      {/* Viền mờ overlay — hiển thị rõ ở cả giao diện sáng lẫn tối */}
+      {/* Viền mờ overlay - hiển thị rõ ở cả giao diện sáng lẫn tối */}
       <div className={`absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/[0.12]${caption ? ' rounded-t-xl' : ' rounded-xl'}`} />
       {/* Hover action buttons */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/media:opacity-100 transition-opacity">
@@ -3683,7 +3734,7 @@ function MediaBubble({ msg, onView, isSent, allContacts, groupMembersList, onMen
   );
 }
 
-/** VideoBubble — hiển thị tin nhắn video với thumbnail và nút play */
+/** VideoBubble - hiển thị tin nhắn video với thumbnail và nút play */
 function VideoBubble({ msg, isSent }: { msg: any; isSent: boolean }) {
   const [saving, setSaving] = React.useState(false);
   // local-first thumbnail; fallback remote khi local chưa tải hoặc lỗi
@@ -3810,7 +3861,7 @@ function VideoBubble({ msg, isSent }: { msg: any; isSent: boolean }) {
         </div>
       </div>
 
-      {/* Duration + HD badge — bottom left */}
+      {/* Duration + HD badge - bottom left */}
       <div className="absolute bottom-2 left-2 flex items-center gap-1.5">
         {duration > 0 && (
           <span className="text-[11px] text-white font-medium bg-black/50 px-1.5 py-0.5 rounded">
@@ -3825,7 +3876,7 @@ function VideoBubble({ msg, isSent }: { msg: any; isSent: boolean }) {
         )}
       </div>
 
-      {/* Action buttons — top right, on hover */}
+      {/* Action buttons - top right, on hover */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/video:opacity-100 transition-opacity">
         {videoLocalPath && (
           <button onClick={handleOpenFolder} title="Mở thư mục"
@@ -3848,7 +3899,7 @@ function VideoBubble({ msg, isSent }: { msg: any; isSent: boolean }) {
   );
 }
 
-/** VoiceBubble — hiển thị tin nhắn ghi âm (chat.voice) */
+/** VoiceBubble - hiển thị tin nhắn ghi âm (chat.voice) */
 function VoiceBubble({ msg, isSent }: { msg: any; isSent: boolean }) {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
@@ -3996,7 +4047,7 @@ function VoiceBubble({ msg, isSent }: { msg: any; isSent: boolean }) {
   );
 }
 
-/** Preview sticker nhỏ dùng trong khung trích dẫn (quote) — tải URL từ DB cache hoặc API */
+/** Preview sticker nhỏ dùng trong khung trích dẫn (quote) - tải URL từ DB cache hoặc API */
 function QuotedStickerPreview({ content }: { content: string }) {
   const [stickerUrl, setStickerUrl] = React.useState<string | null>(null);
 
@@ -4057,7 +4108,7 @@ function QuotedStickerPreview({ content }: { content: string }) {
   return <img src={stickerUrl} alt="sticker" className="w-12 h-12 object-contain rounded-lg flex-shrink-0" />;
 }
 
-/** Hiển thị nhiều sticker liền nhau từ cùng người gửi trong 30 phút — mỗi sticker có thể right-click riêng */
+/** Hiển thị nhiều sticker liền nhau từ cùng người gửi trong 30 phút - mỗi sticker có thể right-click riêng */
 function StickerGroupBubble({
   msgs: groupMsgs,
   onContextMenu,
@@ -4095,7 +4146,7 @@ function getGroupLayoutId(msg: any): string | null {  if (!isMediaType(msg.msg_t
   return null;
 }
 
-/** Hiển thị nhóm ảnh gửi cùng 1 batch — tối đa 4 ảnh/hàng, chiều cao cố định */
+/** Hiển thị nhóm ảnh gửi cùng 1 batch - tối đa 4 ảnh/hàng, chiều cao cố định */
 function MediaGroupBubble({ msgs: groupMsgs, onView, isSelecting: isSelectingProp, selectedMsgIds: selectedMsgIdsProp, onToggleSelect }: {
   msgs: any[]; onView: (src: string) => void;
   isSelecting?: boolean; selectedMsgIds?: Set<string>; onToggleSelect?: (msgId: string) => void;
@@ -4129,7 +4180,7 @@ function MediaGroupBubble({ msgs: groupMsgs, onView, isSelecting: isSelectingPro
   );
 }
 
-/** Ảnh đơn bên trong MediaGroupBubble — chiều cao cố định h-40 */
+/** Ảnh đơn bên trong MediaGroupBubble - chiều cao cố định h-40 */
 function SingleImageInGroup({ msg, onView, isSelecting: isSelectingProp, isSelected, onToggleSelect }: {
   msg: any; onView: (src: string) => void;
   isSelecting?: boolean; isSelected?: boolean; onToggleSelect?: (msgId: string) => void;
@@ -4244,9 +4295,9 @@ function SingleImageInGroup({ msg, onView, isSelecting: isSelectingProp, isSelec
           </div>
         </div>
       )}
-      {/* Viền overlay — hiển thị ở cả giao diện sáng lẫn tối */}
+      {/* Viền overlay - hiển thị ở cả giao diện sáng lẫn tối */}
       <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/[0.12]" />
-      {/* Hover action buttons — hidden in selection mode */}
+      {/* Hover action buttons - hidden in selection mode */}
       {!isSelectingProp && (
         <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover/singleimg:opacity-100 transition-opacity">
           {localFilePath && (
@@ -4272,7 +4323,7 @@ function SingleImageInGroup({ msg, onView, isSelecting: isSelectingProp, isSelec
   );
 }
 
-/** StickerBubble — hiển thị sticker với lazy load từ DB cache hoặc API */
+/** StickerBubble - hiển thị sticker với lazy load từ DB cache hoặc API */
 function StickerBubble({ msg }: { msg: any }) {
   const [stickerUrl, setStickerUrl] = React.useState<string | null>(null);
   const [failed, setFailed] = React.useState(false);
@@ -4397,8 +4448,18 @@ function StickerBubble({ msg }: { msg: any }) {
   );
 }
 
-function parseContent(content: string): string {
+function parseContent(content: string, msgType?: string): string {
   if (!content || content === 'null') return '';
+  // Location message (chat.location.new): show description or coordinates
+  if (msgType === 'chat.location.new') {
+    try {
+      const parsed = JSON.parse(content);
+      if (parsed?.description) return `📍 ${parsed.description}`;
+      const params = typeof parsed?.params === 'string' ? JSON.parse(parsed.params) : (parsed?.params || {});
+      if (params?.latitude && params?.longitude) return `📍 ${params.latitude.slice(0, 8)}, ${params.longitude.slice(0, 8)}`;
+    } catch {}
+    return '📍 [Vị trí]';
+  }
   try {
     const parsed = JSON.parse(content);
     if (parsed === null || parsed === undefined) return '';
@@ -4443,7 +4504,7 @@ function parseReactionsFull(raw: any): { total: number; emoji: Record<string, { 
 
   const convertKey = (k: string) => zaloCodeToEmoji(k);
 
-  // New format: has .emoji with user counts — convert Zalo codes to emoji
+  // New format: has .emoji with user counts - convert Zalo codes to emoji
   if (parsed.emoji && typeof parsed.emoji === 'object') {
     const converted: Record<string, { total: number; users: Record<string, number> }> = {};
     for (const [code, data] of Object.entries(parsed.emoji as any)) {
@@ -4457,7 +4518,7 @@ function parseReactionsFull(raw: any): { total: number; emoji: Record<string, { 
     return { total: parsed.total || 0, emoji: converted };
   }
 
-  // Old format: { userId: emojiChar } — convert Zalo codes to emoji
+  // Old format: { userId: emojiChar } - convert Zalo codes to emoji
   const result = { total: 0, emoji: {} as Record<string, { total: number; users: Record<string, number> }> };
   for (const [uid, emo] of Object.entries(parsed as Record<string, string>)) {
     if (!emo || typeof emo !== 'string') continue;
@@ -4649,8 +4710,8 @@ function MsgActionBtn({ title, onClick, children }: {
   );
 }
 
-// ─── CardBubble — dispatches to LinkBubble, CallBubble or ContactCardBubble ───
-// ─── EcardBubble — thông báo hệ thống dạng thẻ (vd: trở thành phó nhóm, nhắc hẹn) ─────
+// ─── CardBubble - dispatches to LinkBubble, CallBubble or ContactCardBubble ───
+// ─── EcardBubble - thông báo hệ thống dạng thẻ (vd: trở thành phó nhóm, nhắc hẹn) ─────
 function EcardBubble({ msg, onManage }: { msg: any; onManage?: () => void }) {
   let parsed: any = {};
   try { parsed = JSON.parse(msg.content || '{}'); } catch {}
@@ -4781,7 +4842,7 @@ function EcardBubble({ msg, onManage }: { msg: any; onManage?: () => void }) {
             <p className="text-gray-400 text-xs leading-relaxed">{description}</p>
           )}
         </div>
-        {/* Actions — chỉ nút Quản lý nhóm */}
+        {/* Actions - chỉ nút Quản lý nhóm */}
         {actions.length > 0 && onManage && (
           <div className="border-t border-gray-700">
             {actions.map((a: any, i: number) => (
@@ -4810,7 +4871,7 @@ function CardBubble({ msg, isSent, onOpenProfile }: { msg: any; isSent: boolean;
   return <ContactCardBubble parsed={parsed} isSent={isSent} onOpenProfile={onOpenProfile} />;
 }
 
-// ─── LinkBubble — hiển thị tin nhắn link preview như Zalo ────────────────────
+// ─── LinkBubble - hiển thị tin nhắn link preview như Zalo ────────────────────
 function LinkBubble({ parsed, isSent }: { parsed: any; isSent: boolean }) {
   const href = String(parsed.href || parsed.title || '');
   const params = (() => { try { const p = parsed.params; return typeof p === 'string' ? JSON.parse(p) : (p || {}); } catch { return {}; } })();
@@ -4852,7 +4913,7 @@ function LinkBubble({ parsed, isSent }: { parsed: any; isSent: boolean }) {
     <div
       className={`flex flex-col overflow-hidden rounded-2xl min-w-[260px] max-w-sm text-left shadow-lg ${isSent ? 'bg-gray-750' : 'bg-gray-800'} border ${isSent ? 'border-gray-700' : 'border-gray-700'}`}
     >
-      {/* Message content: text + link — hiển thị bình thường, không bấm mở link */}
+      {/* Message content: text + link - hiển thị bình thường, không bấm mở link */}
       <div className="px-3 py-2.5 space-y-1.5 select-text cursor-text">
         {displayTitle && (
           <p className="text-sm text-white leading-snug">
@@ -4874,7 +4935,7 @@ function LinkBubble({ parsed, isSent }: { parsed: any; isSent: boolean }) {
         )}
       </div>
 
-      {/* Preview section — CHỈ bấm vào đây mới mở link */}
+      {/* Preview section - CHỈ bấm vào đây mới mở link */}
       <button
         onClick={() => href && ipc.shell?.openExternal(href)}
         className="mx-2 mb-2 border border-gray-700/80 rounded-xl overflow-hidden bg-gray-900/60 text-left cursor-pointer hover:opacity-90 active:scale-[0.98] transition-all"
@@ -4906,7 +4967,7 @@ function LinkBubble({ parsed, isSent }: { parsed: any; isSent: boolean }) {
   );
 }
 
-// ─── CallBubble — hiển thị tin nhắn cuộc gọi ─────────────────────────────────
+// ─── CallBubble - hiển thị tin nhắn cuộc gọi ─────────────────────────────────
 function CallBubble({ parsed, isSent }: { parsed: any; isSent: boolean }) {
   const params = (() => { try { const p = parsed.params; return typeof p === 'string' ? JSON.parse(p) : (p || {}); } catch { return {}; } })();
   const duration: number = params.duration || 0;
@@ -4952,7 +5013,7 @@ function CallBubble({ parsed, isSent }: { parsed: any; isSent: boolean }) {
   );
 }
 
-// ─── ContactCardBubble — hiển thị danh thiếp Zalo ────────────────────────────
+// ─── ContactCardBubble - hiển thị danh thiếp Zalo ────────────────────────────
 function ContactCardBubble({ parsed, isSent, onOpenProfile }: { parsed: any; isSent: boolean; onOpenProfile?: (userId: string, e: React.MouseEvent) => void }) {
   const title = parsed.title || '';
   const thumbUrl = parsed.thumb || '';
@@ -5061,7 +5122,7 @@ function ContactCardBubble({ parsed, isSent, onOpenProfile }: { parsed: any; isS
       className={`rounded-2xl max-w-[340px] ${isSent ? 'bg-blue-600/70 text-white' : 'bg-gray-700 text-gray-200'}`}
     >
       <div className="flex items-center gap-3.5 px-4 py-3.5 select-text">
-        {/* Avatar — click mở profile */}
+        {/* Avatar - click mở profile */}
         <div
           className={`card-avatar-area w-14 h-14 rounded-full overflow-hidden flex-shrink-0 bg-gray-600 ${resolvedUserId && onOpenProfile ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
           onClick={handleOpenProfile}
@@ -5100,7 +5161,7 @@ function ContactCardBubble({ parsed, isSent, onOpenProfile }: { parsed: any; isS
             </svg>
             Gửi tin nhắn
           </button>
-          {/* Nút kết bạn — chỉ hiện nếu chưa là bạn bè */}
+          {/* Nút kết bạn - chỉ hiện nếu chưa là bạn bè */}
           {!isFriend && !isSent && (
             <button
               onClick={handleAddFriend}
@@ -5131,9 +5192,9 @@ function ContactCardBubble({ parsed, isSent, onOpenProfile }: { parsed: any; isS
   );
 }
 
-// ─── BankCardBubble — imported from MessageBubbles (shared component) ────────
+// ─── BankCardBubble - imported from MessageBubbles (shared component) ────────
 
-// ─── RtfBubble — webchat + action=rtf (rich text formatting) ────────────────
+// ─── RtfBubble - webchat + action=rtf (rich text formatting) ────────────────
 // Zalo TextStyle: b=bold, i=italic, u=underline, s=strikethrough
 // Colors: c_db342e=red, c_f27806=orange, c_f7b503=yellow, c_15a85f=green
 // Size: f_13=small, f_18=big
@@ -5315,7 +5376,7 @@ function TextWithMentions({
       }
     }
     if (!matched) {
-      // No name match — grab @word (stop at whitespace)
+      // No name match - grab @word (stop at whitespace)
       const restStr = converted.slice(atIdx + 1);
       const spaceIdx = restStr.search(/[\s,!?;:\n]/);
       const end = spaceIdx === -1 ? converted.length : atIdx + 1 + spaceIdx;
@@ -5383,6 +5444,20 @@ function extractMsgText(msg: any): string {
   try {
     const c = msg.content;
     if (!c || c === 'null') return '[Tin nhắn]';
+
+    // Location message: include Google Maps link
+    if (msg.msg_type === 'chat.location.new') {
+      const parsed = JSON.parse(c);
+      const params = typeof parsed?.params === 'string' ? JSON.parse(parsed.params) : (parsed?.params || {});
+      const lat = params?.latitude;
+      const lng = params?.longitude;
+      const desc = parsed?.description || '';
+      const mapLink = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : '';
+      let result = `📍 ${desc || 'Vị trí'}`;
+      if (mapLink) result += `\n${mapLink}`;
+      return result;
+    }
+
     const parsed = JSON.parse(c);
     if (typeof parsed === 'string') return parsed;
     if (parsed?.msg && typeof parsed.msg === 'string') return parsed.msg;
@@ -5393,7 +5468,7 @@ function extractMsgText(msg: any): string {
   } catch { return msg.content || '[Tin nhắn]'; }
 }
 
-/** Gửi 1 tin nhắn đến 1 target — dùng trong forward loop */
+/** Gửi 1 tin nhắn đến 1 target - dùng trong forward loop */
 async function sendOneForward(
   auth: any, msg: any, target: { threadId: string; threadType: number }, composeText: string,
   channel?: string, accountId?: string,
@@ -5641,7 +5716,7 @@ function ForwardMessageModal({ messages, contacts, onClose, onForward }: {
           ))}
         </div>
 
-        {/* Label source tabs + filter pills — only for categories tab */}
+        {/* Label source tabs + filter pills - only for categories tab */}
         {tab === 'categories' && (
           <div className="border-b border-gray-700 flex-shrink-0">
             {/* Local / Zalo sub-tabs */}
@@ -6188,7 +6263,7 @@ function FriendRequestBar({ zaloId, userId, contact, getAuth, onReady }: {
       await ipc.zalo?.acceptFriendRequest({ auth, userId });
       setStatus('friend');
       showNotification('Đã chấp nhận kết bạn', 'success');
-      // Update local DB — also remove from friend_requests
+      // Update local DB - also remove from friend_requests
       ipc.db?.addFriend({ zaloId, friend: { userId, displayName: contact?.display_name || contact?.alias || '', avatar: contact?.avatar_url || contact?.avatar || '' } }).catch(() => {});
       ipc.db?.removeFriendRequest({ zaloId, userId, direction: 'received' }).catch(() => {});
     } catch (e: any) {
@@ -6251,7 +6326,7 @@ function FriendRequestBar({ zaloId, userId, contact, getAuth, onReady }: {
           )}
           {status === 'sent' && (
             <span className="text-sm text-gray-400">
-              Đã gửi yêu cầu kết bạn tới <span className="font-medium text-gray-300">{displayName}</span> — đang chờ chấp nhận
+              Đã gửi yêu cầu kết bạn tới <span className="font-medium text-gray-300">{displayName}</span> - đang chờ chấp nhận
             </span>
           )}
           {status === 'received' && (

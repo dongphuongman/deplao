@@ -14,7 +14,7 @@ interface Props {
   /** Số lời mời nhận được để hiển thị badge */
   requestsCount?: number;
 
-  /** Chế độ gộp trang — ẩn/hiện phần chọn tài khoản */
+  /** Chế độ gộp trang - ẩn/hiện phần chọn tài khoản */
   mergedInboxMode?: boolean;
   accounts: AccountOption[];
   activeAccountId: string | null;
@@ -28,7 +28,7 @@ const TABS: { key: FriendTab; label: string; icon: string }[] = [
   { key: 'requests', label: 'Lời mời',  icon: '✉️' },
 ];
 
-/** Header của FriendList — 3 tab bên trái, account selector bên phải (giống CRM) */
+/** Header của FriendList - 3 tab bên trái, account selector bên phải (giống CRM) */
 export default function FriendListAccountSelector({
   tab,
   onTabChange,
@@ -79,7 +79,7 @@ export default function FriendListAccountSelector({
 
       <div className="flex-1" />
 
-      {/* ── Account selector (phải) — chỉ hiện khi mergedInboxMode ── */}
+      {/* ── Account selector (phải) - chỉ hiện khi mergedInboxMode ── */}
       {accounts.length > 0 && (
         <AccountSelectorDropdown
           options={accounts}

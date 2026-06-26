@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 # Opt-in Node.js 24 để tắt warning deprecation Node.js 20
-# (bắt buộc từ June 2, 2026 — xem https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/)
+# (bắt buộc từ June 2, 2026 - xem https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/)
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -44,14 +44,14 @@ on:
 
 # ─── SECRETS cần cấu hình trong GitHub repo Settings → Secrets ──────────────
 # Bắt buộc:
-#   GH_TOKEN          — GitHub Personal Access Token (repo scope)
+#   GH_TOKEN          - GitHub Personal Access Token (repo scope)
 #
 # Tùy chọn (Code Signing - thêm sau nếu có Apple Developer Account):
-#   CSC_LINK           — Base64 của file .p12 certificate
-#   CSC_KEY_PASSWORD   — Password của .p12
-#   APPLE_ID           — Apple ID email
-#   APPLE_APP_SPECIFIC_PASSWORD — App-specific password
-#   APPLE_TEAM_ID      — Apple Developer Team ID
+#   CSC_LINK           - Base64 của file .p12 certificate
+#   CSC_KEY_PASSWORD   - Password của .p12
+#   APPLE_ID           - Apple ID email
+#   APPLE_APP_SPECIFIC_PASSWORD - App-specific password
+#   APPLE_TEAM_ID      - Apple Developer Team ID
 
 jobs:
   # ═══════════════════════════════════════════════════════════════════════════
@@ -99,7 +99,7 @@ jobs:
           # Ưu tiên 2: Tag từ git push (refs/tags/v*)
           elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
             echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
-          # Ưu tiên 3: Lấy từ package.json — KHÔNG có hậu tố -mac
+          # Ưu tiên 3: Lấy từ package.json - KHÔNG có hậu tố -mac
           # (phải khớp với tag Windows để electron-updater tìm đúng latest-mac.yml)
           else
             VERSION=$(node -p "require('./package.json').version")

@@ -27,7 +27,7 @@ export class HaravanAdapter extends IntegrationAdapter {
   private getHeaders() {
     const { accessToken, apiKey, password } = this.config.credentials;
 
-    // Ưu tiên dùng access token (OAuth / Custom App) — đúng chuẩn Haravan docs
+    // Ưu tiên dùng access token (OAuth / Custom App) - đúng chuẩn Haravan docs
     if (accessToken) {
       return {
         Authorization: `Bearer ${accessToken}`,
@@ -65,7 +65,7 @@ export class HaravanAdapter extends IntegrationAdapter {
     try {
       const data = await this.apiGet('/admin/shop.json');
       const shopName = data?.shop?.name || data?.shop?.domain || 'Haravan Shop';
-      return { success: true, message: `Kết nối Haravan thành công — shop: ${shopName}` };
+      return { success: true, message: `Kết nối Haravan thành công - shop: ${shopName}` };
     } catch (e: any) {
       return { success: false, message: `Lỗi kết nối Haravan: ${e.response?.data?.errors || e.message}` };
     }
@@ -101,7 +101,7 @@ export class HaravanAdapter extends IntegrationAdapter {
         }
 
         if (params.phone) {
-          // Haravan /admin/orders.json KHÔNG hỗ trợ param `phone` —
+          // Haravan /admin/orders.json KHÔNG hỗ trợ param `phone` -
           // phải lookup customer trước → lấy customer id → query orders
           const custData = await this.apiGet('/admin/customers/search.json', {
             query: params.phone,
@@ -134,7 +134,7 @@ export class HaravanAdapter extends IntegrationAdapter {
       }
 
       case 'lookupProduct': {
-        // Haravan /admin/products.json?title=X chỉ exact match —
+        // Haravan /admin/products.json?title=X chỉ exact match -
         // nên lấy nhiều hơn rồi client-side filter partial match
         const limit = params.limit || 50;
         const data = await this.apiGet('/admin/products.json', {

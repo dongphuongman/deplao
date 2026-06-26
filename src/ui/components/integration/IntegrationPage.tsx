@@ -205,7 +205,7 @@ function AISection({ onNavigateAi }: { onNavigateAi: () => void }) {
                 '💬 Gợi ý trả lời trong hội thoại',
                 '🤖 Hỏi đáp với AI trong hội thoại',
                 '⚡ Dùng AI tạo workflow bằng câu lệnh',
-                '🔄 Node AI trả lời — tạo chatbot 24/7',
+                '🔄 Node AI trả lời - tạo chatbot 24/7',
               ].map((text, i) => (
                 <p key={i} className="text-gray-300 text-[11px] flex items-center gap-1.5">
                   <span className="text-blue-500/70">▸</span>
@@ -281,7 +281,7 @@ function AISection({ onNavigateAi }: { onNavigateAi: () => void }) {
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-900/50 text-blue-400 font-bold flex-shrink-0">MẶC ĐỊNH</span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400">{meta.label} — {a.model}</p>
+                    <p className="text-xs text-gray-400">{meta.label} - {a.model}</p>
                   </div>
                 </div>
                 <div className="mt-3 flex items-center justify-between">
@@ -336,7 +336,7 @@ function TunnelStatusCard({ webhookPort, tunnelUrl, tunnelLoading, onToggle, sav
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="text-sm font-semibold flex items-center gap-2">
-            <span>🌐</span> Webhook Tunnel — Kết nối Internet
+            <span>🌐</span> Webhook Tunnel - Kết nối Internet
           </h3>
           <p className="text-xs mt-1">
             Tunnel expose server local ra internet để nhận webhook thanh toán,
@@ -387,7 +387,7 @@ function TunnelStatusCard({ webhookPort, tunnelUrl, tunnelLoading, onToggle, sav
         )}
       </div>
 
-      {/* Billing explanation — always visible */}
+      {/* Billing explanation - always visible */}
       <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700/30 rounded-xl p-3">
           <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">💳 Khi nào cần bật Tunnel?</p>
@@ -424,7 +424,7 @@ function TunnelStatusCard({ webhookPort, tunnelUrl, tunnelLoading, onToggle, sav
         <div className="mt-3 bg-green-50 dark:bg-green-900/15 border border-green-300 dark:border-green-700/30 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="text-green-600 dark:text-green-400 text-sm">✅</span>
-            <p className="text-xs text-green-800 dark:text-green-300 font-medium">Tunnel đang hoạt động — sẵn sàng nhận webhook thanh toán</p>
+            <p className="text-xs text-green-800 dark:text-green-300 font-medium">Tunnel đang hoạt động - sẵn sàng nhận webhook thanh toán</p>
           </div>
           <p className="text-[11px] text-green-700/70 dark:text-green-400/70 mt-1 ml-5">
             Casso/SePay sẽ gửi thông báo giao dịch qua URL công khai bên trên. Khi có chuyển khoản, hệ thống tự động xử lý.
@@ -622,7 +622,7 @@ export default function IntegrationPage() {
               </svg>
             </div>
           ) : activeTab === 'all' ? (
-            /* ── "Tất cả" — AI first, then sections ── */
+            /* ── "Tất cả" - AI first, then sections ── */
             <>
               <AISection onNavigateAi={handleNavigateAi} />
 

@@ -7,7 +7,7 @@ import * as channelIpc from '../lib/channelIpc';
 import { sendSeenForThread } from '@/lib/sendSeenHelper';
 
 /**
- * Hook quản lý trạng thái chat — load messages, contacts, gửi tin nhắn
+ * Hook quản lý trạng thái chat - load messages, contacts, gửi tin nhắn
  */
 export function useChat() {
   const {

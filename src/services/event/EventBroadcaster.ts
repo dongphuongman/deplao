@@ -42,7 +42,7 @@ class EventBroadcaster {
         this.window = win;
     }
 
-    /** Generic channel emit — dùng bởi CRMQueueService và các service khác */
+    /** Generic channel emit - dùng bởi CRMQueueService và các service khác */
     public static emit(channel: string, data: any): void {
         this.send(channel, data);
     }
@@ -140,7 +140,7 @@ class EventBroadcaster {
     }
 
     /**
-     * Fire onBeforeSend hooks ONLY — do NOT send to renderer.
+     * Fire onBeforeSend hooks ONLY - do NOT send to renderer.
      * Used when boss webhook fires while an employee workspace is active:
      * hooks relay the event to employees, but the renderer is showing
      * the employee workspace (employee's handlePushedEvent sends to renderer).
@@ -359,7 +359,7 @@ class EventBroadcaster {
                     }
                     // ── End auto-pin ────────────────────────────────────────────────
 
-                    // Re-use event:groupEvent channel — it handles any threadId, not just groups
+                    // Re-use event:groupEvent channel - it handles any threadId, not just groups
                     this.send('event:groupEvent', {
                         zaloId,
                         groupId:   message.threadId,
@@ -419,7 +419,7 @@ class EventBroadcaster {
             }
             // ─────────────────────────────────────────────────────────────────────────
 
-            // Lưu vào database — always target the boss (default) workspace DB
+            // Lưu vào database - always target the boss (default) workspace DB
             if (bossDbPath) {
                 DatabaseService.getInstance().withDbPath(bossDbPath, () => {
                     DatabaseService.getInstance().saveMessage(zaloId, message);
@@ -456,7 +456,7 @@ class EventBroadcaster {
             if (message.data?.msgId) {
                 const isSelfMsg = message.isSelf === true;
                 if (!isSelfMsg) {
-                    Logger.log(`[EventBroadcaster] ⚠️ message.isSelf=${message.isSelf} for msgId="${message.data.msgId}" — checking pending map anyway`);
+                    Logger.log(`[EventBroadcaster] ⚠️ message.isSelf=${message.isSelf} for msgId="${message.data.msgId}" - checking pending map anyway`);
                 }
                 try {
                     const HttpRelayService = require('../http/HttpRelayService').default;
@@ -550,7 +550,7 @@ class EventBroadcaster {
             const msgId = message.data?.msgId || '';
 
             // Skip file/image downloads for reminder and poll messages
-            // Also skip when fromRelay — boss already downloads files and relays event:localPath separately
+            // Also skip when fromRelay - boss already downloads files and relays event:localPath separately
             const SKIP_DOWNLOAD_MSG_TYPES = ['chat.ecard', 'group.poll'];
             const shouldSkipDownload = !!options?.fromRelay || SKIP_DOWNLOAD_MSG_TYPES.includes(rawMsgType);
 
@@ -562,13 +562,13 @@ class EventBroadcaster {
 
             // File message: share.file hoặc content có title + href (không có rawUrl/hd)
             // Loại trừ card messages để tránh download href=www.zaloapp.com
-            // Video: chat.video.msg — download thumbnail + video file
+            // Video: chat.video.msg - download thumbnail + video file
             const isVideoMsg = rawMsgType === 'chat.video.msg' ||
                 (contentRaw && typeof contentRaw === 'object' &&
                     contentRaw.href && String(contentRaw.href).includes('video') &&
                     contentRaw.thumb && !contentRaw.title);
 
-            // Voice message: chat.voice — download audio file, KHÔNG phải ảnh/file
+            // Voice message: chat.voice - download audio file, KHÔNG phải ảnh/file
             const isVoiceMsg = rawMsgType === 'chat.voice';
 
             if (!shouldSkipDownload && isVoiceMsg && contentRaw && typeof contentRaw === 'object' && msgId) {
@@ -641,7 +641,7 @@ class EventBroadcaster {
                     !contentParams.rawUrl && !contentParams.hd));
 
             // Ảnh: chat.photo, photo, image, hoặc content có href+params.hd/rawUrl
-            // Cho phép có title (caption) — title là chú thích ảnh, không phải tên file
+            // Cho phép có title (caption) - title là chú thích ảnh, không phải tên file
             const isPhoto = !isFileMsg && !isCardMsg && !isVideoMsg && !isVoiceMsg && (
                 rawMsgType === 'chat.photo' || rawMsgType === 'photo' || rawMsgType === 'image' ||
                 (contentRaw && typeof contentRaw === 'object' &&
@@ -662,7 +662,7 @@ class EventBroadcaster {
             }
 
             // Card message (chat.recommended): URLs (thumb, qrCodeUrl) are stable on Zalo CDN
-            // No local download needed — use remote URLs directly in UI
+            // No local download needed - use remote URLs directly in UI
             if (isCardMsg) {
                 Logger.log(`[EventBroadcaster] Card message ${msgId}: using remote thumb/qrCode URLs directly`);
                 // Save link to links table if this is a link card
@@ -720,7 +720,7 @@ class EventBroadcaster {
             // fromRelay: skip onBeforeSend hooks to avoid infinite relay loop
             // (Boss relay → Employee broadcastMessage → send → hook → relay → loop)
             if (options?.fromRelay) {
-                // Employee relay — NEVER called anymore (handled by saveRelayMessageToWorkspaceDb)
+                // Employee relay - NEVER called anymore (handled by saveRelayMessageToWorkspaceDb)
                 this.sendDirect('event:message', { zaloId, message });
             } else if (!activeIsDefault) {
                 // Boss webhook but employee workspace is active:
@@ -943,7 +943,7 @@ class EventBroadcaster {
     }
 
     /**
-     * Broadcast group event — also saves a system message to DB
+     * Broadcast group event - also saves a system message to DB
      */
     public static broadcastGroupEvent(zaloId: string, groupId: string, eventType: string, rawEvent: any): void {
         // ── Handle remind_topic event (reminder notification) ─────────────────────
@@ -1180,7 +1180,7 @@ class EventBroadcaster {
                             return labels[val as 0 | 1] || '';
                         }
                     }
-                    // Unknown featureId — fall through to diff approach below
+                    // Unknown featureId - fall through to diff approach below
                     // (do NOT silently return '' – we may still have prev state to diff against)
                 }
 
@@ -1257,7 +1257,7 @@ class EventBroadcaster {
 
     /**
      * Broadcast delete messages (chat.delete event) - marks as recalled in DB and notifies renderer.
-     * Không xoá khỏi DB để giữ lịch sử — chỉ đánh dấu recalled.
+     * Không xoá khỏi DB để giữ lịch sử - chỉ đánh dấu recalled.
      */
     public static broadcastDeleteMessages(zaloId: string, msgIds: string[], threadId: string): void {
         if (msgIds.length > 0) {

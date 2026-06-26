@@ -7,7 +7,7 @@ import { extractApiError } from '@/utils/apiError';
 import { UserProfilePopup } from '../../common/UserProfilePopup';
 
 /**
- * CRM Requests Tab — quản lý lời mời kết bạn (nhận được + đã gửi).
+ * CRM Requests Tab - quản lý lời mời kết bạn (nhận được + đã gửi).
  * Tách từ FriendList để dùng trong CRMPage.
  */
 export default function CRMRequestsTab() {

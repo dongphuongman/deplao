@@ -25,6 +25,14 @@ export interface CRMCampaign {
     mixed_config?: string;
     status: CRMCampaignStatus;
     delay_seconds: number;
+    /** Delay range: minimum seconds between sends (replaces fixed delay_seconds + jitter) */
+    delay_min_seconds?: number;
+    /** Delay range: maximum seconds between sends */
+    delay_max_seconds?: number;
+    /** Per-contact: minimum seconds between messages to the same contact (0 = use delay_min_seconds) */
+    per_contact_delay_min_seconds?: number;
+    /** Per-contact: maximum seconds between messages to the same contact (0 = use per_contact_delay_min_seconds) */
+    per_contact_delay_max_seconds?: number;
     daily_send_limit?: number;
     daily_start_time?: string;
     created_at?: number;

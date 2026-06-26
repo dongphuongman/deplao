@@ -1,4 +1,4 @@
-// Tái xuất từ FacebookTypes.ts — single source of truth cho Facebook types
+// Tái xuất từ FacebookTypes.ts - single source of truth cho Facebook types
 // Tất cả FB services import từ ./FacebookTypes, centralized consumers import từ src/models
 export type {
     FBAccountRecord, FBAccountStatus,

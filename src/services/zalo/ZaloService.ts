@@ -359,7 +359,7 @@ export default class ZaloService {
         try {
             const parsedMessage = JSON.parse(message);
             const msgId = String(parsedMessage.data?.msgId || parsedMessage.msgId || '0');
-            // cliMsgId MUST be a parseable integer — fallback to msgId if missing/empty
+            // cliMsgId MUST be a parseable integer - fallback to msgId if missing/empty
             const rawCliMsgId = parsedMessage.data?.cliMsgId || parsedMessage.cliMsgId;
             const cliMsgId = (rawCliMsgId && String(rawCliMsgId) !== '' && String(rawCliMsgId) !== 'undefined')
                 ? String(rawCliMsgId)
@@ -548,7 +548,7 @@ export default class ZaloService {
 
             Logger.log(`[ZaloService] undoMessage: msgId=${parsedMessage.data.msgId} threadId=${parsedMessage.threadId} type=${threadType}(raw=${parsedMessage.type})${uidFrom ? ` uidFrom=${uidFrom}` : ''}`);
 
-            // Trưởng/phó nhóm thu hồi tin nhắn của thành viên — cần gửi uidFrom
+            // Trưởng/phó nhóm thu hồi tin nhắn của thành viên - cần gửi uidFrom
             if (uidFrom && threadType === ThreadType.Group) {
                 return await this.adminRecallGroupMessage(undoOptions, parsedMessage.threadId, uidFrom);
             }

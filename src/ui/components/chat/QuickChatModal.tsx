@@ -1,5 +1,5 @@
 /**
- * QuickChatModal — Popup soạn tin nhắn nhanh
+ * QuickChatModal - Popup soạn tin nhắn nhanh
  * Luôn hiển thị trang chi tiết (không có trang danh sách riêng).
  * Tính năng: tìm người nhận inline, chọn tài khoản gửi (avatar+tên+SĐT), lịch sử chat, tin nhắn nhanh.
  */

@@ -10,7 +10,7 @@ const faqs: FaqItem[] = [
   {
     question: 'Deplao là gì?',
     answer:
-      'Deplao là phần mềm quản lý đa tài khoản Zalo trên máy tính. Bạn có thể đăng nhập và sử dụng nhiều tài khoản Zalo cùng lúc trên một giao diện duy nhất — chat, quản lý bạn bè, nhóm, CRM, chiến dịch marketing, tự động hoá workflow, tích hợp các công công cụ bán hàng và  AI Assistant.',
+      'Deplao là phần mềm quản lý đa tài khoản Zalo trên máy tính. Bạn có thể đăng nhập và sử dụng nhiều tài khoản Zalo cùng lúc trên một giao diện duy nhất - chat, quản lý bạn bè, nhóm, CRM, chiến dịch marketing, tự động hoá workflow, tích hợp các công công cụ bán hàng và  AI Assistant.',
   },
   {
     question: 'Dùng Deplao có mất phí không?',

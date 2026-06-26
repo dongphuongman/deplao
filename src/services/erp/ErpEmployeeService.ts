@@ -10,7 +10,7 @@ import type {
 import ErpNotificationService from './ErpNotificationService';
 
 /**
- * ErpEmployeeService — Phase 2 HRM.
+ * ErpEmployeeService - Phase 2 HRM.
  * Manages departments, positions, employee profiles, attendance & leave.
  */
 export default class ErpEmployeeService {

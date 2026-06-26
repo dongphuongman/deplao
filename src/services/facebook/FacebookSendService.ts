@@ -1,6 +1,6 @@
 /**
  * FacebookSendService.ts
- * Shared service gửi tin nhắn Facebook — dùng chung cho IPC handler VÀ workflow engine.
+ * Shared service gửi tin nhắn Facebook - dùng chung cho IPC handler VÀ workflow engine.
  *
  * Mục đích: tránh lặp logic giữa electron/ipc/facebookIpc.ts và WorkflowEngineService.ts.
  * Tất cả thao tác gửi + lưu DB + emit UI đều qua service này.
@@ -97,7 +97,7 @@ export class FacebookSendService {
     //   - Group → bridge MQTT (fallback REST)
     // KHÔNG tự route ở đây vì isUserThread() không phân biệt được user vs group.
     const isUserMessage = params.typeChat === 'user';
-    const SEND_TIMEOUT_MS = 30000; // 30s — enough for bridge E2EE + REST fallback
+    const SEND_TIMEOUT_MS = 30000; // 30s - enough for bridge E2EE + REST fallback
     let result: any;
     try {
       result = await Promise.race([

@@ -1,12 +1,12 @@
 /**
- * after-pack.js — runs after electron-builder packs the app.
+ * after-pack.js - runs after electron-builder packs the app.
  *
  * On Windows: uses rcedit to embed the correct icon and version metadata
  * into the main Electron executable, because electron-builder's built-in
  * icon injection requires signAndEditExecutable=true (which also triggers
  * code signing). This script provides the icon embedding without signing.
  *
- * On macOS/Linux: no action needed — icons are handled by the bundle format.
+ * On macOS/Linux: no action needed - icons are handled by the bundle format.
  */
 
 'use strict';
@@ -54,7 +54,7 @@ module.exports = async function afterPack(context) {
     console.log(`[after-pack] ✅ Icon & version metadata embedded into ${productName}.exe`);
   } catch (err) {
     console.error('[after-pack] ❌ rcedit failed:', err.message);
-    // Non-fatal — build continues without icon embed
+    // Non-fatal - build continues without icon embed
   }
 };
 

@@ -100,7 +100,7 @@ export class NhanhAdapter extends IntegrationAdapter {
       if (res?.code === 1) {
         const products = this.unwrapList(res?.data);
         const name = products[0]?.name || `Business ${this.getBusinessId()}`;
-        return { success: true, message: `Kết nối Nhanh.vn (API v3) thành công — cửa hàng: ${name}` };
+        return { success: true, message: `Kết nối Nhanh.vn (API v3) thành công - cửa hàng: ${name}` };
       }
       return { success: false, message: this.formatApiError(res?.messages, 'Kết nối Nhanh.vn thất bại') };
     } catch (e: any) {
@@ -148,7 +148,7 @@ export class NhanhAdapter extends IntegrationAdapter {
       case 'createOrder': {
         // params is the structured v3 payload from platformOrderAdapters.toNhanh
         // (nested: info, channel, shippingAddress, products, payment)
-        // appId & businessId are already in the query string via buildUrl — do NOT add to body.
+        // appId & businessId are already in the query string via buildUrl - do NOT add to body.
         // Accept both direct payload and wrapped { order } from workflow callers.
         const payload = params?.order && typeof params.order === 'object' ? params.order : params;
 

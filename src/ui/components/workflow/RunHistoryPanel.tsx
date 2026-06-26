@@ -6,7 +6,7 @@ interface Props {
   workflowId: string;
 }
 
-/** Format a value for display — truncate long strings, beautify JSON */
+/** Format a value for display - truncate long strings, beautify JSON */
 function formatValue(v: any, maxLen = 300): string {
   if (v === null || v === undefined) return '∅';
   if (typeof v === 'string') {

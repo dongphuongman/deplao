@@ -58,7 +58,7 @@ export default function AIAssistantPage() {
           <div className="flex-1">
             <h1 className="text-lg font-semibold text-white">🤖 Trợ lý AI</h1>
             <p className="text-xs text-gray-400 mt-0.5">
-              Tạo và quản lý trợ lý AI — tùy chỉnh prompt, nạp dữ liệu sản phẩm, file kiến thức
+              Tạo và quản lý trợ lý AI - tùy chỉnh prompt, nạp dữ liệu sản phẩm, file kiến thức
             </p>
           </div>
           <button onClick={() => setShowAccountPopup(true)}
@@ -115,7 +115,7 @@ export default function AIAssistantPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-400">{meta.label} — {a.model}</p>
+                      <p className="text-xs text-gray-400">{meta.label} - {a.model}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between">

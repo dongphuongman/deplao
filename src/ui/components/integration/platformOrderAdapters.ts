@@ -1,5 +1,5 @@
 /**
- * platformOrderAdapters — Chuẩn hoá dữ liệu đơn hàng cho từng nền tảng POS
+ * platformOrderAdapters - Chuẩn hoá dữ liệu đơn hàng cho từng nền tảng POS
  *
  * Mỗi nền tảng có cấu trúc API khác nhau:
  * - KiotViet:  orderDetails[], customer{id, name, contactNumber}, branchId
@@ -46,7 +46,7 @@ export interface GenericOrderData {
 
 // ─── KiotViet ───────────────────────────────────────────────────────────────
 // Docs: https://www.kiotviet.vn/huong-dan-su-dung-api/
-// POST /orders — body: { branchId, customerId?, orderDetails[], discount, totalPayment, ... }
+// POST /orders - body: { branchId, customerId?, orderDetails[], discount, totalPayment, ... }
 
 function toKiotViet(data: GenericOrderData) {
   const provinceName = data.customer.provinceName || getProvinceName(data.customer.provinceId);
@@ -102,7 +102,7 @@ function toKiotViet(data: GenericOrderData) {
 
 // ─── Haravan ────────────────────────────────────────────────────────────────
 // Docs: https://docs.haravan.com/blogs/api
-// POST /admin/orders.json — body: { order: { line_items[], customer{}, shipping_address{}, ... } }
+// POST /admin/orders.json - body: { order: { line_items[], customer{}, shipping_address{}, ... } }
 
 function toHaravan(data: GenericOrderData) {
   const provinceName = data.customer.provinceName || getProvinceName(data.customer.provinceId);
@@ -156,7 +156,7 @@ function toHaravan(data: GenericOrderData) {
 
 // ─── Sapo ───────────────────────────────────────────────────────────────────
 // Docs: https://developers.sapo.vn/
-// POST /admin/orders.json — body: { order: { line_items[], customer_id?, shipping_address{}, ... } }
+// POST /admin/orders.json - body: { order: { line_items[], customer_id?, shipping_address{}, ... } }
 
 function toSapo(data: GenericOrderData) {
   const provinceName = data.customer.provinceName || getProvinceName(data.customer.provinceId);
@@ -210,7 +210,7 @@ function toSapo(data: GenericOrderData) {
 
 // ─── Nhanh.vn ───────────────────────────────────────────────────────────────
 // Docs: https://open.nhanh.vn/
-// POST /v3.0/order/add?appId=&businessId= — body: nested v3 structure
+// POST /v3.0/order/add?appId=&businessId= - body: nested v3 structure
 // appId & businessId go in query string (handled by NhanhAdapter.buildUrl)
 
 function toNhanh(data: GenericOrderData) {
@@ -245,7 +245,7 @@ function toNhanh(data: GenericOrderData) {
       mobile: data.customer.phone || undefined,
       ...(data.customer.email ? { email: data.customer.email } : {}),
       address: fullAddress || undefined,
-      // cityId / districtId / wardId are Nhanh's own IDs — not available from our division data
+      // cityId / districtId / wardId are Nhanh's own IDs - not available from our division data
       // Pass address as free-text only (all fields optional except name + mobile)
       locationVersion: 'v1',
     },

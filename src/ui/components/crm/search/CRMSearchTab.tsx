@@ -9,7 +9,7 @@ import { UserProfilePopup } from '../../common/UserProfilePopup';
 import AddFriendModal from '../../common/AddFriendModal';
 
 /**
- * CRM Search Tab — tìm kiếm người dùng theo SĐT + gợi ý kết bạn.
+ * CRM Search Tab - tìm kiếm người dùng theo SĐT + gợi ý kết bạn.
  * Tách từ FriendList để dùng trong CRMPage.
  */
 export default function CRMSearchTab() {

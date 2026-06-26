@@ -45,7 +45,7 @@ export default class ErpCalendarService {
       params.push(filter.attendeeId);
     }
     sql += ' ORDER BY e.start_at ASC';
-    // Defensive LIMIT — range-bounded but cap to protect against huge ranges.
+    // Defensive LIMIT - range-bounded but cap to protect against huge ranges.
     const limit = Math.min(Math.max(1, filter.limit ?? 1000), 2000);
     const offset = Math.max(0, filter.offset ?? 0);
     sql += ' LIMIT ? OFFSET ?';
@@ -149,7 +149,7 @@ export default class ErpCalendarService {
             ErpNotificationService.getInstance().notify(
               empId, 'event_invited',
               `Mời tham dự: ${input.title}`,
-              `${new Date(input.start_at).toLocaleString()}${normalizedEndAt > input.start_at ? ` → ${new Date(normalizedEndAt).toLocaleString()}` : ''}${input.location ? ` — ${input.location}` : ''}`,
+              `${new Date(input.start_at).toLocaleString()}${normalizedEndAt > input.start_at ? ` → ${new Date(normalizedEndAt).toLocaleString()}` : ''}${input.location ? ` - ${input.location}` : ''}`,
               `erp://event/${id}`,
               { eventId: id, channels: ['toast', 'zalo'] }
             );

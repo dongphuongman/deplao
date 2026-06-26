@@ -3,7 +3,7 @@ import { useWorkspaceStore, WorkspaceInfo } from '@/store/workspaceStore';
 import ipc from '@/lib/ipc';
 import { useAppStore } from '@/store/appStore';
 
-/** Build normalized Boss URL — handles both IP:Port and full tunnel URL */
+/** Build normalized Boss URL - handles both IP:Port and full tunnel URL */
 function buildBossUrl(address: string, port: string): string {
     if (!address) return '';
     if (address.startsWith('http://') || address.startsWith('https://')) {
@@ -13,7 +13,7 @@ function buildBossUrl(address: string, port: string): string {
 }
 
 // ── WorkspaceSwitcher ─────────────────────────────────────────────────────────
-// Compact dropdown in TopBar — shows active workspace + quick switch.
+// Compact dropdown in TopBar - shows active workspace + quick switch.
 // Only visible when multi-workspace mode is active.
 
 export default function WorkspaceSwitcher() {
@@ -282,7 +282,7 @@ function CreateWorkspaceInline({ onCreated, onCancel }: { onCreated: () => void;
                     if (res.workspace?.id && loginRes.token) {
                         await ipc.workspace?.connectRemote(res.workspace.id, bossUrl, loginRes.token);
                     }
-                    showNotification(`Workspace "${name}" — đã kết nối!`, 'success');
+                    showNotification(`Workspace "${name}" - đã kết nối!`, 'success');
                     onCreated();
                 } else {
                     showNotification(res?.error || 'Tạo thất bại', 'error');

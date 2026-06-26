@@ -78,7 +78,7 @@ export interface ScanTabData {
   batchInput: string;       // Danh sách ID (mỗi dòng 1 ID)
   threadCount: number;      // Số luồng đồng thời (1/5/10/20)
   batchProgress: { done: number; total: number; current: string }; // Tiến độ batch
-  // Pagination params cho search (giống original — bsid/tsid từ chaining_params)
+  // Pagination params cho search (giống original - bsid/tsid từ chaining_params)
   _nextBsid?: string;
   _nextTsid?: string;
   // Debug / history

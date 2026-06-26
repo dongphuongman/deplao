@@ -6,7 +6,7 @@ const pkg = require('./package.json');
 const isProd = process.env.NODE_ENV === 'production' || process.env.BUILD_TARGET === 'production';
 
 /**
- * Load javascript-obfuscator plugin đồng bộ qua require() — chỉ production.
+ * Load javascript-obfuscator plugin đồng bộ qua require() - chỉ production.
  * Dùng require() để tránh async defineConfig (TypeScript không nhận async factory).
  */
 function loadObfuscatorPlugin(): any[] {
@@ -38,7 +38,7 @@ function loadObfuscatorPlugin(): any[] {
           renameGlobals: false,        // tắt: dễ break global vars
           renameProperties: false,     // tắt: dễ break React props
 
-          // ── Control flow (TẮT — bật làm chậm 1.5-3x) ──────────────────
+          // ── Control flow (TẮT - bật làm chậm 1.5-3x) ──────────────────
           controlFlowFlattening: false,
           deadCodeInjection: false,
           numbersToExpressions: false,

@@ -51,7 +51,7 @@ export default function PinnedBar({ zaloId, threadId, pins, onPinsChange, onScro
     <>
       <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 border-b border-gray-700 z-20 flex-shrink-0 min-h-[44px]">
 
-        {/* Left accent bar — blue for msg, yellow for note */}
+        {/* Left accent bar - blue for msg, yellow for note */}
         <div className={`w-0.5 self-stretch rounded-full flex-shrink-0 ${effectiveTab === 'note' ? 'bg-yellow-400' : 'bg-blue-500'}`} />
 
         {/* Icon */}
@@ -93,7 +93,7 @@ export default function PinnedBar({ zaloId, threadId, pins, onPinsChange, onScro
 
         {/* Right side actions */}
         <div className="flex items-center gap-1 flex-shrink-0">
-          {/* Tab switcher — only when both types exist */}
+          {/* Tab switcher - only when both types exist */}
           {hasMsg && hasNote && (
             <div className="flex rounded-lg overflow-hidden border border-gray-600">
               <button
@@ -129,7 +129,7 @@ export default function PinnedBar({ zaloId, threadId, pins, onPinsChange, onScro
             </button>
           )}
 
-          {/* Xem tất cả ghi chú — opens combined list */}
+          {/* Xem tất cả ghi chú - opens combined list */}
           {effectiveTab === 'note' && (
             <button
               onClick={() => setShowList(true)}
@@ -152,7 +152,7 @@ export default function PinnedBar({ zaloId, threadId, pins, onPinsChange, onScro
             />
           )}
 
-          {/* Tooltip ? — giải thích giới hạn ghim */}
+          {/* Tooltip ? - giải thích giới hạn ghim */}
           {effectiveTab === 'msg' && (
             <div className="relative group">
               <span className="w-4 h-4 rounded-full border border-gray-600 text-gray-500 hover:border-blue-400 hover:text-blue-400 flex items-center justify-center text-[11px] font-bold cursor-default select-none transition-colors">
@@ -245,7 +245,7 @@ function PinnedListModal({ pins, notes, zaloId, threadId, onClose, onScrollToMsg
               className="flex items-center gap-3 px-4 py-3 border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors cursor-pointer"
               onClick={() => { onNoteClick?.(note); onClose(); }}
             >
-              {/* Note icon — orange */}
+              {/* Note icon - orange */}
               <div className="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-orange-500/15 rounded-xl">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
@@ -274,7 +274,7 @@ function PinnedListModal({ pins, notes, zaloId, threadId, onClose, onScrollToMsg
           {pins.map((pin, idx) => (
             <div key={pin.msg_id}
               className="flex items-center gap-3 px-4 py-3 border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
-              {/* Message icon — blue */}
+              {/* Message icon - blue */}
               <div className="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-blue-500/15 rounded-xl overflow-hidden">
                 {pin.preview_image ? (
                   <img
@@ -307,7 +307,7 @@ function PinnedListModal({ pins, notes, zaloId, threadId, onClose, onScrollToMsg
           ))}
         </div>
 
-        {/* Footer — Xem tất cả */}
+        {/* Footer - Xem tất cả */}
         <div className="border-t border-gray-700 flex-shrink-0">
           <button
             onClick={() => {
@@ -554,7 +554,7 @@ export function usePinnedNotes(zaloId: string | null, threadId: string | null) {
   return { pinnedNotes, setPinnedNotes };
 }
 
-// ─── OPTIMIZED: Combined hook — load pins + notes in ONE IPC call ─────────────
+// ─── OPTIMIZED: Combined hook - load pins + notes in ONE IPC call ─────────────
 /** Helper: parse raw pins response thành {pins, notes} */
 function parsePinsResponse(res: any): { pins: PinnedMsg[]; notes: PinnedNote[] } {
   if (!res?.success) return { pins: [], notes: [] };
@@ -580,7 +580,7 @@ function parsePinsResponse(res: any): { pins: PinnedMsg[]; notes: PinnedNote[] }
 }
 
 /**
- * usePinnedData — Combined hook thay thế usePinnedMessages + usePinnedNotes.
+ * usePinnedData - Combined hook thay thế usePinnedMessages + usePinnedNotes.
  * Chỉ gọi 1 IPC getPinnedMessages duy nhất, trả về cả pins và notes.
  * Trả thêm `ready` flag để ChatWindow biết khi nào data đã load xong.
  */
@@ -710,7 +710,7 @@ export function buildPinFromMsg(msg: any, senderName: string): {
       const question = params.question || p.title || '';
       previewText = question ? `📊 ${question}` : '📊 Bình chọn';
     } catch { previewText = '📊 Bình chọn'; }
-  } else if (t === 'photo' || t === 'image') {    // FIX #2: local path trước, remote sau — KHÔNG lưu content JSON vào previewImage
+  } else if (t === 'photo' || t === 'image') {    // FIX #2: local path trước, remote sau - KHÔNG lưu content JSON vào previewImage
     previewImage = getLocalImg() || getRemoteImg();
     previewText = '';
   } else if (t.includes('video')) {

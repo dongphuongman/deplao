@@ -434,7 +434,7 @@ export function QuickMessageManagerPanel({ onClose, onSelect }: { onClose: () =>
     requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
   }, []);
 
-  // Close on outside click — only when clicking truly outside both panel AND dialog
+  // Close on outside click - only when clicking truly outside both panel AND dialog
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -587,7 +587,7 @@ export function QuickMessageManagerPanel({ onClose, onSelect }: { onClose: () =>
 
   return (
     <>
-      {/* Floating popup — absolute, anchored to the relative wrapper in toolbar */}
+      {/* Floating popup - absolute, anchored to the relative wrapper in toolbar */}
       <div
         ref={panelRef}
         data-qm-panel
@@ -606,7 +606,7 @@ export function QuickMessageManagerPanel({ onClose, onSelect }: { onClose: () =>
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 flex-shrink-0">
           <span className="text-sm font-semibold text-white">Tin nhắn nhanh</span>
           <div className="flex items-center gap-2">
-            {/* Mode toggle — hide Zalo tab for Facebook channel */}
+            {/* Mode toggle - hide Zalo tab for Facebook channel */}
             {channelCap.supportsQuickMessages && (
             <div className="flex items-center gap-0.5 p-0.5 bg-gray-700 rounded-lg">
               <button
@@ -639,7 +639,7 @@ export function QuickMessageManagerPanel({ onClose, onSelect }: { onClose: () =>
         {/* Toolbar */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-700/60 flex-shrink-0 bg-gray-800/80">
           <div className="flex items-center gap-2">
-            {/* Sync button — only on Zalo tab, not for Facebook channel */}
+            {/* Sync button - only on Zalo tab, not for Facebook channel */}
             {mode === 'zalo' && channelCap.supportsQuickMessages && (
               <SyncDropdown onSync={handleSync} syncing={syncing} anchorRef={syncBtnRef} />
             )}
@@ -751,10 +751,10 @@ export function QuickMessageManagerPanel({ onClose, onSelect }: { onClose: () =>
         {/* Mode hint footer */}
         <div className={`px-4 py-2.5 border-t border-gray-700/60 flex-shrink-0 text-xs ${mode === 'local' ? 'text-green-400/70' : 'text-yellow-400/70'}`}>
           {!channelCap.supportsQuickMessages
-            ? '✓ Local — tin nhắn nhanh cho kênh Facebook'
+            ? '✓ Local - tin nhắn nhanh cho kênh Facebook'
             : mode === 'local'
-            ? '✓ Local — không bị Zalo chặn số lượng tin nhắn nhanh'
-            : '⚠ Zalo API — có thể bị giới hạn nếu bạn không dùng gói trả phí của Zalo'}
+            ? '✓ Local - không bị Zalo chặn số lượng tin nhắn nhanh'
+            : '⚠ Zalo API - có thể bị giới hạn nếu bạn không dùng gói trả phí của Zalo'}
         </div>
       </div>
 

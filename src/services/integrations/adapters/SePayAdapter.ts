@@ -26,7 +26,7 @@ export class SePayAdapter extends IntegrationAdapter {
       });
       if (res.data?.status === 200) {
         const name = res.data?.data?.fullname || 'SePay';
-        return { success: true, message: `Kết nối SePay thành công — ${name}` };
+        return { success: true, message: `Kết nối SePay thành công - ${name}` };
       }
       return { success: false, message: res.data?.messages || 'Không thể kết nối SePay' };
     } catch (e: any) {

@@ -16,7 +16,7 @@ export function useVisibleAccounts(): AccountInfo[] {
     const assignedAccounts = useEmployeeStore(s => s.assignedAccounts);
 
     return useMemo(() => {
-        // Boss simulation mode — filter to previewed employee's assigned accounts
+        // Boss simulation mode - filter to previewed employee's assigned accounts
         if (mode !== 'employee' && previewEmployeeId) {
             const emp = employees.find((e: any) => e.employee_id === previewEmployeeId);
             const assigned = emp?.assigned_accounts as string[] | undefined;
@@ -26,13 +26,13 @@ export function useVisibleAccounts(): AccountInfo[] {
             return []; // employee has no accounts assigned
         }
 
-        // Real employee mode — always restrict to assigned accounts only
+        // Real employee mode - always restrict to assigned accounts only
         if (mode === 'employee') {
             if (assignedAccounts.length === 0) return [];
             return accounts.filter(a => assignedAccounts.includes(a.zalo_id));
         }
 
-        // Standalone / boss (no simulation) — show all
+        // Standalone / boss (no simulation) - show all
         return accounts;
     }, [accounts, mode, previewEmployeeId, employees, assignedAccounts]);
 }

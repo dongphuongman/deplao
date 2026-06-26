@@ -26,7 +26,7 @@ export function createProxyAgent(proxy: ProxyConfig | null | undefined): any {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { ProxyAgent } = require('proxy-agent');
         Logger.log(`[ProxyHelper] Creating proxy agent for ${proxy.host}:${proxy.port} (${proxy.name}) type=${proxy.type}`);
-        // getProxyForUrl callback — proxy-agent auto-detects HTTP/HTTPS/SOCKS from URL protocol
+        // getProxyForUrl callback - proxy-agent auto-detects HTTP/HTTPS/SOCKS from URL protocol
         return new ProxyAgent({
             getProxyForUrl: () => proxyUrl
         });

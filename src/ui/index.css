@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── CSS Variables — dark theme defaults ───────────────────────────────────── */
+/* ── CSS Variables - dark theme defaults ───────────────────────────────────── */
 :root {
   --color-sidebar: #1a1a2e;
   --color-sidebar-hover: #16213e;
@@ -157,7 +157,7 @@
     display: none !important;
   }
 
-  /* Inline sticker suggestion bar — ultra-thin scrollbar */
+  /* Inline sticker suggestion bar - ultra-thin scrollbar */
   .inline-sticker-bar {
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
@@ -256,7 +256,7 @@
   }
 }
 
-/* ── input[type="date/datetime-local"] — light theme fix ────────────────────
+/* ── input[type="date/datetime-local"] - light theme fix ────────────────────
    Mặc định [color-scheme:dark] sẽ hiển thị picker tối kể cả ở light theme.
    Override để dùng light color-scheme. Format dd/mm/yyyy do Electron lang=vi-VN. */
 html[data-theme="light"] input[type="date"],
@@ -288,7 +288,7 @@ html[data-theme="light"] input[type="datetime-local"] {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LIGHT THEME OVERRIDES — applied when <html data-theme="light">
+   LIGHT THEME OVERRIDES - applied when <html data-theme="light">
    ═══════════════════════════════════════════════════════════════════════════ */
 
 html[data-theme="light"] {
@@ -322,7 +322,7 @@ html[data-theme="light"] .bg-gray-700  { background-color: #e3dfd8; }
 html[data-theme="light"] .bg-gray-600  { background-color: #d6d1c8; }
 html[data-theme="light"] .bg-gray-500  { background-color: #b5b0a8; }
 
-/* hover variants — chỉ đậm hơn base một chút, không quá nặng */
+/* hover variants - chỉ đậm hơn base một chút, không quá nặng */
 html[data-theme="light"] .hover\:bg-gray-900:hover  { background-color: #eeebe6; }
 html[data-theme="light"] .hover\:bg-gray-800:hover  { background-color: #e8e4de; }
 html[data-theme="light"] .hover\:bg-gray-700:hover  { background-color: #e3dfd8; }
@@ -523,7 +523,7 @@ html[data-theme="light"] .ai-suggestion-close:hover {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TEXT COLOR OVERRIDES — light theme
+   TEXT COLOR OVERRIDES - light theme
    Vấn đề: text-white / màu nhạt (green-400, blue-400, yellow-300...) bị
    chìm vào nền kem. Giải pháp: đổi sang màu tối tương đương, nhưng
    KHÔI PHỤC màu trắng khi nằm trên nền có màu (button, badge...).
@@ -587,7 +587,7 @@ html[data-theme="light"] .text-blue-300  { color: #3b82f6; }
 html[data-theme="light"] .hover\:text-blue-300:hover { color: #1d4ed8; }
 html[data-theme="light"] .hover\:text-blue-400:hover { color: #1d4ed8; }
 
-/* Green accent — contrast vs #f7f6f3:
+/* Green accent - contrast vs #f7f6f3:
    #22c55e (green-500) ≈ 3.3:1 ❌  →  #15803d (green-700) ≈ 9.3:1 ✅ */
 html[data-theme="light"] .text-green-500 { color: #15803d; }
 html[data-theme="light"] .text-green-400 { color: #15803d; }
@@ -602,7 +602,7 @@ html[data-theme="light"] .text-red-300   { color: #b91c1c; }
 html[data-theme="light"] .hover\:text-red-400:hover  { color: #991b1b; }
 html[data-theme="light"] .hover\:text-red-300:hover  { color: #991b1b; }
 
-/* Yellow/Amber — contrast vs #f7f6f3:
+/* Yellow/Amber - contrast vs #f7f6f3:
    #ca8a04 (yellow-600) ≈ 4.1:1 ❌  →  #92400e (amber-800) ≈ 9.1:1 ✅
    #a16207 (yellow-700) ≈ 6.9:1 ✅  →  giữ hoặc tối thêm             */
 html[data-theme="light"] .text-yellow-600 { color: #92400e; }
@@ -610,7 +610,7 @@ html[data-theme="light"] .text-yellow-500 { color: #92400e; }
 html[data-theme="light"] .text-yellow-400 { color: #78350f; }
 html[data-theme="light"] .text-yellow-300 { color: #78350f; }
 html[data-theme="light"] .text-yellow-200 { color: #78350f; }
-/* opacity variants — class riêng, phải override riêng */
+/* opacity variants - class riêng, phải override riêng */
 html[data-theme="light"] .text-yellow-600\/90,
 html[data-theme="light"] .text-yellow-600\/80,
 html[data-theme="light"] .text-yellow-600\/70,
@@ -633,7 +633,7 @@ html[data-theme="light"] .hover\:text-yellow-500:hover { color: #78350f; }
 html[data-theme="light"] .hover\:text-yellow-400:hover { color: #78350f; }
 html[data-theme="light"] .hover\:text-yellow-300:hover { color: #78350f; }
 
-/* amber text — cùng nhóm với yellow */
+/* amber text - cùng nhóm với yellow */
 html[data-theme="light"] .text-amber-600  { color: #92400e; }
 html[data-theme="light"] .text-amber-500  { color: #92400e; }
 html[data-theme="light"] .text-amber-400  { color: #92400e; }
@@ -653,7 +653,7 @@ html[data-theme="light"] .text-amber-500\/60 { color: #92400e; }
 html[data-theme="light"] .hover\:text-amber-400:hover { color: #78350f; }
 html[data-theme="light"] .hover\:text-amber-500:hover { color: #78350f; }
 
-/* bg-yellow opacity variants — quá nhạt trên nền kem, đậm lên */
+/* bg-yellow opacity variants - quá nhạt trên nền kem, đậm lên */
 html[data-theme="light"] .bg-yellow-500\/10  { background-color: #fef3c7; }
 html[data-theme="light"] .bg-yellow-500\/20  { background-color: #fde68a; }
 html[data-theme="light"] .bg-yellow-500\/30  { background-color: #fcd34d; }
@@ -703,7 +703,7 @@ html[data-theme="light"] .text-indigo-300 { color: #6366f1; }
 html[data-theme="light"] .bg-green-900\/50 { background-color: rgba(220,252,231,0.8); }
 html[data-theme="light"] .bg-green-900\/30 { background-color: rgba(220,252,231,0.5); }
 
-/* blue-900 / 950 — dark navy → light blue-100 base ── */
+/* blue-900 / 950 - dark navy → light blue-100 base ── */
 html[data-theme="light"] .bg-blue-950\/50 { background-color: rgba(219,234,254,0.55); }
 html[data-theme="light"] .bg-blue-950\/40 { background-color: rgba(219,234,254,0.45); }
 html[data-theme="light"] .bg-blue-900\/50 { background-color: rgba(219,234,254,0.80); }
@@ -712,12 +712,12 @@ html[data-theme="light"] .bg-blue-900\/30 { background-color: rgba(219,234,254,0
 html[data-theme="light"] .bg-blue-900\/20 { background-color: rgba(219,234,254,0.35); }
 html[data-theme="light"] .bg-blue-900\/10 { background-color: rgba(219,234,254,0.20); }
 
-/* blue-700 — dark blue → blue-200 base ── */
+/* blue-700 - dark blue → blue-200 base ── */
 html[data-theme="light"] .bg-blue-700\/60 { background-color: rgba(191,219,254,0.70); }
 html[data-theme="light"] .bg-blue-700\/50 { background-color: rgba(191,219,254,0.60); }
 html[data-theme="light"] .bg-blue-700\/40 { background-color: rgba(191,219,254,0.50); }
 
-/* blue-600 — → blue-100 base ── */
+/* blue-600 - → blue-100 base ── */
 html[data-theme="light"] .bg-blue-600\/70 { background-color: rgba(219,234,254,0.75); }
 html[data-theme="light"] .bg-blue-600\/40 { background-color: rgba(219,234,254,0.55); }
 html[data-theme="light"] .bg-blue-600\/30 { background-color: rgba(219,234,254,0.50); }
@@ -804,10 +804,10 @@ html[data-theme="light"] .border-yellow-700 { border-color: #a16207; }
 html[data-theme="light"] .border-blue-700  { border-color: #1d4ed8; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   HOVER / ACTIVE / FOCUS / GROUP-HOVER OVERRIDES — light theme
+   HOVER / ACTIVE / FOCUS / GROUP-HOVER OVERRIDES - light theme
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Hover backgrounds — opacity variants còn thiếu ─────────────────────── */
+/* ── Hover backgrounds - opacity variants còn thiếu ─────────────────────── */
 html[data-theme="light"] .hover\:bg-gray-500:hover        { background-color: #ddd8d0; }
 html[data-theme="light"] .hover\:bg-gray-750:hover        { background-color: #ddd8d0; }
 html[data-theme="light"] .hover\:bg-gray-900\/10:hover    { background-color: rgba(238,235,230,0.25); }
@@ -822,7 +822,7 @@ html[data-theme="light"] .hover\:bg-gray-800\/60:hover    { background-color: rg
 html[data-theme="light"] .hover\:bg-gray-800\/50:hover    { background-color: rgba(232,228,222,0.32); }
 html[data-theme="light"] .hover\:bg-gray-800\/40:hover    { background-color: rgba(232,228,222,0.28); }
 html[data-theme="light"] .hover\:bg-gray-800\/30:hover    { background-color: rgba(232,228,222,0.22); }
-/* hover:bg-gray-700/* — giữ rất nhẹ */
+/* hover:bg-gray-700/* - giữ rất nhẹ */
 html[data-theme="light"] .hover\:bg-gray-700\/80:hover    { background-color: rgba(227,223,216,0.38); }
 html[data-theme="light"] .hover\:bg-gray-700\/70:hover    { background-color: rgba(227,223,216,0.35); }
 html[data-theme="light"] .hover\:bg-gray-700\/60:hover    { background-color: rgba(227,223,216,0.32); }
@@ -835,7 +835,7 @@ html[data-theme="light"] .hover\:border-gray-500:hover    { border-color: #8a858
 html[data-theme="light"] .hover\:border-red-400\/50:hover { border-color: rgba(248,113,113,0.48); }
 html[data-theme="light"] .hover\:border-blue-500\/50:hover { border-color: rgba(59,130,246,0.4); }
 
-/* ── bg-sky-* — sky-700 quá đậm trong light mode ────────────────────────── */
+/* ── bg-sky-* - sky-700 quá đậm trong light mode ────────────────────────── */
 html[data-theme="light"] .bg-sky-900    { background-color: #e0f2fe; }
 html[data-theme="light"] .bg-sky-800    { background-color: #e0f2fe; }
 html[data-theme="light"] .bg-sky-700    { background-color: #bae6fd; }
@@ -877,7 +877,7 @@ html[data-theme="light"] .group-hover\:text-gray-200 { color: #1a1917; }
 html[data-theme="light"] .group-hover\:text-gray-300 { color: #37352f; }
 html[data-theme="light"] .group-hover\:text-gray-400 { color: #57534e; }
 
-/* ── bg-black opacity — quá tối trong light, giảm mạnh ─────────────────── */
+/* ── bg-black opacity - quá tối trong light, giảm mạnh ─────────────────── */
 html[data-theme="light"] .bg-black\/20  { background-color: rgba(0,0,0,0.06); }
 html[data-theme="light"] .bg-black\/40  { background-color: rgba(0,0,0,0.08); }
 html[data-theme="light"] .bg-black\/50  { background-color: rgba(0,0,0,0.10); }
@@ -892,7 +892,7 @@ html[data-theme="light"] .hover\:bg-black\/20:hover  { background-color: rgba(0,
 html[data-theme="light"] .hover\:bg-black\/70:hover  { background-color: rgba(0,0,0,0.12); }
 html[data-theme="light"] .hover\:bg-black\/80:hover  { background-color: rgba(0,0,0,0.15); }
 
-/* ── bg-white opacity — dùng trên nền đậm, trong light chuyển sang kem nhẹ  */
+/* ── bg-white opacity - dùng trên nền đậm, trong light chuyển sang kem nhẹ  */
 html[data-theme="light"] .bg-white\/5   { background-color: rgba(240,237,232,0.30); }
 html[data-theme="light"] .bg-white\/10  { background-color: rgba(240,237,232,0.45); }
 html[data-theme="light"] .bg-white\/20  { background-color: rgba(240,237,232,0.55); }

@@ -1,6 +1,6 @@
 /**
  * Re-export of the canonical ERP permission matrix from
- * `src/services/erp/permissions.ts` — kept here for backwards-compatible
+ * `src/services/erp/permissions.ts` - kept here for backwards-compatible
  * UI imports via `@/models/erp`.
  */
 export {

@@ -57,7 +57,7 @@ export const useErpCalendarStore = create<ErpCalendarState>((set, get) => ({
       set(s => ({ events: reconcileEventForRange(s.events, event, s.currentRange) }));
       return;
     }
-    // Reload single event — simple re-fetch pattern
+    // Reload single event - simple re-fetch pattern
     const { currentRange } = get();
     if (currentRange) get().loadEvents(currentRange.from, currentRange.to);
   },

@@ -1,5 +1,5 @@
 /**
- * TrackingService — Gửi dữ liệu tracking page lên API deplaoapp.com.
+ * TrackingService - Gửi dữ liệu tracking page lên API deplaoapp.com.
  *
  * - Chỉ hoạt động khi build production (GitHub Actions / NODE_ENV=production).
  * - Cache local: mỗi ngày chỉ push 1 lần.
@@ -7,7 +7,7 @@
  * - Không gửi các field nhạy cảm khác (name, phone,...).
  *
  * API: POST https://deplaoapp.com/api/tracking/page
- * Rate limit: 10 req/giờ/IP — trả về 429 nếu vượt quá.
+ * Rate limit: 10 req/giờ/IP - trả về 429 nếu vượt quá.
  */
 
 import { IS_DEV_BUILD } from '../../configs/BuildConfig';
@@ -70,7 +70,7 @@ class TrackingService {
   public start(): void {
     // ── Guard: chỉ chạy trong production ────────────────────────────────
     if (IS_DEV_BUILD) {
-      Logger.log('[TrackingService] 🔇 Bỏ qua — đang chạy ở môi trường development');
+      Logger.log('[TrackingService] 🔇 Bỏ qua - đang chạy ở môi trường development');
       return;
     }
 
@@ -85,7 +85,7 @@ class TrackingService {
       this.cachePath = path.join(app.getPath('userData'), CACHE_FILENAME);
       this.loadCache();
 
-      Logger.log(`[TrackingService] ✅ Khởi động — machineId=${this.cache?.machineId?.slice(0, 8)}... lastTracked=${this.cache?.lastTrackedDate || 'never'}`);
+      Logger.log(`[TrackingService] ✅ Khởi động - machineId=${this.cache?.machineId?.slice(0, 8)}... lastTracked=${this.cache?.lastTrackedDate || 'never'}`);
 
       // Chạy lần đầu sau 10s (đợi DB sẵn sàng)
       setTimeout(() => this.tick(), 10_000);
@@ -133,7 +133,7 @@ class TrackingService {
       Logger.log('[TrackingService] ✅ Tracking hôm nay đã gửi thành công');
     } catch (err: any) {
       Logger.warn(`[TrackingService] ⚠️ Gửi tracking thất bại: ${err.message}`);
-      // Không crash app — thử lại vào lần tick sau (60 phút)
+      // Không crash app - thử lại vào lần tick sau (60 phút)
     }
   }
 
@@ -164,7 +164,7 @@ class TrackingService {
 
     // ── Không có account nào ───────────────────────────────────────────
     if (zaloAccounts.length === 0 && fbAccounts.length === 0) {
-      Logger.log('[TrackingService] ℹ️ Không có account nào — gửi machineId không');
+      Logger.log('[TrackingService] ℹ️ Không có account nào - gửi machineId không');
       const payload: TrackingPayload[] = [
         {
           pageId: `machine:${machineId.slice(0, 12)}`,
@@ -233,7 +233,7 @@ class TrackingService {
         Logger.log(`[TrackingService] 📂 Đã load cache: lastTrackedDate=${this.cache.lastTrackedDate}`);
       }
     } catch (err: any) {
-      Logger.warn(`[TrackingService] ⚠️ Lỗi đọc cache: ${err.message} — sẽ tạo mới`);
+      Logger.warn(`[TrackingService] ⚠️ Lỗi đọc cache: ${err.message} - sẽ tạo mới`);
     }
   }
 

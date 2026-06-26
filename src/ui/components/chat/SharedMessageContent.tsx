@@ -19,6 +19,7 @@ interface SharedMessageContentProps {
   isSticker?: boolean;
   isRtf?: boolean;
   isBankCard?: boolean;
+  isLocation?: boolean;
   renderPoll?: () => React.ReactNode;
   renderGroupMedia?: () => React.ReactNode;
   renderVideo?: () => React.ReactNode;
@@ -55,6 +56,7 @@ export default function SharedMessageContent({
   isSticker,
   isRtf,
   isBankCard,
+  isLocation,
   renderPoll,
   renderGroupMedia,
   renderVideo,
@@ -79,6 +81,18 @@ export default function SharedMessageContent({
   if (isEcard && renderEcard) return <>{renderEcard()}</>;
   if (isSticker && renderSticker) return <>{renderSticker()}</>;
   if (isRtf && renderRtf) return <>{renderRtf()}</>;
+  if (isLocation) {
+    return (
+      <MessageBubble
+        msg={msg}
+        isSelf={isSelf}
+        senderName={senderName}
+        onManage={onManage}
+        onView={onView}
+        onOpenProfile={onOpenProfile}
+      />
+    );
+  }
   if (renderText) return <>{renderText()}</>;
 
   return (

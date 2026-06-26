@@ -19,6 +19,10 @@ interface CampaignFormData {
   campaign_type: CampaignType;
   mixed_config: string;
   delay_seconds: number;
+  delay_min_seconds?: number;
+  delay_max_seconds?: number;
+  per_contact_delay_min_seconds?: number;
+  per_contact_delay_max_seconds?: number;
   daily_send_limit: number;
   daily_start_time: string;
 }
@@ -31,7 +35,7 @@ interface CampaignCreateModalProps {
   onSave: (data: CampaignFormData) => Promise<void>;
 }
 
-// Preview substitution — replaces variables with dummy values
+// Preview substitution - replaces variables with dummy values
 function substitutePreview(text: string): string {
   return (text || '')
     .replace(/\{name\}/g, 'Nguyễn Văn A')
@@ -65,11 +69,31 @@ function parseMixedConfig(raw?: string): MixedConfig {
 
 const TEMPLATE_VARS = ['{name}', '{userId}'];
 
-const DELAY_OPTIONS = [
-  { label: '5s',    value: 5   }, { label: '15s',   value: 15  },
-  { label: '30s',   value: 30  }, { label: '1 phút', value: 60  },
-  { label: '2 phút',value: 120 }, { label: '3 phút', value: 180 },
-  { label: '5 phút',value: 300 }, { label: '15 phút',value: 900 },
+/** Format delay range for display */
+function fmtDelayRange(min: number, max: number): string {
+  const fmt = (s: number) => {
+    if (s < 60) return `${s}s`;
+    if (s < 3600) return `${Math.round(s / 60)}m`;
+    return `${Math.round(s / 3600)}h`;
+  };
+  return `${fmt(min)}-${fmt(max)}`;
+}
+
+/** Preset delay ranges giữa các liên hệ */
+const DELAY_PRESETS = [
+  { label: '2-3m',   min: 120, max: 180 },
+  { label: '3-5m',   min: 180, max: 300 },
+  { label: '5-10m',  min: 300, max: 600 },
+  { label: '10-15m', min: 600, max: 900 },
+];
+
+/** Preset delay ranges giữa các tin nhắn */
+const PC_DELAY_PRESETS = [
+  { label: 'Không',   min: 0,   max: 0   },
+  { label: '5-15s',   min: 5,   max: 15  },
+  { label: '15-30s',  min: 15,  max: 30  },
+  { label: '30-60s',  min: 30,  max: 60  },
+  { label: '1-2m',    min: 60,  max: 120 },
 ];
 
 const TYPE_OPTIONS: { value: CampaignType; icon: string; label: string }[] = [
@@ -243,7 +267,7 @@ function GroupPicker({
   return (
     <div className="flex flex-col h-full min-h-0">
       <p className="text-[11px] text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 rounded-lg px-2.5 py-1.5 mb-2 flex-shrink-0">
-        ⚠️ Chỉ mời được bạn bè — Không mời được người lạ
+        ⚠️ Chỉ mời được bạn bè - Không mời được người lạ
       </p>
       {!zaloId ? (
         <p className="text-xs text-gray-500 py-4 text-center">Mở modal từ tab Chiến dịch để xem danh sách nhóm</p>
@@ -357,7 +381,7 @@ function BlockEditor({
         ))}
       </div>
 
-      {/* Textarea — takes most space */}
+      {/* Textarea - takes most space */}
       <textarea
         ref={taRef}
         value={block.text}
@@ -405,12 +429,40 @@ export default function CampaignCreateModal({
 }: CampaignCreateModalProps) {
   const [name,          setName]         = useState(initialData?.name ?? '');
   const [type,          setType]         = useState<CampaignType>(initialData?.campaign_type ?? 'message');
-  const [delay,         setDelay]        = useState(initialData?.delay_seconds ?? 120);
   const [saving,        setSaving]       = useState(false);
   const [friendReqMsg,  setFriendReqMsg] = useState(initialData?.friend_request_message ?? '');
   const [activeBlock,   setActiveBlock]  = useState(0);
   const [dailyLimit,    setDailyLimit]   = useState(initialData?.daily_send_limit ?? 0);
   const [dailyStartTime, setDailyStartTime] = useState(initialData?.daily_start_time ?? '08:00');
+
+  // ── Delay range (min/max thay thế fixed + jitter) ────────────────────────
+  const getInitMinMax = (): [number, number] => {
+    const d = initialData;
+    if (!d) return [110, 130];
+    const dm = (d as any).delay_min_seconds;
+    const dx = (d as any).delay_max_seconds;
+    if (dm != null && dx != null) return [dm, dx];
+    const fallback = d.delay_seconds || 120;
+    return [Math.max(30, fallback - 10), fallback + 10];
+  };
+  const initRange = getInitMinMax();
+  const [delayMin, setDelayMin] = useState(initRange[0]);
+  const [delayMax, setDelayMax] = useState(initRange[1]);
+  const [customDelayMode, setCustomDelayMode] = useState(false);
+
+  // ── Per-contact delay range (delay giữa các tin trong 1 liên hệ) ────────
+  const getInitPc = (): [number, number] => {
+    const d = initialData;
+    if (!d) return [0, 0];
+    return [
+      (d as any).per_contact_delay_min_seconds ?? 0,
+      (d as any).per_contact_delay_max_seconds ?? 0,
+    ];
+  };
+  const initPcRange = getInitPc();
+  const [pcDelayMin, setPcDelayMin] = useState(initPcRange[0]);
+  const [pcDelayMax, setPcDelayMax] = useState(initPcRange[1]);
+  const [customPcDelayMode, setCustomPcDelayMode] = useState(false);
   const friendReqRef = useRef<HTMLTextAreaElement>(null);
 
   const [contentConfig, setContentConfig] = useState<ContentConfig>(() =>
@@ -481,13 +533,18 @@ export default function CampaignCreateModal({
   const handleSave = async () => {
     if (!isValid()) return;
     setSaving(true);
+    const finalDelaySec = Math.round((delayMin + delayMax) / 2);
     await onSave({
       name: name.trim(),
       template_message: hasMsg ? JSON.stringify(contentConfig) : '',
       friend_request_message: friendReqMsg.trim(),
       campaign_type: type,
       mixed_config: buildMixedConfig(),
-      delay_seconds: delay,
+      delay_seconds: finalDelaySec,
+      delay_min_seconds: delayMin,
+      delay_max_seconds: delayMax,
+      per_contact_delay_min_seconds: pcDelayMin,
+      per_contact_delay_max_seconds: pcDelayMax,
       daily_send_limit: dailyLimit,
       daily_start_time: dailyStartTime,
     });
@@ -506,6 +563,11 @@ export default function CampaignCreateModal({
 
   // Current block reference
   const currentBlock = contentConfig.blocks[activeBlock] ?? contentConfig.blocks[0];
+
+  // Whether the campaign can send multiple items per contact (show per-contact delay section)
+  const hasMultiSend = (hasMsg && contentConfig.mode === 'all' && contentConfig.blocks.length > 1)
+    || (type === 'mixed' && mixedActions.length > 1)
+    || (hasMsg && hasFR);
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
@@ -595,23 +657,95 @@ export default function CampaignCreateModal({
               </div>
             )}
 
-            {/* Delay */}
+            {/* ⏱ Delay giữa các liên hệ */}
             <div>
-              <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">⏱ Delay</label>
+              <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">⏱ Delay giữa các liên hệ</label>
               <div className="grid grid-cols-2 gap-1">
-                {DELAY_OPTIONS.map(opt => (
-                  <button key={opt.value} type="button" onClick={() => setDelay(opt.value)}
-                    className={`py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
-                      delay === opt.value
-                        ? 'border-blue-500 bg-blue-500/15 text-blue-300'
-                        : 'border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300'
-                    }`}>
-                    {opt.label}
-                  </button>
-                ))}
+                {DELAY_PRESETS.map(p => {
+                  const active = !customDelayMode && delayMin === p.min && delayMax === p.max;
+                  return (
+                    <button key={p.label} type="button" onClick={() => { setDelayMin(p.min); setDelayMax(p.max); setCustomDelayMode(false); }}
+                      className={`py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
+                        active ? 'border-blue-500 bg-blue-500/15 text-blue-300'
+                          : 'border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300'
+                      }`}>
+                      {p.label}
+                    </button>
+                  );
+                })}
               </div>
-              <p className="text-[10px] text-gray-600 mt-1">± 10s jitter ngẫu nhiên</p>
+              <button type="button" onClick={() => setCustomDelayMode(!customDelayMode)}
+                className={`flex items-center gap-1 mt-1.5 text-[11px] px-2 py-1 rounded-lg border transition-colors w-full ${
+                  customDelayMode ? 'border-blue-500 bg-blue-500/10 text-blue-300'
+                    : 'border-gray-600 text-gray-500 hover:text-gray-300 hover:border-gray-500'
+                }`}>
+                <span>{customDelayMode ? '▾' : '▸'}</span> Tùy chỉnh khoảng
+              </button>
+              {customDelayMode && (
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <input type="number" min={5} value={delayMin || ''}
+                    onChange={e => setDelayMin(Math.max(5, parseInt(e.target.value) || 0))}
+                    className="w-full bg-gray-900 border border-gray-600 rounded-lg px-2 py-1.5 text-[11px] text-gray-200 focus:outline-none focus:border-blue-500"
+                    placeholder="Tối thiểu (s)" />
+                  <span className="text-gray-500 text-xs">→</span>
+                  <input type="number" min={delayMin} value={delayMax || ''}
+                    onChange={e => setDelayMax(Math.max(delayMin || 5, parseInt(e.target.value) || 0))}
+                    className="w-full bg-gray-900 border border-gray-600 rounded-lg px-2 py-1.5 text-[11px] text-gray-200 focus:outline-none focus:border-blue-500"
+                    placeholder="Tối đa (s)" />
+                  <span className="text-gray-500 text-[10px] flex-shrink-0">giây</span>
+                </div>
+              )}
+              <p className="text-[10px] text-gray-500 mt-1">
+                ⏱ Ngẫu nhiên <span className="text-gray-400 font-medium">{fmtDelayRange(delayMin, delayMax)}</span> giữa các liên hệ
+              </p>
             </div>
+
+            {/* ⏱ Delay giữa các tin nhắn (chỉ khi gửi nhiều tin/liên hệ) */}
+            {hasMultiSend && (
+              <div>
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">⏱ Delay giữa các tin nhắn</label>
+                <div className="grid grid-cols-2 gap-1">
+                  {PC_DELAY_PRESETS.map(p => {
+                    const active = !customPcDelayMode && pcDelayMin === p.min && pcDelayMax === p.max;
+                    return (
+                      <button key={p.label} type="button" onClick={() => { setPcDelayMin(p.min); setPcDelayMax(p.max); setCustomPcDelayMode(false); }}
+                        className={`py-1.5 rounded-lg border text-[11px] font-medium transition-colors ${
+                          active ? 'border-blue-500 bg-blue-500/15 text-blue-300'
+                            : 'border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300'
+                        }`}>
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <button type="button" onClick={() => setCustomPcDelayMode(!customPcDelayMode)}
+                  className={`flex items-center gap-1 mt-1.5 text-[11px] px-2 py-1 rounded-lg border transition-colors w-full ${
+                    customPcDelayMode ? 'border-blue-500 bg-blue-500/10 text-blue-300'
+                      : 'border-gray-600 text-gray-500 hover:text-gray-300 hover:border-gray-500'
+                  }`}>
+                  <span>{customPcDelayMode ? '▾' : '▸'}</span> Tùy chỉnh
+                </button>
+                {customPcDelayMode && (
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <input type="number" min={0} value={pcDelayMin ?? ''}
+                      onChange={e => setPcDelayMin(Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full bg-gray-900 border border-gray-600 rounded-lg px-2 py-1.5 text-[11px] text-gray-200 focus:outline-none focus:border-blue-500"
+                      placeholder="Min (s)" />
+                    <span className="text-gray-500 text-xs">→</span>
+                    <input type="number" min={pcDelayMin} value={pcDelayMax ?? ''}
+                      onChange={e => setPcDelayMax(Math.max(pcDelayMin || 0, parseInt(e.target.value) || 0))}
+                      className="w-full bg-gray-900 border border-gray-600 rounded-lg px-2 py-1.5 text-[11px] text-gray-200 focus:outline-none focus:border-blue-500"
+                      placeholder="Max (s)" />
+                    <span className="text-gray-500 text-[10px] flex-shrink-0">giây</span>
+                  </div>
+                )}
+                <p className="text-[10px] text-gray-500 mt-1">
+                  {pcDelayMin > 0 || pcDelayMax > 0
+                    ? `⏱ Ngẫu nhiên ${fmtDelayRange(pcDelayMin, pcDelayMax)} giữa các tin nhắn`
+                    : '⏱ Gửi liên tiếp (mặc định ~1s)'}
+                </p>
+              </div>
+            )}
 
             {/* Daily Send Limit */}
             <div>
@@ -740,7 +874,7 @@ export default function CampaignCreateModal({
                 </div>
               )}
 
-              {/* Friend request — inline in center when mixed */}
+              {/* Friend request - inline in center when mixed */}
               {hasFR && hasMsg && (
                 <div className="flex-shrink-0 border-t border-gray-700 pt-3">
                   <div className="flex items-center justify-between mb-1.5">

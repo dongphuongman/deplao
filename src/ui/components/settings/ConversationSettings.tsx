@@ -28,7 +28,7 @@ export default function ConversationSettings() {
 
       {/* Top header: tabs + search + account filter */}
       <div className="border-b border-gray-800 bg-gray-900 px-4 flex items-center gap-3 flex-wrap shrink-0">
-        {/* Main tabs — pill style */}
+        {/* Main tabs - pill style */}
         <div className="flex bg-gray-800 rounded-lg p-0.5 gap-0.5 my-2">
           {([
             { id: 'quick_msg' as const, label: '⚡ Tin nhắn nhanh' },

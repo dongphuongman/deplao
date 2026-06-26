@@ -25,6 +25,14 @@ export interface CRMCampaign {
   mixed_config: string;
   status: 'draft' | 'active' | 'paused' | 'done';
   delay_seconds: number;
+  /** Delay range: min seconds between sends */
+  delay_min_seconds: number;
+  /** Delay range: max seconds between sends */
+  delay_max_seconds: number;
+  /** Per-contact delay min (0 = use delay_min_seconds) */
+  per_contact_delay_min_seconds: number;
+  /** Per-contact delay max (0 = use per_contact_delay_min_seconds) */
+  per_contact_delay_max_seconds: number;
   daily_send_limit: number;    // 0 = không giới hạn
   daily_start_time: string;    // "HH:MM" format
   created_at: number;

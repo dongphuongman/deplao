@@ -19,8 +19,8 @@ export function secureSet(key: string, value: string): void {
         return;
     }
     if (!safeStorage.isEncryptionAvailable()) {
-        // Fallback: lưu plaintext với warning (hiếm gặp — OS không hỗ trợ keychain)
-        Logger.warn(`[SecureSettings] safeStorage unavailable — storing "${key}" as plaintext`);
+        // Fallback: lưu plaintext với warning (hiếm gặp - OS không hỗ trợ keychain)
+        Logger.warn(`[SecureSettings] safeStorage unavailable - storing "${key}" as plaintext`);
         DatabaseService.getInstance().setSetting(key, value);
         return;
     }
@@ -47,12 +47,12 @@ export function secureGet(key: string): string | null {
             const buf = Buffer.from(raw.slice(ENC_PREFIX.length), 'base64');
             return safeStorage.decryptString(buf);
         } catch (err: any) {
-            Logger.warn(`[SecureSettings] Decrypt failed for "${key}" — may be from different machine: ${err.message}`);
+            Logger.warn(`[SecureSettings] Decrypt failed for "${key}" - may be from different machine: ${err.message}`);
             return null;
         }
     }
 
-    // Plaintext cũ (chưa migrate) — trả về nguyên
+    // Plaintext cũ (chưa migrate) - trả về nguyên
     return raw;
 }
 

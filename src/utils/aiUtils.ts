@@ -1,6 +1,6 @@
 /**
  * aiUtils.ts
- * Helpers dùng chung cho AI Assistant — parsing structured JSON, validation, ...
+ * Helpers dùng chung cho AI Assistant - parsing structured JSON, validation, ...
  */
 
 export interface AIStructuredSegment {
@@ -13,9 +13,9 @@ export interface AIStructuredSegment {
  *   [{type:"text",content:"..."}, {type:"image",content:["url",...]}]
  *
  * Xử lý 3 trường hợp:
- *  1. JSON hoàn chỉnh — JSON.parse trực tiếp
- *  2. JSON bị wrap trong markdown / khoảng trắng — extract bằng regex
- *  3. JSON bị truncate / cắt ngang — dùng state machine trích object hoàn chỉnh
+ *  1. JSON hoàn chỉnh - JSON.parse trực tiếp
+ *  2. JSON bị wrap trong markdown / khoảng trắng - extract bằng regex
+ *  3. JSON bị truncate / cắt ngang - dùng state machine trích object hoàn chỉnh
  */
 export function parseStructuredResponse(
   raw: string
@@ -43,7 +43,7 @@ export function parseStructuredResponse(
     // fall through
   }
 
-  // ── Attempt 3: Truncated JSON — extract individual complete {..} objects ──
+  // ── Attempt 3: Truncated JSON - extract individual complete {..} objects ──
   // Khi AI bị cắt ngang giữa chừng, VD:
   //   [{"type":"text","content":"Chào bạn"}, {"type
   // Ta dùng state machine để vớt các object hoàn chỉnh còn được.

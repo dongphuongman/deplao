@@ -4,7 +4,7 @@ import { useAppStore } from '../store/appStore';
 import ipc from '../lib/ipc';
 
 /**
- * Hook quản lý tài khoản Zalo — bao gồm kết nối, ngắt kết nối, reload
+ * Hook quản lý tài khoản Zalo - bao gồm kết nối, ngắt kết nối, reload
  */
 export function useAccounts() {
   const { accounts, activeAccountId, setAccounts, addAccount, removeAccount, updateAccountStatus, updateListenerActive, setActiveAccount, getActiveAccount } =

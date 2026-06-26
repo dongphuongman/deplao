@@ -81,7 +81,7 @@ function resolveAuthFromConnection(auth: any, zaloId: string): any {
 
 /**
  * Upload local media files from Employee machine to Boss storage before proxying.
- * Employee's local file paths are invalid on Boss — reads each file on the
+ * Employee's local file paths are invalid on Boss - reads each file on the
  * Employee side, sends as base64 via uploadEmployeeMedia(), returns Boss-resolved paths.
  * In standalone/boss mode (no-op) returns original params unchanged.
  */
@@ -117,7 +117,7 @@ function wrap(channel: string, fn: (service: ZaloService, params: any) => Promis
             if (activeWs?.type === 'remote' && !params?._fromRelay) {
                 try {
                     // Upload local files (images, videos, voice) from Employee to Boss
-                    // before proxying — Employee's file paths don't exist on Boss machine.
+                    // before proxying - Employee's file paths don't exist on Boss machine.
                     const preparedParams = await prepareLocalFilesForProxy(params);
                     return await HttpConnectionManager.getInstance().proxyAction(activeWs.id, channel, preparedParams);
                 } catch (proxyErr: any) {

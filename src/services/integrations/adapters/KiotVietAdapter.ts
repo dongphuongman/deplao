@@ -70,7 +70,7 @@ export class KiotVietAdapter extends IntegrationAdapter {
       await this.getAccessToken();
       const info = await this.apiGet('/retailer');
       const retailer = info?.RetailerName || info?.retailerName || 'KiotViet';
-      return { success: true, message: `Kết nối KiotViet thành công — gian hàng: ${retailer}` };
+      return { success: true, message: `Kết nối KiotViet thành công - gian hàng: ${retailer}` };
     } catch (e: any) {
       return { success: false, message: `Lỗi kết nối KiotViet: ${e.response?.data?.message || e.message}` };
     }
@@ -119,7 +119,7 @@ export class KiotVietAdapter extends IntegrationAdapter {
           const orders = data.data || [];
           return { orders, ...this.buildPagedMeta(data, page, pageSize) };
         } else if (params.phone) {
-          // KiotViet /orders KHÔNG hỗ trợ contactNumber —
+          // KiotViet /orders KHÔNG hỗ trợ contactNumber -
           // phải lookup customer trước → lấy customerId → query orders
           const custData = await this.apiGet('/customers', {
             contactNumber: params.phone,

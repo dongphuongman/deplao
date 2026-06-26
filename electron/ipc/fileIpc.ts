@@ -119,7 +119,7 @@ export function registerFileIpc() {
             const resolvedLocalPath = params.localPath ? FileStorageService.resolveAbsolutePath(params.localPath) : '';
             const isImageExt = imageExts.includes(extNoDot);
 
-            // Try local file first — validate if it's an image
+            // Try local file first - validate if it's an image
             let localValid = false;
             if (resolvedLocalPath && fs.existsSync(resolvedLocalPath)) {
                 if (isImageExt) {

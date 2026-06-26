@@ -6,7 +6,7 @@
  * Patches the Electron dev binary with Deplao's icon and version metadata.
  * Run once after `npm install` or any time the electron package is updated.
  *
- * Only applicable on Windows — on macOS/Linux the app bundle handles icons.
+ * Only applicable on Windows - on macOS/Linux the app bundle handles icons.
  */
 
 const path = require('path');
@@ -14,7 +14,7 @@ const fs   = require('fs');
 
 async function main() {
   if (process.platform !== 'win32') {
-    console.log('[patch-icon] Non-Windows platform — skipping exe patch');
+    console.log('[patch-icon] Non-Windows platform - skipping exe patch');
     return;
   }
 

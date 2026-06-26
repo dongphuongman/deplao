@@ -1,16 +1,16 @@
 /**
- * ConversationActions — Shared action rows cho cả group & user conversation panel.
+ * ConversationActions - Shared action rows cho cả group & user conversation panel.
  *
  * Cung cấp:
- *  - <DangerActionRow>       — 1 row action (icon + label + chevron), dùng cho mọi loại action
- *  - <DeleteHistoryAction>   — Xoá lịch sử trò chuyện (chỉ trên app, xoá DB local)
- *  - <ReportAction>          — Báo xấu (gọi API reportUser hoặc reportGroup)
- *  - <LeaveGroupAction>      — Rời nhóm
- *  - <BlockUserAction>       — Chặn/bỏ chặn tin nhắn và cuộc gọi
- *  - <RemoveFriendAction>    — Xoá bạn bè
- *  - <MutualGroupsRow>       — Nhóm chung (x), mở sub-panel
- *  - <GroupActionSection>    — Kết hợp các action cho group (báo xấu + xoá lịch sử + rời nhóm)
- *  - <UserActionSection>     — Kết hợp các action cho user (nhóm chung + chặn + báo xấu + xoá bạn + xoá lịch sử)
+ *  - <DangerActionRow>       - 1 row action (icon + label + chevron), dùng cho mọi loại action
+ *  - <DeleteHistoryAction>   - Xoá lịch sử trò chuyện (chỉ trên app, xoá DB local)
+ *  - <ReportAction>          - Báo xấu (gọi API reportUser hoặc reportGroup)
+ *  - <LeaveGroupAction>      - Rời nhóm
+ *  - <BlockUserAction>       - Chặn/bỏ chặn tin nhắn và cuộc gọi
+ *  - <RemoveFriendAction>    - Xoá bạn bè
+ *  - <MutualGroupsRow>       - Nhóm chung (x), mở sub-panel
+ *  - <GroupActionSection>    - Kết hợp các action cho group (báo xấu + xoá lịch sử + rời nhóm)
+ *  - <UserActionSection>     - Kết hợp các action cho user (nhóm chung + chặn + báo xấu + xoá bạn + xoá lịch sử)
  */
 
 import React, { useEffect, useState } from 'react';

@@ -49,7 +49,7 @@ interface UpdateStore {
   /** Hoãn notification durationMs ms rồi tự hiện lại */
   postpone: (durationMs?: number) => void;
 
-  /** Có bản update cần hành động (chưa tải xong) — hiện nút trên TopBar */
+  /** Có bản update cần hành động (chưa tải xong) - hiện nút trên TopBar */
   hasActionableUpdate: () => boolean;
 }
 

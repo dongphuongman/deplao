@@ -447,7 +447,7 @@ function InstallModal({
             )}
             <p className="text-gray-600 text-[10px] mt-1.5">
               {selectedPages.length === 0
-                ? `⚠ Chưa chọn — workflow sẽ chạy cho TẤT CẢ tài khoản ${channelLabel}`
+                ? `⚠ Chưa chọn - workflow sẽ chạy cho TẤT CẢ tài khoản ${channelLabel}`
                 : `✓ Sẽ áp dụng cho ${selectedPages.length} tài khoản ${channelLabel}`}
             </p>
           </div>

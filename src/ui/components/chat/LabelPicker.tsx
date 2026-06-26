@@ -37,7 +37,7 @@ export default function LabelPicker({
 
   return (
     <div className={`py-1 ${className}`}>
-      {/* Header với nút Chỉnh sửa và Cập nhật — luôn hiện nếu có prop */}
+      {/* Header với nút Chỉnh sửa và Cập nhật - luôn hiện nếu có prop */}
       {(onEditLabels || onSync) && (
         <div className="flex items-center justify-between px-3 py-2 border-b border-gray-700">
           {onEditLabels && (
@@ -157,7 +157,7 @@ export function ActiveLabels({
         <button
           key={l.id}
           onClick={onClickPill}
-          title={`${l.text} — nhấn để đổi nhãn Zalo`}
+          title={`${l.text} - nhấn để đổi nhãn Zalo`}
           className="inline-flex items-center gap-0.5 text-white text-[11px] px-1.5 py-1 rounded-full leading-none hover:opacity-80 transition-opacity cursor-pointer"
           style={{ backgroundColor: l.color || '#3b82f6', color: '#fff' }}
         >

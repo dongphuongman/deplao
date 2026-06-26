@@ -5,7 +5,7 @@ import Logger from '../../utils/Logger';
 import BetterSqlite3 from 'better-sqlite3';
 import type { Account, Message, Contact, CRMNote, CRMCampaign, CRMCampaignContact, CRMSendLog, CRMCampaignStatus, CRMContactStatus } from '../../models';
 
-// better-sqlite3: native SQLite — no WASM heap, memory-mapped I/O
+// better-sqlite3: native SQLite - no WASM heap, memory-mapped I/O
 let db: BetterSqlite3.Database | null = null;
 
 // ── Cached secondary DB for withDbPath (avoids repeated open/close) ─────────
@@ -76,7 +76,7 @@ class DatabaseService {
                     resolvedViaWorkspace = true;
                     Logger.log(`[DatabaseService] DB path from WorkspaceManager: ${this.dbPath}`);
                 }
-            } catch { /* WorkspaceManager not yet initialized — fall back to legacy */ }
+            } catch { /* WorkspaceManager not yet initialized - fall back to legacy */ }
 
             if (!resolvedViaWorkspace) {
                 let dbFolder = userDataPath;
@@ -89,13 +89,13 @@ class DatabaseService {
                                 dbFolder = cfg.dbFolder;
                                 Logger.log(`[DatabaseService] Using custom dbFolder from config: ${dbFolder}`);
                             } else {
-                                Logger.warn(`[DatabaseService] Configured dbFolder not found: ${cfg.dbFolder} — attempting to create it`);
+                                Logger.warn(`[DatabaseService] Configured dbFolder not found: ${cfg.dbFolder} - attempting to create it`);
                                 try {
                                     fs.mkdirSync(cfg.dbFolder, { recursive: true });
                                     dbFolder = cfg.dbFolder;
                                     Logger.log(`[DatabaseService] Created missing dbFolder: ${dbFolder}`);
                                 } catch (mkErr: any) {
-                                    Logger.error(`[DatabaseService] Cannot create dbFolder ${cfg.dbFolder}: ${mkErr.message} — falling back to userData`);
+                                    Logger.error(`[DatabaseService] Cannot create dbFolder ${cfg.dbFolder}: ${mkErr.message} - falling back to userData`);
                                 }
                             }
                         }
@@ -135,16 +135,16 @@ class DatabaseService {
 
     /** No-op: better-sqlite3 with WAL mode writes directly to disk. Kept for API compat. */
     public save(): void {
-        // better-sqlite3 writes to disk automatically via WAL — nothing to do
+        // better-sqlite3 writes to disk automatically via WAL - nothing to do
     }
 
     /** No-op: better-sqlite3 auto-persists. Kept for API compat. */
     private scheduleSave(): void {
-        // No-op — WAL mode auto-writes
+        // No-op - WAL mode auto-writes
     }
 
     /**
-     * WAL checkpoint — ensures all writes are flushed to main DB file.
+     * WAL checkpoint - ensures all writes are flushed to main DB file.
      * Call before copy/move DB file, switch workspace, or app quit.
      */
     public forceFlush(): void {
@@ -187,11 +187,11 @@ class DatabaseService {
         const targetDbPath = path.resolve(newDbPath);
         const currentDbPath = this.dbPath ? path.resolve(this.dbPath) : '';
         if (currentDbPath && currentDbPath === targetDbPath) {
-            Logger.log(`[DatabaseService] Switch skipped — already using ${targetDbPath}`);
+            Logger.log(`[DatabaseService] Switch skipped - already using ${targetDbPath}`);
             return;
         }
 
-        // Set switching lock — queues any concurrent run()/query() calls
+        // Set switching lock - queues any concurrent run()/query() calls
         this.switching = true;
 
         const prevDbPath = this.dbPath;
@@ -270,7 +270,7 @@ class DatabaseService {
     /**
      * Temporarily switch to a different DB file, run a synchronous callback,
      * then switch back. Used by EmployeeService to access the relay workspace DB.
-     * @deprecated Use queryOtherDb() instead — withDbPath swaps the global db and is unsafe with concurrent IPC.
+     * @deprecated Use queryOtherDb() instead - withDbPath swaps the global db and is unsafe with concurrent IPC.
      */
     public withDbPath<T>(targetDbPath: string, fn: () => T): T {
         const currentPath = this.dbPath;
@@ -290,7 +290,7 @@ class DatabaseService {
     }
 
     /**
-     * Execute a callback against a SEPARATE DB instance — does NOT swap the global db.
+     * Execute a callback against a SEPARATE DB instance - does NOT swap the global db.
      * Safe for use from relay/socket handlers that may run concurrently with IPC.
      */
     public queryOtherDb<T>(targetDbPath: string, fn: (otherDb: any) => T): T {
@@ -315,7 +315,7 @@ class DatabaseService {
         db!.prepare(sql).run(...params);
     }
 
-    /** Execute SQL without flushing to disk — same as run() now (WAL auto-writes) */
+    /** Execute SQL without flushing to disk - same as run() now (WAL auto-writes) */
     private runNoSave(sql: string, params: any[] = []): void {
         db!.prepare(sql).run(...params);
     }
@@ -482,7 +482,7 @@ class DatabaseService {
             CREATE INDEX IF NOT EXISTS idx_group_member ON page_group_member(owner_zalo_id, group_id);
         `);
 
-        // Sticker cache — device-wide (no owner_zalo_id)
+        // Sticker cache - device-wide (no owner_zalo_id)
         this.exec(`
             CREATE TABLE IF NOT EXISTS stickers (
                 sticker_id INTEGER PRIMARY KEY,
@@ -912,7 +912,7 @@ class DatabaseService {
     // ─── ERP Schema ────────────────────────────────────────────────────────────
 
     /**
-     * Khởi tạo schema cho ERP module. Idempotent — safe to call on every startup.
+     * Khởi tạo schema cho ERP module. Idempotent - safe to call on every startup.
      * Tất cả bảng đều prefix erp_.
      */
     public initErpSchema(): void {
@@ -1339,7 +1339,7 @@ class DatabaseService {
             const nMessages = badMessages[0]?.n || 0;
 
             if (nContacts > 0 || nMessages > 0) {
-                Logger.warn(`[DatabaseService] 🧹 Migration: found ${nContacts} bad contacts, ${nMessages} bad messages — deleting...`);
+                Logger.warn(`[DatabaseService] 🧹 Migration: found ${nContacts} bad contacts, ${nMessages} bad messages - deleting...`);
                 db!.exec(`DELETE FROM contacts WHERE contact_id = 'undefined' OR contact_id = '' OR contact_id IS NULL`);
                 db!.exec(`DELETE FROM messages WHERE thread_id = 'undefined' OR thread_id = '' OR thread_id IS NULL`);
                 this.save();
@@ -1442,7 +1442,7 @@ class DatabaseService {
                         db!.exec(`UPDATE accounts SET zalo_id = '${row.facebook_id}' WHERE zalo_id = '${row.zalo_id}' AND channel = 'facebook'`);
                         Logger.log(`[DatabaseService] ✅ Migration B4: FB account ${row.zalo_id} → ${row.facebook_id}`);
                     } else {
-                        // Already migrated or duplicate — remove the old UUID row
+                        // Already migrated or duplicate - remove the old UUID row
                         db!.exec(`DELETE FROM accounts WHERE zalo_id = '${row.zalo_id}' AND channel = 'facebook'`);
                         Logger.log(`[DatabaseService] ✅ Migration B4: Removed duplicate FB account row ${row.zalo_id}`);
                     }
@@ -2165,6 +2165,23 @@ class DatabaseService {
             Logger.warn(`[DatabaseService] daily_send_limit migration: ${err.message}`);
         }
 
+        // Migration: add delay_min_seconds + delay_max_seconds + per_contact_delay to crm_campaigns
+        try {
+            const campCols2 = this.query<any>(`PRAGMA table_info(crm_campaigns)`);
+            if (campCols2.length > 0 && !campCols2.some((c: any) => c.name === 'delay_min_seconds')) {
+                db!.exec(`ALTER TABLE crm_campaigns ADD COLUMN delay_min_seconds INTEGER NOT NULL DEFAULT 60`);
+                db!.exec(`ALTER TABLE crm_campaigns ADD COLUMN delay_max_seconds INTEGER NOT NULL DEFAULT 60`);
+                db!.exec(`ALTER TABLE crm_campaigns ADD COLUMN per_contact_delay_min_seconds INTEGER NOT NULL DEFAULT 0`);
+                db!.exec(`ALTER TABLE crm_campaigns ADD COLUMN per_contact_delay_max_seconds INTEGER NOT NULL DEFAULT 0`);
+                // Backfill existing campaigns: derive range from delay_seconds (±10s, min 30s)
+                db!.exec(`UPDATE crm_campaigns SET delay_min_seconds = MAX(30, delay_seconds - 10), delay_max_seconds = delay_seconds + 10 WHERE delay_min_seconds = 60 AND delay_max_seconds = 60`);
+                this.save();
+                Logger.log('[DatabaseService] Migration: added delay_min/max + per_contact_delay to crm_campaigns');
+            }
+        } catch (err: any) {
+            Logger.warn(`[DatabaseService] delay_min/max migration: ${err.message}`);
+        }
+
         // ── fb_threads.is_e2ee ──────────────────────────────────────────────
         try {
             const threadCols = this.query<any>(`PRAGMA table_info(fb_threads)`);
@@ -2266,7 +2283,7 @@ class DatabaseService {
             }
         }
 
-        // Zalo tables (có owner_zalo_id column) — chạy an toàn, không ảnh hưởng nếu ko có row
+        // Zalo tables (có owner_zalo_id column) - chạy an toàn, không ảnh hưởng nếu ko có row
         this.run('DELETE FROM messages WHERE owner_zalo_id = ?', [zaloId]);
         this.run('DELETE FROM contacts WHERE owner_zalo_id = ?', [zaloId]);
         this.run('DELETE FROM friends WHERE owner_zalo_id = ?', [zaloId]);
@@ -2290,7 +2307,7 @@ class DatabaseService {
         this.run(`DELETE FROM crm_campaign_contacts WHERE campaign_id IN (SELECT id FROM crm_campaigns WHERE owner_zalo_id = ?)`, [zaloId]);
         this.run('DELETE FROM crm_campaigns WHERE owner_zalo_id = ?', [zaloId]);
 
-        // Workflows — page_ids là comma-separated list of account IDs
+        // Workflows - page_ids là comma-separated list of account IDs
         // Nếu workflow chỉ gắn với account này → xoá cả workflow
         // Nếu workflow gắn với nhiều account → chỉ gỡ account này khỏi page_ids
         try {
@@ -2309,8 +2326,8 @@ class DatabaseService {
             }
         } catch { /* workflows table may not have page_ids column on very old DBs */ }
 
-        // Integrations — không có owner_zalo_id, bỏ qua (integration không gắn với account cụ thể)
-        // Ai assistant data — không có owner_zalo_id, bỏ qua
+        // Integrations - không có owner_zalo_id, bỏ qua (integration không gắn với account cụ thể)
+        // Ai assistant data - không có owner_zalo_id, bỏ qua
 
         // Employee access (dùng zalo_id column)
         this.run('DELETE FROM employee_account_access WHERE zalo_id = ?', [zaloId]);
@@ -2470,14 +2487,14 @@ class DatabaseService {
                 return decrypted;
             }
         } catch (err: any) {
-            Logger.warn(`[DatabaseService] decryptCookies failed — cookies may be encrypted by a different app instance (${err.message}). Account will need to re-login.`);
+            Logger.warn(`[DatabaseService] decryptCookies failed - cookies may be encrypted by a different app instance (${err.message}). Account will need to re-login.`);
         }
         return encrypted;
     }
 
     // ─── Message Operations ───────────────────────────────────────────────
 
-    /** Check if a message already exists in DB (by msg_id) — used to skip duplicate broadcasts */
+    /** Check if a message already exists in DB (by msg_id) - used to skip duplicate broadcasts */
     public hasMessage(ownerZaloId: string, msgId: string): boolean {
         if (!this.initialized || !msgId) return false;
         try {
@@ -2507,12 +2524,12 @@ class DatabaseService {
 
             // Guard: bỏ qua nếu threadId không hợp lệ
             if (!threadId || threadId === 'undefined') {
-                Logger.warn(`[DB.saveMessage] ⚠️ SKIPPED — invalid threadId="${threadId}". rawMessage.isSelf=${rawMessage.isSelf}, rawMessage.threadId=${rawMessage.threadId}. Có thể main process chưa được rebuild với code mới!`);
+                Logger.warn(`[DB.saveMessage] ⚠️ SKIPPED - invalid threadId="${threadId}". rawMessage.isSelf=${rawMessage.isSelf}, rawMessage.threadId=${rawMessage.threadId}. Có thể main process chưa được rebuild với code mới!`);
                 return;
             }
 
             const contentRaw = rawMessage.data?.content;
-            // typeof null === 'object' trong JS — check null/undefined trước khi check typeof object
+            // typeof null === 'object' trong JS - check null/undefined trước khi check typeof object
             const content = contentRaw == null
                 ? String(rawMessage.data?.message || '')
                 : typeof contentRaw === 'object'
@@ -2594,7 +2611,7 @@ class DatabaseService {
         }
     }
 
-    /** Mark a message as handled by employee — matches by msg_id OR cli_msg_id (fallback for ID mismatch) */
+    /** Mark a message as handled by employee - matches by msg_id OR cli_msg_id (fallback for ID mismatch) */
     public setMessageHandledByEmployeeFlexible(ownerZaloId: string, msgId: string, employeeId: string): void {
         if (!this.initialized || !msgId || !employeeId) return;
         try {
@@ -2659,7 +2676,7 @@ class DatabaseService {
         return msgs;
     }
 
-    /** Lấy tin nhắn xung quanh 1 timestamp — dùng khi cần scroll đến tin nhắn cũ ngoài trang hiện tại */
+    /** Lấy tin nhắn xung quanh 1 timestamp - dùng khi cần scroll đến tin nhắn cũ ngoài trang hiện tại */
     public getMessagesAround(ownerZaloId: string, threadId: string, timestamp: number, limit = 50): Message[] {
         if (!this.initialized) return [];
         const half = Math.floor(limit / 2);
@@ -2685,7 +2702,7 @@ class DatabaseService {
         return deduped;
     }
 
-    /** Lấy tất cả file đính kèm trong một thread — dùng cho tab File */
+    /** Lấy tất cả file đính kèm trong một thread - dùng cho tab File */
     public getFileMessages(ownerZaloId: string, threadId: string, limit = 50, offset = 0): Message[] {
         if (!this.initialized) return [];
         return this.query<Message>(
@@ -2829,7 +2846,7 @@ class DatabaseService {
     /**
      * Lưu biệt danh (alias) cho một contact.
      * alias='' nghĩa là xóa biệt danh.
-     * Không bao giờ overwrite display_name — alias là field riêng biệt.
+     * Không bao giờ overwrite display_name - alias là field riêng biệt.
      */
     public setContactAlias(ownerZaloId: string, contactId: string, alias: string): void {
         if (!this.initialized || !contactId) return;
@@ -2948,6 +2965,17 @@ class DatabaseService {
 
         // ── Todo ──────────────────────────────────────────────────────────────
         if (mt === 'chat.todo') return '📝 Công việc';
+
+        // ── Location ──────────────────────────────────────────────────────────
+        if (mt === 'chat.location.new') {
+            try {
+                const p = JSON.parse(content);
+                if (p?.description) return `📍 ${p.description}`;
+                const params = typeof p?.params === 'string' ? JSON.parse(p.params) : (p?.params || {});
+                if (params?.latitude && params?.longitude) return `📍 ${params.latitude.slice(0, 8)}, ${params.longitude.slice(0, 8)}`;
+            } catch {}
+            return '📍 [Vị trí]';
+        }
 
         // ── JSON content: parse and detect type from fields ──────────────────
         try {
@@ -3085,7 +3113,7 @@ class DatabaseService {
     ): void {
         // Guard: không tạo contact với contactId không hợp lệ
         if (!contactId || contactId === 'undefined' || contactId === 'null' || contactId === '') {
-            Logger.warn(`[DB.updateContactLastMessage] ⚠️ SKIPPED — invalid contactId="${contactId}" for owner=${ownerZaloId}`);
+            Logger.warn(`[DB.updateContactLastMessage] ⚠️ SKIPPED - invalid contactId="${contactId}" for owner=${ownerZaloId}`);
             return;
         }
         const display = this.formatLastMessageContent(content, msgType);
@@ -3208,7 +3236,7 @@ class DatabaseService {
                 [oldPrefix.replace(/\\/g, '/'),    newPrefix.replace(/\\/g, '/')],
             ];
             let updated = 0;
-            // UDF: no parameter binding — all logic runs in pure JS callback
+            // UDF: no parameter binding - all logic runs in pure JS callback
             db!.function('_rewrite_local_path', (jsonStr: string): string => {
                 if (!jsonStr) return jsonStr;
                 let text = jsonStr;
@@ -3234,7 +3262,7 @@ class DatabaseService {
 
     /**
      * Convert ALL absolute local_paths → "media/zaloId/date/img.jpg" (relative to configFolder).
-     * Uses sql.js create_function (UDF) — single SQL UPDATE, zero parameter binding.
+     * Uses sql.js create_function (UDF) - single SQL UPDATE, zero parameter binding.
      * This bypasses the sql.js Wasm "unknown type undefined" error that occurs when trying
      * to bind rowid values (sql.js does not expose rowid via getAsObject).
      */
@@ -3243,7 +3271,7 @@ class DatabaseService {
         let migrationCount = 0;
         try {
             // JS UDF: receives local_paths JSON string, returns transformed string.
-            // No Wasm param binding — all transformation runs in JavaScript.
+            // No Wasm param binding - all transformation runs in JavaScript.
             db!.function('_migrate_local_path', (jsonStr: string): string => {
                 if (!jsonStr) return jsonStr;
                 try {
@@ -3266,7 +3294,7 @@ class DatabaseService {
                 } catch { return jsonStr; }
             });
 
-            // Single UPDATE — UDF handles everything, no bound params needed
+            // Single UPDATE - UDF handles everything, no bound params needed
             db!.exec(
                 `UPDATE messages SET local_paths = _migrate_local_path(local_paths)
                  WHERE local_paths IS NOT NULL AND local_paths != '' AND local_paths != '{}' AND local_paths != 'null'`
@@ -3404,7 +3432,7 @@ class DatabaseService {
         return contactRow?.is_friend === 1;
     }
 
-    /** Lưu toàn bộ danh sách bạn bè vào DB (upsert) — batch: single prepare + single save */
+    /** Lưu toàn bộ danh sách bạn bè vào DB (upsert) - batch: single prepare + single save */
     public saveFriends(ownerZaloId: string, friends: Array<{ userId: string; displayName?: string; zaloName?: string; avatar?: string; phoneNumber?: string }>): void {
         if (!this.initialized) return;
         const now = Date.now();
@@ -3430,7 +3458,7 @@ class DatabaseService {
     }
 
     /**
-     * Batch upsert contacts — single prepare + single disk write.
+     * Batch upsert contacts - single prepare + single disk write.
      * Dùng cho fetchAllFriendsInBackground thay vì gọi saveContact() từng dòng.
      */
     public saveContactsBatch(contacts: Array<Omit<Contact, 'id'>>): void {
@@ -3871,7 +3899,7 @@ class DatabaseService {
             }
         } catch {}
 
-        // Backfill from messages table — only if no links exist yet for this thread
+        // Backfill from messages table - only if no links exist yet for this thread
         try {
             const existing = this.queryOne<any>(
                 'SELECT 1 FROM links WHERE owner_zalo_id = ? AND thread_id = ? LIMIT 1',
@@ -4450,7 +4478,7 @@ class DatabaseService {
     }
 
 
-    /** Lấy toàn bộ quick messages của TẤT CẢ accounts — dùng cho Settings global list */
+    /** Lấy toàn bộ quick messages của TẤT CẢ accounts - dùng cho Settings global list */
     public getAllLocalQuickMessages(): any[] {
         if (!this.initialized) return [];
         try {
@@ -4763,16 +4791,23 @@ class DatabaseService {
             const mixedCfg = campaign.mixed_config || '{}';
             const dailyLimit = campaign.daily_send_limit ?? 0;
             const dailyStartTime = campaign.daily_start_time || '08:00';
+            // Delay range fields (with backward compat)
+            const delayMin = campaign.delay_min_seconds ?? Math.max(30, (campaign.delay_seconds || 60) - 10);
+            const delayMax = campaign.delay_max_seconds ?? Math.max(delayMin, (campaign.delay_seconds || 60) + 10);
+            const perContactMin = campaign.per_contact_delay_min_seconds ?? 0;
+            const perContactMax = campaign.per_contact_delay_max_seconds ?? perContactMin;
+            // Still write delay_seconds as the midpoint for backward compat
+            const compatDelaySeconds = campaign.delay_seconds || Math.round((delayMin + delayMax) / 2);
             if (campaign.id) {
                 this.run(
-                    `UPDATE crm_campaigns SET name=?, template_message=?, friend_request_message=?, campaign_type=?, mixed_config=?, status=?, delay_seconds=?, daily_send_limit=?, daily_start_time=?, updated_at=? WHERE id=? AND owner_zalo_id=?`,
-                    [campaign.name, campaign.template_message || '', frMsg, type, mixedCfg, status, campaign.delay_seconds || 60, dailyLimit, dailyStartTime, now, campaign.id, campaign.owner_zalo_id]
+                    `UPDATE crm_campaigns SET name=?, template_message=?, friend_request_message=?, campaign_type=?, mixed_config=?, status=?, delay_seconds=?, delay_min_seconds=?, delay_max_seconds=?, per_contact_delay_min_seconds=?, per_contact_delay_max_seconds=?, daily_send_limit=?, daily_start_time=?, updated_at=? WHERE id=? AND owner_zalo_id=?`,
+                    [campaign.name, campaign.template_message || '', frMsg, type, mixedCfg, status, compatDelaySeconds, delayMin, delayMax, perContactMin, perContactMax, dailyLimit, dailyStartTime, now, campaign.id, campaign.owner_zalo_id]
                 );
                 return campaign.id;
             } else {
                 return this.runInsert(
-                    `INSERT INTO crm_campaigns (owner_zalo_id, name, template_message, friend_request_message, campaign_type, mixed_config, status, delay_seconds, daily_send_limit, daily_start_time, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
-                    [campaign.owner_zalo_id, campaign.name, campaign.template_message, frMsg, type, mixedCfg, campaign.status || 'draft', campaign.delay_seconds || 60, dailyLimit, dailyStartTime, now, now]
+                    `INSERT INTO crm_campaigns (owner_zalo_id, name, template_message, friend_request_message, campaign_type, mixed_config, status, delay_seconds, delay_min_seconds, delay_max_seconds, per_contact_delay_min_seconds, per_contact_delay_max_seconds, daily_send_limit, daily_start_time, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                    [campaign.owner_zalo_id, campaign.name, campaign.template_message, frMsg, type, mixedCfg, campaign.status || 'draft', compatDelaySeconds, delayMin, delayMax, perContactMin, perContactMax, dailyLimit, dailyStartTime, now, now]
                 );
             }
         } catch (err: any) { Logger.error(`[DB] saveCRMCampaign: ${err.message}`); return 0; }
@@ -4886,7 +4921,9 @@ class DatabaseService {
         if (!this.initialized) return null;
         try {
             const rows = this.query<any>(
-                `SELECT cc.*, c.template_message, c.delay_seconds, c.campaign_type, c.friend_request_message, c.mixed_config,
+                `SELECT cc.*, c.template_message, c.delay_seconds, c.delay_min_seconds, c.delay_max_seconds,
+                    c.per_contact_delay_min_seconds, c.per_contact_delay_max_seconds,
+                    c.campaign_type, c.friend_request_message, c.mixed_config,
                     COALESCE(cont.phone, fr.phone, '') as phone,
                     COALESCE(cont.contact_type, 'user') as contact_type
                  FROM crm_campaign_contacts cc
@@ -4996,7 +5033,7 @@ class DatabaseService {
         } catch (err: any) { Logger.error(`[DB] getTopCampaignStats: ${err.message}`); return []; }
     }
 
-    /** CRM Contacts — aggregate friends + contacts, dedup */
+    /** CRM Contacts - aggregate friends + contacts, dedup */
     public getCRMContacts(ownerZaloId: string, opts: {
         search?: string; tagIds?: number[]; isFriendOnly?: boolean;
         contactType?: 'all' | 'friend' | 'group' | 'non_friend';
@@ -5136,7 +5173,7 @@ class DatabaseService {
         } catch (err: any) { Logger.error(`[DB] getCRMContacts: ${err.message}`); return { contacts: [], total: 0 }; }
     }
 
-    /** Activity stats for a given time window — used by CRM Dashboard */
+    /** Activity stats for a given time window - used by CRM Dashboard */
     public getActivityStats(ownerZaloId: string, sinceTs: number, untilTs: number = Date.now()): {
         conversationCount: number; messageCount: number; sentCount: number; receivedCount: number;
     } {
@@ -5160,7 +5197,7 @@ class DatabaseService {
         }
     }
 
-    /** Unfiltered aggregate stats — used by CRM Dashboard */
+    /** Unfiltered aggregate stats - used by CRM Dashboard */
     public getContactStats(ownerZaloId: string): { total: number; friendCount: number; noteCount: number } {
         if (!this.initialized) return { total: 0, friendCount: 0, noteCount: 0 };
         try {
@@ -5377,10 +5414,10 @@ class DatabaseService {
                 }
 
                 if (m.is_sent === 0) {
-                    // Incoming message — record timestamp (always take the latest unanswered incoming)
+                    // Incoming message - record timestamp (always take the latest unanswered incoming)
                     lastIncomingTs = m.timestamp;
                 } else if (m.is_sent === 1 && lastIncomingTs !== null) {
-                    // Outgoing message after an incoming one — this is a reply
+                    // Outgoing message after an incoming one - this is a reply
                     const gapMs = m.timestamp - lastIncomingTs;
                     if (gapMs >= 0 && gapMs < 7 * 86400000) {
                         // Only count replies within 7 days (ignore stale threads)
@@ -5393,7 +5430,7 @@ class DatabaseService {
                         if (!hourGaps.has(hour)) hourGaps.set(hour, []);
                         hourGaps.get(hour)!.push(gapSec);
                     }
-                    lastIncomingTs = null; // Reset — this reply consumed the incoming
+                    lastIncomingTs = null; // Reset - this reply consumed the incoming
                 }
             }
 
@@ -6279,7 +6316,7 @@ class DatabaseService {
         }
     }
 
-    /** Lấy tất cả drafts cho 1 tài khoản — dùng khi khởi tạo app */
+    /** Lấy tất cả drafts cho 1 tài khoản - dùng khi khởi tạo app */
     public getDrafts(ownerZaloId: string): Array<{ threadId: string; content: string; updatedAt: number }> {
         if (!this.initialized) return [];
         try {
@@ -6293,7 +6330,7 @@ class DatabaseService {
         }
     }
 
-    /** Xoá tất cả draft cũ hơn N ngày — cleanup */
+    /** Xoá tất cả draft cũ hơn N ngày - cleanup */
     public deleteOldDrafts(olderThanDays: number = 7): void {
         if (!this.initialized) return;
         try {
@@ -7005,7 +7042,7 @@ class DatabaseService {
                 is_muted: t.is_muted ? 1 : 0,
             });
             const avatarUrl = t.metadata?.avatar_url || '';
-            // Sync to unified contacts table — use facebook_id as owner_zalo_id
+            // Sync to unified contacts table - use facebook_id as owner_zalo_id
             this.run(`
                 INSERT INTO contacts (owner_zalo_id, contact_id, display_name, avatar_url, is_friend, contact_type, unread_count, last_message, last_message_time, channel)
                 VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?, 'facebook')
@@ -7097,7 +7134,7 @@ class DatabaseService {
             msg.body || null, msg.timestamp, msg.type, msg.attachments || '[]',
             msg.reply_to_id || null, msg.is_self, msg.is_unsent, msg.reactions || '{}', now]);
 
-        // Also save to unified messages table — use facebook_id as owner_zalo_id
+        // Also save to unified messages table - use facebook_id as owner_zalo_id
         let ownerZaloId = msg.account_id;
         try {
             const fbAcc = this.queryOne<any>(`SELECT facebook_id FROM fb_accounts WHERE id = ?`, [msg.account_id]);

@@ -213,6 +213,10 @@ interface AppStore {
   hasAnyCRMRequestUnseen: () => boolean;
 
   // ── Account switcher (Ctrl+Tab) ──────────────────────────────────────────
+  // ── Sidebar expanded ────────────────────────────────────────────
+  sidebarExpanded: boolean;
+  toggleSidebarExpanded: () => void;
+
   accountSwitcherOpen: boolean;
   accountSwitcherIndex: number;
   openAccountSwitcher: () => void;
@@ -365,8 +369,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
   integrationPanelTarget: null,
   analyticsInitialTab: null as string | null,
   crmRequestUnseenByAccount: loadCRMRequestUnseen(),
+  sidebarExpanded: false,
   accountSwitcherOpen: false,
   accountSwitcherIndex: 0,
+
+  toggleSidebarExpanded: () => set((s) => ({ sidebarExpanded: !s.sidebarExpanded })),
 
   openQuickChat: (opts) => set({
     quickChatOpen: true,

@@ -42,7 +42,7 @@ export default function NotificationCenter({ onClose }: Props) {
     }
   };
 
-  // Hoãn với duration tuỳ chọn — timer re-show được quản lý bởi UpdateNotification (luôn mounted)
+  // Hoãn với duration tuỳ chọn - timer re-show được quản lý bởi UpdateNotification (luôn mounted)
   const handlePostpone = (ms: number = POSTPONE_MS) => {
     setPostponeOpen(false);
     postpone(ms);

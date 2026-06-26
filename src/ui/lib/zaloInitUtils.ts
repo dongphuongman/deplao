@@ -1,7 +1,7 @@
 /**
  * zaloInitUtils.ts
  *
- * Account first-run initialization — syncs 6 data types when a
+ * Account first-run initialization - syncs 6 data types when a
  * new (or previously-unseen) account first accesses the Chat view.
  *
  * ┌─ runAccountInit ──────────────────────────────────────────────────────────┐
@@ -10,7 +10,7 @@
  * │      friends          (getFriends API → saveFriends DB)                  │
  * │      labels           (getLabels API  → appStore.setLabels)              │
  * │      quickMessages    (getQuickMessageList API → bulkReplaceLocalQM DB)  │
- * │      oldMessages      (requestOldMessages — fire-and-forget via listener)│
+ * │      oldMessages      (requestOldMessages - fire-and-forget via listener)│
  * │      groups → oldGroupMessages (chained: groups sync first,              │
  * │                                 then getGroupChatHistory per group)      │
  * │  → marks account as initialized in localStorage                          │
@@ -102,7 +102,7 @@ export function isAccountInitDone(zaloId: string): boolean {
 
 export function markAccountInitDone(zaloId: string): void {
   try {
-    // Write a clean record — intentionally DO NOT spread the existing record.
+    // Write a clean record - intentionally DO NOT spread the existing record.
     // Spreading would silently carry over any old `localDataVerifiedAt` value,
     // which would make Stage 2 skip the DB check on the next startup even if
     // the database was wiped or the storage path was changed.
@@ -144,13 +144,13 @@ function _wasLocalDataRecentlyVerified(zaloId: string): boolean {
  *
  * Three-stage logic:
  *
- *  Stage 1 — Never initialised (or outdated SYNC_VERSION):
+ *  Stage 1 - Never initialised (or outdated SYNC_VERSION):
  *    → force ALL 4 tasks to run.
  *
- *  Stage 2 — Already initialised AND local data was verified within the last 24 h:
+ *  Stage 2 - Already initialised AND local data was verified within the last 24 h:
  *    → nothing to do (fast path, no DB queries).
  *
- *  Stage 3 — Already initialised BUT local data has NOT been verified recently:
+ *  Stage 3 - Already initialised BUT local data has NOT been verified recently:
  *    → query the local DB for each persistent task (friends, quickMessages, groups).
  *    → if a table is empty, mark that task as needed so it re-syncs.
  *    → labels are NOT checked here because they live in appStore memory and are
@@ -170,7 +170,7 @@ export async function checkAccountInitNeeds(zaloId: string): Promise<InitNeeds> 
     return { friends: false, labels: false, quickMessages: false, groups: false, oldMessages: false, oldGroupMessages: false, any: false };
   }
 
-  // ── Stage 3: done but stale — check actual local DB data ─────────────────
+  // ── Stage 3: done but stale - check actual local DB data ─────────────────
   const [friendsRes, qmRes, contactsRes, localLabelsRes] = await Promise.allSettled([
     ipc.db?.getFriends({ zaloId }),
     ipc.db?.getLocalQuickMessages({ zaloId }),
@@ -200,8 +200,8 @@ export async function checkAccountInitNeeds(zaloId: string): Promise<InitNeeds> 
     labels:        localLabelCount === 0,  // local_labels DB (includes global labels visible to this account)
     quickMessages: qmCount === 0,
     groups:        groupCount === 0,
-    oldMessages:       false,  // Session-based — only runs on first init (Stage 1)
-    oldGroupMessages:  false,  // Session-based — only runs on first init (Stage 1)
+    oldMessages:       false,  // Session-based - only runs on first init (Stage 1)
+    oldGroupMessages:  false,  // Session-based - only runs on first init (Stage 1)
   };
 
   const any = needs.friends || needs.labels || needs.quickMessages || needs.groups || needs.oldMessages || needs.oldGroupMessages;
@@ -260,7 +260,7 @@ async function _syncFriends(
           }
         }
       } catch {
-        // Alias loading is non-fatal — continue to Step 3
+        // Alias loading is non-fatal - continue to Step 3
       }
 
       // ── Step 3: Batch fetch gender/birthday via getUserInfo ──────────────
@@ -352,7 +352,7 @@ async function _syncLabels(
         store.setLabelsVersion?.(activeAccountId, version);
         zaloLabelCount = zaloLabelData.length;
       }
-    } catch { /* non-fatal — continue to local clone step */ }
+    } catch { /* non-fatal - continue to local clone step */ }
 
     // ── Step 1b: Zalo API labels → local_labels DB (merge mode) ───────────
     let zaloToLocalCount = 0;
@@ -437,7 +437,7 @@ async function _syncQuickMessages(
 
 /**
  * Tải tin nhắn cũ toàn phiên đăng nhập qua listener.requestOldMessages
- * (fire-and-forget — messages arrive async via old_messages event)
+ * (fire-and-forget - messages arrive async via old_messages event)
  */
 async function _syncOldMessages(
   activeAccountId: string,
@@ -522,8 +522,8 @@ async function _syncOldGroupMessages(
  * Tasks already satisfied (data exists in DB/store) are marked 'skipped'.
  * Records completion in localStorage so it never runs again for this account.
  *
- *   friends, labels, quickMessages, oldMessages — run concurrently
- *   groups → oldGroupMessages — chained (old group msgs run AFTER groups sync)
+ *   friends, labels, quickMessages, oldMessages - run concurrently
+ *   groups → oldGroupMessages - chained (old group msgs run AFTER groups sync)
  */
 export async function runAccountInit(opts: AccountInitOptions): Promise<void> {
   const { activeAccountId, auth, onProgress, groupStopRef } = opts;

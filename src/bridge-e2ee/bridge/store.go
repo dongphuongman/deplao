@@ -316,7 +316,7 @@ func (ds *DeviceStore) DeleteOldBufferedHashes(ctx context.Context) error {
 }
 
 // EventBuffer outgoing-event methods (added in newer whatsmeow). We don't
-// persist outgoing events — the bridge is stateless w.r.t. retries.
+// persist outgoing events - the bridge is stateless w.r.t. retries.
 
 func (ds *DeviceStore) GetOutgoingEvent(ctx context.Context, chatJID, altChatJID waTypes.JID, id waTypes.MessageID) (string, []byte, error) {
 	return "", nil, nil

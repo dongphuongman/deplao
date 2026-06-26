@@ -1,5 +1,5 @@
 /**
- * DownloadDropdown — Nút tải xuống dạng dropdown dùng chung.
+ * DownloadDropdown - Nút tải xuống dạng dropdown dùng chung.
  * Dropdown dùng position:fixed để không bị clip bởi overflow:hidden của parent.
  */
 import { useState, useRef, useEffect } from 'react';
@@ -23,7 +23,7 @@ interface DownloadDropdownProps {
   wrapperClassName?: string;
 }
 
-const MENU_WIDTH = 240; // px — w-60
+const MENU_WIDTH = 240; // px - w-60
 
 const DownloadDropdown: React.FC<DownloadDropdownProps> = ({
   label = 'Tải xuống',
@@ -129,7 +129,7 @@ const DownloadDropdown: React.FC<DownloadDropdownProps> = ({
         </svg>
       </button>
 
-      {/* Dropdown — render vào document.body qua Portal
+      {/* Dropdown - render vào document.body qua Portal
           → thoát hoàn toàn khỏi mọi ancestor có transform/overflow:hidden */}
       {open && createPortal(
         <div

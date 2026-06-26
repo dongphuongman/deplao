@@ -166,7 +166,7 @@ function LocalMsgRow({
           </button>
         </div>
       </div>
-      {/* Account badge — only show when 2+ accounts are in filter */}
+      {/* Account badge - only show when 2+ accounts are in filter */}
       {showAccountBadge && (
         <div className="mt-2 pl-[calc(theme(spacing.10)+theme(spacing.3))] flex items-center gap-1.5">
           <div className="flex items-center gap-1.5 bg-gray-800 rounded-full px-2 py-0.5 border border-gray-700/50">
@@ -244,7 +244,7 @@ function LocalMsgModal({
     initialData?.owner_zalo_id || accounts[0]?.zalo_id || ''
   );
 
-  // Add mode: multi-select checkboxes — pre-select filterAccounts or all
+  // Add mode: multi-select checkboxes - pre-select filterAccounts or all
   const defaultSelected = !isEdit
     ? (filterAccounts.length > 0 ? filterAccounts : accounts.map(a => a.zalo_id))
     : [];
@@ -662,7 +662,7 @@ function HelpModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60]" onClick={onClose}>
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 max-w-lg w-full mx-4 shadow-2xl relative" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
-        <h3 className="text-lg font-bold text-white mb-4">⚡ Hướng dẫn — Tin nhắn nhanh</h3>
+        <h3 className="text-lg font-bold text-white mb-4">⚡ Hướng dẫn - Tin nhắn nhanh</h3>
 
         {/* Comparison table */}
         <div className="grid grid-cols-2 gap-3 mb-5 text-xs">
@@ -681,7 +681,7 @@ function HelpModal({ onClose }: { onClose: () => void }) {
           <div className="bg-gray-900/60 border border-gray-700/60 rounded-xl p-3.5">
             <p className="font-bold text-gray-400 mb-2.5 flex items-center gap-1.5">☁️ Zalo</p>
             <ul className="space-y-1.5 text-gray-400">
-              <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5 shrink-0">✗</span><span><strong className="text-red-300">Chỉ 1 tin nhắn nhanh</strong> — Zalo giới hạn rất ít</span></li>
+              <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5 shrink-0">✗</span><span><strong className="text-red-300">Chỉ 1 tin nhắn nhanh</strong> - Zalo giới hạn rất ít</span></li>
               <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5 shrink-0">✗</span><span>Chỉ đính kèm <strong className="text-red-300">1 ảnh</strong>, không hỗ trợ video</span></li>
               <li className="flex items-start gap-1.5"><span className="text-green-400 mt-0.5 shrink-0">✓</span><span className="text-gray-400">Đồng bộ trên điện thoại Zalo</span></li>
             </ul>
@@ -953,7 +953,7 @@ export default function QuickMessageSettings({ accounts, filterAccounts, searchT
             >{src.label}</button>
           ))}
         </div>
-        {/* Help button — right next to tabs */}
+        {/* Help button - right next to tabs */}
         <button onClick={() => setShowHelp(true)} title="Hướng dẫn sử dụng"
           className="p-1.5 hover:bg-gray-700 rounded-full text-gray-500 hover:text-blue-400 transition-colors">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

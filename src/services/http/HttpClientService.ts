@@ -4,7 +4,7 @@ import EventBroadcaster from '../event/EventBroadcaster';
 import DataSyncService, { SyncPayload } from '../employee/DataSyncService';
 
 /**
- * HttpClientService — Employee side only.
+ * HttpClientService - Employee side only.
  * Replaces SocketClientService.
  *
  * - Runs a lightweight HTTP server to receive pushed events from Boss
@@ -33,7 +33,7 @@ class HttpClientService {
     /** Track consecutive heartbeat failures to trigger SSE reconnect */
     private consecutiveHeartbeatFailures = 0;
 
-    /** SSE watchdog — detect silent TCP drops that res.on('end') never fires for */
+    /** SSE watchdog - detect silent TCP drops that res.on('end') never fires for */
     private lastSseDataAt = 0;
     private sseWatchdogTimer: ReturnType<typeof setInterval> | null = null;
     private static SSE_WATCHDOG_INTERVAL = 30_000; // check every 30s
@@ -161,7 +161,7 @@ class HttpClientService {
                 this.callbackUrl = `http://${this.getLocalIP()}:${this.localPort}`;
                 Logger.log(`[HttpClientService] LAN callback server ready at ${this.callbackUrl}`);
             } catch {
-                // WAN-only mode — local server not needed, SSE is the only channel
+                // WAN-only mode - local server not needed, SSE is the only channel
                 Logger.log('[HttpClientService] Local server not available (WAN-only mode)');
             }
 
@@ -195,7 +195,7 @@ class HttpClientService {
                     this.onInitialState?.(snapshot.snapshot);
                 }
             } catch (_) {
-                // Non-critical — snapshot comes via SSE push
+                // Non-critical - snapshot comes via SSE push
             }
 
             return { success: true };
@@ -458,9 +458,9 @@ class HttpClientService {
         }
     }
 
-    // ─── Local HTTP Server (legacy fallback — kept for backward compat) ──
+    // ─── Local HTTP Server (legacy fallback - kept for backward compat) ──
 
-    /** Local HTTP server for LAN callback fallback — boss can push events via POST when SSE is down. */
+    /** Local HTTP server for LAN callback fallback - boss can push events via POST when SSE is down. */
     private startLocalServer(): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.localServer) {
@@ -545,7 +545,7 @@ class HttpClientService {
         }
 
         // Forward Zalo events to local EventBroadcaster
-        // Use sendDirect to bypass onBeforeSend hooks — prevents infinite relay loop
+        // Use sendDirect to bypass onBeforeSend hooks - prevents infinite relay loop
         // when HttpRelayService hooks are active in the same process.
         if (channel === 'event:message' && data?.zaloId && data?.message) {
             this.saveRelayMessageToWorkspaceDb(data.zaloId, data.message);
@@ -559,14 +559,14 @@ class HttpClientService {
             return;
         }
 
-        // Persist undo/recall to employee DB — boss uses runOnBossDb, so employee DB
+        // Persist undo/recall to employee DB - boss uses runOnBossDb, so employee DB
         // must be updated separately on the employee side.
         if (channel === 'event:undo' && data?.zaloId && data?.msgId) {
             this.saveRelayRecallToWorkspaceDb('event:undo', data, data.zaloId, [String(data.msgId)], data.threadId);
             return;
         }
 
-        // Persist delete (chat.delete) to employee DB — same as undo, mark as recalled.
+        // Persist delete (chat.delete) to employee DB - same as undo, mark as recalled.
         if (channel === 'event:delete' && data?.zaloId && Array.isArray(data?.msgIds) && data.msgIds.length) {
             this.saveRelayRecallToWorkspaceDb('event:delete', data, data.zaloId, data.msgIds.map(String), data.threadId);
             return;
@@ -634,7 +634,7 @@ class HttpClientService {
             return;
         }
 
-        // ── Contact alias — persist + forward to employee renderer ──
+        // ── Contact alias - persist + forward to employee renderer ──
         if (channel === 'db:contactAliasChanged' && data) {
             try {
                 const DatabaseService = require('../database/DatabaseService').default;
@@ -826,7 +826,7 @@ class HttpClientService {
     private connectSSE(): void {
         if (!this.connected) return;
         if (this.sseReq) {
-            Logger.warn(`[HttpClientService] connectSSE() called while existing SSE request active — destroying old`);
+            Logger.warn(`[HttpClientService] connectSSE() called while existing SSE request active - destroying old`);
             try { this.sseReq.destroy(); } catch {}
             this.sseReq = null;
         } else {
@@ -893,7 +893,7 @@ class HttpClientService {
 
                     // Fire reconnect callback (not on first connect, only on reconnect)
                     if (this.sseWasConnected) {
-                        Logger.log('[HttpClientService] 🔄 SSE reconnected — notifying for delta sync');
+                        Logger.log('[HttpClientService] 🔄 SSE reconnected - notifying for delta sync');
                         try { this.onSSEReconnected?.(); } catch {}
                     }
                     this.sseWasConnected = true;
@@ -918,7 +918,7 @@ class HttpClientService {
                                 } catch { /* ignore malformed events */ }
                                 eventData = '';
                             }
-                            // Lines starting with ':' are comments/keepalive — also mark alive
+                            // Lines starting with ':' are comments/keepalive - also mark alive
                             else if (line.startsWith(':')) {
                                 this.lastSseDataAt = Date.now();
                             }
@@ -1019,7 +1019,7 @@ class HttpClientService {
         this.sseWatchdogTimer = setInterval(() => {
             if (!this.sseConnected || !this.connected) return;
             if (this.lastSseDataAt > 0 && Date.now() - this.lastSseDataAt > HttpClientService.SSE_STALE_THRESHOLD) {
-                Logger.warn(`[HttpClientService] ⏰ SSE watchdog: no data for ${Math.round((Date.now() - this.lastSseDataAt) / 1000)}s — forcing reconnect`);
+                Logger.warn(`[HttpClientService] ⏰ SSE watchdog: no data for ${Math.round((Date.now() - this.lastSseDataAt) / 1000)}s - forcing reconnect`);
                 this.sseConnected = false;
                 if (this.sseReq) {
                     try { this.sseReq.destroy(); } catch {}
@@ -1044,7 +1044,7 @@ class HttpClientService {
     /**
      * Save a relayed reaction to this employee workspace's DB, then send to renderer.
      * Uses withDbPath to target the correct DB when another workspace is active.
-     * Mirrors saveRelayMessageToWorkspaceDb — ensures boss reactions are persisted
+     * Mirrors saveRelayMessageToWorkspaceDb - ensures boss reactions are persisted
      * on the employee side even when the employee workspace is not the active window.
      */
     private saveRelayReactionToWorkspaceDb(zaloId: string, reaction: any): void {
@@ -1112,7 +1112,7 @@ class HttpClientService {
 
     /**
      * Mark relayed recalled/deleted messages in this employee workspace's DB.
-     * Called for event:undo and event:delete — both just mark messages as recalled.
+     * Called for event:undo and event:delete - both just mark messages as recalled.
      * Uses withDbPath to target the correct DB when another workspace is active.
      */
     private saveRelayRecallToWorkspaceDb(_channel: string, _originalData: any, zaloId: string, msgIds: string[], threadId?: string): void {
@@ -1202,7 +1202,7 @@ class HttpClientService {
                 });
                 Logger.log(`[HttpClientService] Saved relay message to ${targetDbPath} via withDbPath`);
             } else {
-                // Active DB IS our workspace — save directly
+                // Active DB IS our workspace - save directly
                 db.saveMessage(zaloId, message);
                 // Persist employee sender info so it survives conversation reload
                 const empInfo = message.data?._employeeInfo;
@@ -1215,7 +1215,7 @@ class HttpClientService {
 
             // Only send to renderer when THIS employee workspace is the active one.
             // When boss workspace is active, the boss's broadcastMessage.send() already
-            // sent to renderer — sending again would cause double notification.
+            // sent to renderer - sending again would cause double notification.
             const activeWsId = wm.getActiveWorkspaceId();
             if (activeWsId === this.workspaceId) {
                 EventBroadcaster.sendDirect('event:message', { zaloId, message });
@@ -1233,7 +1233,7 @@ class HttpClientService {
 
             const start = Date.now();
             try {
-                // Send callbackUrl for LAN fallback — boss can push via HTTP POST if SSE is down
+                // Send callbackUrl for LAN fallback - boss can push via HTTP POST if SSE is down
                 const result = await this.httpPost(
                     `${this.bossUrl}/api/auth/heartbeat`,
                     { callbackUrl: this.callbackUrl },
@@ -1256,7 +1256,7 @@ class HttpClientService {
                     }
                     // After MAX failures, mark as disconnected so health check can trigger full reconnect
                     if (this.consecutiveHeartbeatFailures >= HttpClientService.MAX_HEARTBEAT_FAILURES) {
-                        Logger.warn(`[HttpClientService] ${this.consecutiveHeartbeatFailures} consecutive heartbeat failures — marking disconnected`);
+                        Logger.warn(`[HttpClientService] ${this.consecutiveHeartbeatFailures} consecutive heartbeat failures - marking disconnected`);
                         this.connected = false;
                         this.onStatusChange?.(false, 0);
                     }
@@ -1273,7 +1273,7 @@ class HttpClientService {
                 }
                 // After MAX failures, mark as disconnected so health check can trigger full reconnect
                 if (this.consecutiveHeartbeatFailures >= HttpClientService.MAX_HEARTBEAT_FAILURES) {
-                    Logger.warn(`[HttpClientService] ${this.consecutiveHeartbeatFailures} consecutive heartbeat failures (error) — marking disconnected`);
+                    Logger.warn(`[HttpClientService] ${this.consecutiveHeartbeatFailures} consecutive heartbeat failures (error) - marking disconnected`);
                     this.connected = false;
                     this.onStatusChange?.(false, 0);
                 }
@@ -1313,7 +1313,7 @@ class HttpClientService {
     private parseJsonResponse(data: string): any {
         const trimmed = data.trimStart();
         if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!doctype')) {
-            // HTML interstitial — likely a tunnel challenge page
+            // HTML interstitial - likely a tunnel challenge page
             Logger.warn('[HttpClientService] Received HTML response instead of JSON (tunnel interstitial?)');
             return {
                 success: false,

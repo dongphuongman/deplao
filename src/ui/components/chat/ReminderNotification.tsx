@@ -40,7 +40,7 @@ export default function ReminderNotification({ data, onClose, onOpenThread }: Pr
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
 
-      // Melody "xylophone reminder" — 4 vòng lặp, 2 phrase xen kẽ
+      // Melody "xylophone reminder" - 4 vòng lặp, 2 phrase xen kẽ
       // C5–E5–G5–E5–C6 / D5–F5–A5–F5–D6
       const melodies: number[][] = [
         [523.25, 659.25, 783.99, 659.25, 1046.50],
@@ -115,7 +115,7 @@ export default function ReminderNotification({ data, onClose, onOpenThread }: Pr
         } catch {}
       };
     } catch {
-      // AudioContext không khả dụng — bỏ qua
+      // AudioContext không khả dụng - bỏ qua
     }
 
     return () => {

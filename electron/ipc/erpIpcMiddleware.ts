@@ -23,7 +23,7 @@ export type ErpHandler<TInput, TOutput extends object> = (
  *
  * The inner `handler(input, ctx, event)` may return any object; its keys are
  * merged into `{ success: true, ... }`. Throwing is the ONLY way to signal
- * error — validation helpers should throw `new Error('...')`.
+ * error - validation helpers should throw `new Error('...')`.
  */
 export function withErpAuth<TInput = any, TOutput extends object = any>(
   action: string | null,
@@ -53,7 +53,7 @@ export function withErpAuth<TInput = any, TOutput extends object = any>(
   };
 }
 
-/** Lightweight runtime validators — throw on mismatch. */
+/** Lightweight runtime validators - throw on mismatch. */
 export const erpValidate = {
   string(v: any, field: string, opts: { min?: number; max?: number; allowEmpty?: boolean } = {}): string {
     if (typeof v !== 'string') throw new Error(`${field}: must be string`);

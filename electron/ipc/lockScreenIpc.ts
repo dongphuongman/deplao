@@ -300,14 +300,14 @@ export function registerLockScreenIpc() {
 
 /** Check if biometric hardware is available on this machine */
 function checkBiometricAvailable(): boolean {
-    // Disabled — password-only unlock
+    // Disabled - password-only unlock
     return false;
 }
 
 /** Prompt Windows Hello verification via WinRT UserConsentVerifier */
 function promptWindowsHello(): Promise<boolean> {
     return new Promise((resolve) => {
-        // Use reflection to load WinRT types — works across PS 5.1 and 7
+        // Use reflection to load WinRT types - works across PS 5.1 and 7
         // Returns: 0=Verified, 1=Canceled, 2=RetriesExhausted, 99=NotAvailable, -1=Error
         const bt = '`'; // backtick char for PowerShell generic type name
         const psScript =

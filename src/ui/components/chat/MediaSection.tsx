@@ -1,11 +1,11 @@
 /**
- * MediaSection — component dùng chung cho ConversationInfo (user) và GroupInfoPanel (nhóm)
+ * MediaSection - component dùng chung cho ConversationInfo (user) và GroupInfoPanel (nhóm)
  *
  * Chế độ preview (nằm trong panel info):
  *   - Ảnh/Video: grid 3×2, tối đa 6 ảnh, nếu ≥ ngưỡng → nút "Xem tất cả"
  *   - File / Link: list, tối đa 3 item, nếu ≥ ngưỡng → nút "Xem tất cả"
  *
- * Chế độ detail (thay thế toàn bộ panel — giống MembersPanel):
+ * Chế độ detail (thay thế toàn bộ panel - giống MembersPanel):
  *   - Pagination 50 item/trang, scroll đến cuối → tự load trang tiếp
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -354,7 +354,7 @@ function groupByDateLabel(items: any[]): Array<{ label: string; items: any[] }> 
   return groups;
 }
 
-// ─── Detail panel — thay thế toàn bộ panel (giống MembersPanel) ──────────────
+// ─── Detail panel - thay thế toàn bộ panel (giống MembersPanel) ──────────────
 function MediaDetailPanel({ threadId, activeAccountId, tab, onBack }: {
   threadId: string;
   activeAccountId: string;
@@ -403,7 +403,7 @@ function MediaDetailPanel({ threadId, activeAccountId, tab, onBack }: {
     loadPage(activeTab, 0);
   }, [activeTab, activeAccountId, threadId]);
 
-  // Infinite scroll — sentinel
+  // Infinite scroll - sentinel
   useEffect(() => {
     const el = bottomRef.current;
     if (!el) return;
@@ -420,7 +420,7 @@ function MediaDetailPanel({ threadId, activeAccountId, tab, onBack }: {
 
   return (
     <div className="w-72 h-full flex-shrink-0 bg-gray-800 border-l border-gray-700 flex flex-col overflow-hidden">
-      {/* Header — giống MembersPanel */}
+      {/* Header - giống MembersPanel */}
       <div className="flex items-center gap-2 px-3 py-3 border-b border-gray-700">
         <button onClick={onBack}
           className="p-1 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white transition-colors">
@@ -457,7 +457,7 @@ function MediaDetailPanel({ threadId, activeAccountId, tab, onBack }: {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        {/* Image grid — grouped by date */}
+        {/* Image grid - grouped by date */}
         {activeTab === 'image' && (() => {
           const displayableItems = items.filter(msg => {
             const isVid = msg.msg_type === 'chat.video.msg' || msg.msg_type === 'video';

@@ -1,5 +1,5 @@
 /**
- * MessageBubbles — Component chung render tất cả loại tin nhắn
+ * MessageBubbles - Component chung render tất cả loại tin nhắn
  * Dùng cho cả ChatWindow và QuickChatModal để tránh duplicate code
  * Style khớp với ChatWindow.tsx
  */
@@ -143,6 +143,10 @@ function isVoiceType(msgType: string): boolean {
   return msgType === 'chat.voice' || msgType === 'audio';
 }
 
+function isLocationType(msgType: string): boolean {
+  return msgType === 'chat.location.new';
+}
+
 // ── RTF style constants ───────────────────────────────────────────────────────
 const RTF_COLOR_MAP: Record<string, string> = {
   'c_db342e': '#db342e', 'c_f27806': '#f27806',
@@ -191,7 +195,7 @@ function StickerBubble({ msg }: { msg: any }) {
         const hasDirectPath = atts[0]?.directPath;
         const hasUrl = atts[0]?.url;
         if (msg.isE2EE && !hasDirectPath && !hasUrl) {
-          console.log(`[StickerBubble] E2EE sticker without URL/directPath — bridge limitation, marking unsupported`);
+          console.log(`[StickerBubble] E2EE sticker without URL/directPath - bridge limitation, marking unsupported`);
           if (!cancelled) setUnsupported(true);
           return;
         }
@@ -250,7 +254,7 @@ function StickerBubble({ msg }: { msg: any }) {
         const auth = { cookies: active.cookies, imei: active.imei, userAgent: active.user_agent };
         const detailRes = await ipc.zalo?.getStickersDetail({ auth, stickerIds: [stickerId] });
         if (!detailRes?.success) {
-          // API call failed (e.g. disconnected) — mark unsupported
+          // API call failed (e.g. disconnected) - mark unsupported
           ipc.db?.markStickerUnsupported({ stickerId }).catch(() => {});
           if (!cancelled) setUnsupported(true);
           return;
@@ -260,7 +264,7 @@ function StickerBubble({ msg }: { msg: any }) {
           if (!cancelled) setStickerUrl(stickers[0].stickerUrl);
           ipc.db?.saveStickers({ stickers }).catch(() => {});
         } else {
-          // Empty result — mark unsupported
+          // Empty result - mark unsupported
           ipc.db?.markStickerUnsupported({ stickerId }).catch(() => {});
           if (!cancelled) setUnsupported(true);
         }
@@ -532,7 +536,7 @@ function FacebookVideoBubble({ msg }: { msg: any }) {
   return (
     <div className="relative group/video cursor-pointer rounded-xl overflow-hidden bg-black ring-1 ring-black/[0.12]"
       style={{ width: '17.5rem', height: 160 }} onClick={() => { if (videoUrl) setShowPlayer(true); }}>
-      {/* No thumbnail for FB — always show video placeholder */}
+      {/* No thumbnail for FB - always show video placeholder */}
       <div className="w-full h-full bg-gray-800 flex items-center justify-center">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-600">
           <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
@@ -712,6 +716,55 @@ function VoiceBubble({ msg, isSelf }: { msg: any; isSelf: boolean }) {
         <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
         <path d="M19 10v2a7 7 0 01-14 0v-2"/>
       </svg>
+    </div>
+  );
+}
+
+// ── LocationBubble ──────────────────────────────────────────────────────────────
+function LocationBubble({ msg, isSelf }: { msg: any; isSelf: boolean }) {
+  const { lat, lng, description } = React.useMemo(() => {
+    try {
+      const parsed = JSON.parse(msg.content || '{}');
+      const params = typeof parsed.params === 'string'
+        ? JSON.parse(parsed.params || '{}')
+        : (parsed.params || {});
+      return {
+        lat: params.latitude || '',
+        lng: params.longitude || '',
+        description: parsed.description || '',
+      };
+    } catch { return { lat: '', lng: '', description: '' }; }
+  }, [msg.content]);
+
+  const mapsUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : '';
+
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (mapsUrl) ipc.shell?.openExternal(mapsUrl);
+  };
+
+  return (
+    <div className={`flex ${isSelf ? 'justify-end' : 'justify-start'} mb-0.5`}>
+      <button
+        onClick={handleOpen}
+        className={`rounded-2xl max-w-[260px] text-left ${isSelf ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-200'} hover:opacity-85 transition-opacity cursor-pointer`}
+      >
+        <div className="px-3 py-2.5 flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-400 flex-shrink-0">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <div className="min-w-0 flex-1">
+            <span className="text-sm font-medium">📍 Vị trí</span>
+            {description && <span className="text-xs opacity-80 ml-1">· {description}</span>}
+          </div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-50 flex-shrink-0">
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </div>
+      </button>
     </div>
   );
 }
@@ -957,7 +1010,7 @@ function LinkBubble({ parsed, isSelf }: { parsed: any; isSelf: boolean }) {
 
   return (
     <div className={`rounded-2xl min-w-[220px] max-w-xs overflow-hidden ${isSelf ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-200'}`}>
-      {/* Top area: selectable/copyable text — NOT clickable */}
+      {/* Top area: selectable/copyable text - NOT clickable */}
       <div className="flex items-center gap-3 px-3 py-2.5 select-text cursor-text">
         <div className={`w-11 h-11 rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center ${isSelf ? 'bg-blue-500' : 'bg-gray-600'}`}>
           {thumb
@@ -1138,7 +1191,7 @@ function ContactCardBubble({ parsed, isSelf, onOpenProfile }: { parsed: any; isS
       className={`rounded-2xl max-w-[340px] ${isSelf ? 'bg-blue-600/70 text-white' : 'bg-gray-700 text-gray-200'}`}
     >
       <div className="flex items-center gap-3.5 px-4 py-3.5 select-text">
-        {/* Avatar — click mở profile */}
+        {/* Avatar - click mở profile */}
         <div
           className={`card-avatar-area w-14 h-14 rounded-full overflow-hidden flex-shrink-0 bg-gray-600 ${resolvedUserId && onOpenProfile ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
           onClick={handleOpenProfile}
@@ -1175,7 +1228,7 @@ function ContactCardBubble({ parsed, isSelf, onOpenProfile }: { parsed: any; isS
             </svg>
             Gửi tin nhắn
           </button>
-          {/* Nút kết bạn — chỉ hiện nếu chưa là bạn bè */}
+          {/* Nút kết bạn - chỉ hiện nếu chưa là bạn bè */}
           {!isFriend && !isSelf && (
             <button
               onClick={handleAddFriend}
@@ -1278,7 +1331,7 @@ function RtfBubble({ msg }: { msg: any }) {
   return <span className="whitespace-pre-wrap">{nodes}</span>;
 }
 
-// ── BankCardBubble (shared component — dùng chung cho ChatWindow & QuickChat) ─
+// ── BankCardBubble (shared component - dùng chung cho ChatWindow & QuickChat) ─
 
 const BANK_CARD_COLORS: Record<number, { name: string; color: string }> = {
   970436: { name: 'Vietcombank', color: '#00663b' }, 970415: { name: 'VietinBank', color: '#004a91' },
@@ -1296,7 +1349,7 @@ const BANK_CARD_COLORS: Record<number, { name: string; color: string }> = {
 
 /**
  * Tìm binBank/numAccBank/nameAccBank đệ quy trong object bất kỳ.
- * Zalo webhook trả content với nhiều cấu trúc khác nhau — cần deep search.
+ * Zalo webhook trả content với nhiều cấu trúc khác nhau - cần deep search.
  */
 function deepFindBankFields(obj: any, depth = 0): { binBank: number; numAccBank: string; nameAccBank: string } | null {
   if (!obj || typeof obj !== 'object' || depth > 8) return null;
@@ -1332,7 +1385,7 @@ function deepFindBankFields(obj: any, depth = 0): { binBank: number; numAccBank:
  *  A) Structured: { action, params: { item: { binBank, numAccBank, nameAccBank } } }
  *     → Parse trực tiếp, render custom UI.
  *  B) ZInstant template: { action, params: { item: { data_url, data_type, ... } } }
- *     → Không chứa binBank/numAccBank — cần fetch data_url hoặc dùng cache.
+ *     → Không chứa binBank/numAccBank - cần fetch data_url hoặc dùng cache.
  */
 function parseBankCardFromContent(content: string): { binBank: number; numAccBank: string; nameAccBank: string } | null {
   try {
@@ -1647,7 +1700,7 @@ export function MessageBubble({ msg, isSelf, senderName, onManage, onView, onOpe
     );
   }
 
-  // ── Bank Card (webcontent + zinstant.bankcard) — must be before media/file/card checks ──
+  // ── Bank Card (webcontent + zinstant.bankcard) - must be before media/file/card checks ──
   if (isBankCardType(mt, mc)) {
     return (
       <div className={`flex ${isSelf ? 'justify-end' : 'justify-start'} mb-0.5`}>
@@ -1681,6 +1734,11 @@ export function MessageBubble({ msg, isSelf, senderName, onManage, onView, onOpe
         <CardBubble msg={msg} isSelf={isSelf} onOpenProfile={onOpenProfile} />
       </div>
     );
+  }
+
+  // ── Location ──
+  if (isLocationType(mt)) {
+    return <LocationBubble msg={msg} isSelf={isSelf} />;
   }
 
   // ── Text (default) ──
@@ -1736,7 +1794,7 @@ export function MessageBubble({ msg, isSelf, senderName, onManage, onView, onOpe
   );
 }
 
-// ─── RecalledBubble — hàm chung hiển thị tin nhắn đã thu hồi ──────────────────
+// ─── RecalledBubble - hàm chung hiển thị tin nhắn đã thu hồi ──────────────────
 // Dùng chung cho ChatWindow và bất kỳ nơi nào render recalled messages.
 export function RecalledBubble({
   msg,

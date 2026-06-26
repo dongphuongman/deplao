@@ -51,7 +51,7 @@ export interface ContactItem {
   owner_zalo_id: string;
   contact_id: string;
   display_name: string;
-  /** Biệt danh do người dùng đặt — ưu tiên hiển thị hơn display_name */
+  /** Biệt danh do người dùng đặt - ưu tiên hiển thị hơn display_name */
   alias?: string;
   avatar_url: string;
   phone?: string;
@@ -105,11 +105,11 @@ interface ChatStore {
   /** Sync is_replied dựa trên tin nhắn cuối thực tế (gọi sau khi load messages) */
   syncRepliedState: (zaloId: string, contactId: string, ownZaloId: string) => void;
   setReplyTo: (msg: MessageItem | null) => void;
-  /** Lưu draft cho thread (gọi khi chuyển thread hoặc khi text thay đổi) — debounced persist to DB */
+  /** Lưu draft cho thread (gọi khi chuyển thread hoặc khi text thay đổi) - debounced persist to DB */
   setDraft: (zaloId: string, threadId: string, text: string) => void;
   /** Xoá draft cho thread (gọi khi gửi tin nhắn thành công) */
   clearDraft: (zaloId: string, threadId: string) => void;
-  /** Load tất cả drafts cho account từ DB — gọi khi khởi tạo hoặc switch account */
+  /** Load tất cả drafts cho account từ DB - gọi khi khởi tạo hoặc switch account */
   loadDrafts: (zaloId: string) => Promise<void>;
   removeMessage: (zaloId: string, threadId: string, msgId: string) => void;
   recallMessage: (zaloId: string, msgId: string, threadId?: string) => void;
@@ -127,7 +127,7 @@ interface ChatStore {
   // Per-account last active thread (restored when switching back)
   perAccountThread: Record<string, { threadId: string; threadType: number } | null>;
   saveAccountThread: (accountId: string, threadId: string, threadType: number) => void;
-  /** Reset all chat state when switching workspace — clears messages cache, active thread, etc. */
+  /** Reset all chat state when switching workspace - clears messages cache, active thread, etc. */
   resetForWorkspaceSwitch: () => void;
 }
 
@@ -192,7 +192,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           })
         : messages;
 
-      // Evict old cached threads to cap memory — keep active thread + 20 most recent
+      // Evict old cached threads to cap memory - keep active thread + 20 most recent
       const MAX_CACHED_THREADS = 20;
       let newMessages = { ...state.messages, [key]: merged };
       const threadKeys = Object.keys(newMessages);
@@ -550,7 +550,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     set((state) => {
       const updatedMessages = { ...state.messages };
       const msgIdStr = String(msgId);
-      // threadId=0 ("0") is invalid — search all threads by msgId
+      // threadId=0 ("0") is invalid - search all threads by msgId
       const keysToCheck = threadId && threadId !== '0'
         ? [`${zaloId}_${threadId}`]
         : Object.keys(updatedMessages).filter(k => k.startsWith(zaloId + '_'));
@@ -678,7 +678,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const key = `${zaloId}_${threadId}`;
     set((state) => {
       const prev = state.seenInfo[key];
-      // Merge UIDs — deduplicate, keep union
+      // Merge UIDs - deduplicate, keep union
       const prevUids = prev?.seenUids || [];
       const merged = Array.from(new Set([...prevUids, ...seenUids]));
       return {

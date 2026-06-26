@@ -132,7 +132,15 @@ export default function MessageContextMenu({
       else {
         try {
           const parsed = JSON.parse(c);
-          if (typeof parsed === 'string') text = parsed;
+          // Location message: include Google Maps link
+          if (msg.msg_type === 'chat.location.new') {
+            const params = typeof parsed?.params === 'string' ? JSON.parse(parsed.params) : (parsed?.params || {});
+            const lat = params?.latitude;
+            const lng = params?.longitude;
+            const desc = parsed?.description || 'Vị trí';
+            text = `📍 ${desc}`;
+            if (lat && lng) text += `\nhttps://www.google.com/maps?q=${lat},${lng}`;
+          } else if (typeof parsed === 'string') text = parsed;
           else if (parsed?.msg) text = String(parsed.msg);
           else if (parsed?.message) text = String(parsed.message);
           else if (parsed?.content && typeof parsed.content === 'string') text = parsed.content;
@@ -141,6 +149,11 @@ export default function MessageContextMenu({
         } catch { text = c; }
       }
       navigator.clipboard.writeText(text).catch(() => {});
+      if (msg.msg_type === 'chat.location.new') {
+        showNotification?.('Đã sao chép vị trí + link Maps', 'success');
+        onClose();
+        return;
+      }
     } catch {}
     onClose();
   };
@@ -245,12 +258,12 @@ export default function MessageContextMenu({
         <MenuItem icon="☑" label="Chọn tin nhắn" onClick={() => { onSelectMessages(msg); onClose(); }} />
       )}
 
-      {/* Sao chép text — cho tin nhắn text và link */}
+      {/* Sao chép text - cho tin nhắn text và link */}
       {!isFile && !isMedia && !isVideo && (
         <MenuItem icon="📋" label="Sao chép" onClick={handleCopy} />
       )}
 
-      {/* Sao chép link — chỉ cho tin nhắn link */}
+      {/* Sao chép link - chỉ cho tin nhắn link */}
       {isLink && (
         <MenuItem
           icon={
@@ -265,7 +278,7 @@ export default function MessageContextMenu({
         />
       )}
 
-      {/* Sao chép ảnh vào clipboard — chỉ cho ảnh, không cho video */}
+      {/* Sao chép ảnh vào clipboard - chỉ cho ảnh, không cho video */}
       {isMedia && (
         <MenuItem
           icon={
@@ -278,7 +291,7 @@ export default function MessageContextMenu({
         />
       )}
 
-      {/* Mở trong thư mục — cho file, ảnh, video */}
+      {/* Mở trong thư mục - cho file, ảnh, video */}
       {(isFile || isMedia || isVideo) && (
         <MenuItem
           icon={
@@ -291,7 +304,7 @@ export default function MessageContextMenu({
         />
       )}
 
-      {/* Lưu về máy — cho file, ảnh, video */}
+      {/* Lưu về máy - cho file, ảnh, video */}
       {(isFile || isMedia || isVideo) && (
         <MenuItem
           icon={

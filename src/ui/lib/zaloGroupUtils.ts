@@ -261,7 +261,7 @@ async function _syncSingleGroup(opts: SyncGroupsOptions): Promise<void> {
       return;
     }
 
-    // Build placeholders (empty names — will be enriched)
+    // Build placeholders (empty names - will be enriched)
     placeholders = memberIds.map(memberId => {
       let role = 0;
       if (memberId === creatorId) role = 2;

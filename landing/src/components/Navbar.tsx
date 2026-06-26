@@ -48,7 +48,7 @@ const Navbar: React.FC = () => {
           ))}
         </div>
 
-        {/* CTA — dùng DownloadDropdown chung */}
+        {/* CTA - dùng DownloadDropdown chung */}
         <div className="hidden md:flex items-center gap-3">
           <DownloadDropdown
             label="Tải xuống"

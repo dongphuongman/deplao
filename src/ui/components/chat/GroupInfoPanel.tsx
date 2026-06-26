@@ -116,7 +116,7 @@ export default function GroupInfoPanel() {
   };
 
 
-  // Load pin status on thread change — only for channels that support it
+  // Load pin status on thread change - only for channels that support it
   useEffect(() => {
     if (!activeThreadId || !channelCap.supportsPinConversation) return;
     setIsPinned(false);
@@ -128,7 +128,7 @@ export default function GroupInfoPanel() {
     }).catch(() => {});
   }, [activeThreadId, channelCap.supportsPinConversation]);
 
-  // Load local pin status — cho FB và các kênh không hỗ trợ Zalo API pin
+  // Load local pin status - cho FB và các kênh không hỗ trợ Zalo API pin
   useEffect(() => {
     if (!activeAccountId || !activeThreadId) return;
     ipc.db?.getLocalPinnedConversations({ zaloId: activeAccountId })
@@ -183,7 +183,7 @@ export default function GroupInfoPanel() {
     setMuted(activeAccountId, activeThreadId, until);
     showNotification('Đã tắt thông báo', 'success');
     setMuteDropdownOpen(false);
-    // Gọi API đồng bộ lên Zalo (fire-and-forget) — chỉ khi kênh hỗ trợ
+    // Gọi API đồng bộ lên Zalo (fire-and-forget) - chỉ khi kênh hỗ trợ
     if (channelCap.supportsMuteSync) {
       const auth = getAuth();
       if (auth) {
@@ -197,7 +197,7 @@ export default function GroupInfoPanel() {
     if (!activeAccountId || !activeThreadId) return;
     clearMuted(activeAccountId, activeThreadId);
     showNotification('Đã bật thông báo', 'success');
-    // Gọi API đồng bộ lên Zalo (fire-and-forget) — chỉ khi kênh hỗ trợ
+    // Gọi API đồng bộ lên Zalo (fire-and-forget) - chỉ khi kênh hỗ trợ
     if (channelCap.supportsMuteSync) {
       const auth = getAuth();
       if (auth) {
@@ -208,7 +208,7 @@ export default function GroupInfoPanel() {
 
   // Load group info on mount / thread change
   // Chỉ đọc từ cache (DB đã được ChatWindow load sẵn khi click hội thoại)
-  // KHÔNG tự gọi API — fetchGroupInfo chỉ chạy khi user bấm nút refresh thủ công
+  // KHÔNG tự gọi API - fetchGroupInfo chỉ chạy khi user bấm nút refresh thủ công
   useEffect(() => {
     if (!activeThreadId || !activeAccountId) return;
 
@@ -322,7 +322,7 @@ export default function GroupInfoPanel() {
       const idsFromCurrentMems: string[] = Array.from(currentMemMap.keys()).filter(id => /^\d+$/.test(id));
       const idsFromMemVer: string[] = memVerIds.map(id => id.replace(/_0$/, '').trim()).filter(id => /^\d+$/.test(id));
 
-      console.log('[GroupInfoPanel] Group sources — memberIds:', idsFromMemberIds.length,
+      console.log('[GroupInfoPanel] Group sources - memberIds:', idsFromMemberIds.length,
         'currentMems:', idsFromCurrentMems.length,
         'memVerList:', idsFromMemVer.length,
         'hasMoreMember:', gData.hasMoreMember,
@@ -396,7 +396,7 @@ export default function GroupInfoPanel() {
         groupId: threadId,
         memberIds,
         placeholders,
-        // Phase 1: empty placeholders saved to DB — keep initialInfo in cache
+        // Phase 1: empty placeholders saved to DB - keep initialInfo in cache
         // to avoid showing a blank member list during enrichment.
         onPhase1Done: async () => { /* intentionally no cache update here */ },
         // Phase 2 complete: enriched data in DB → refresh cache
@@ -492,7 +492,7 @@ export default function GroupInfoPanel() {
   // ─── Main info view ───────────────────────────────────────────────────────
   return (
     <div className="w-72 h-full flex-shrink-0 bg-gray-800 border-l border-gray-700 flex flex-col overflow-y-auto">
-      {/* Header — with close + refresh buttons */}
+      {/* Header - with close + refresh buttons */}
       <div className="flex items-center px-3 py-3 border-b border-gray-700">
         <button
           title="Đóng"
@@ -601,7 +601,7 @@ export default function GroupInfoPanel() {
         </div>
       )}
 
-      {/* Member list section — chỉ hiển thị số lượng, click để xem chi tiết */}
+      {/* Member list section - chỉ hiển thị số lượng, click để xem chi tiết */}
       {groupInfo && (
         <button
           onClick={() => setPanelView('members')}
@@ -620,7 +620,7 @@ export default function GroupInfoPanel() {
         </button>
       )}
 
-      {/* Chờ duyệt vào nhóm — chỉ hiển thị với admin/owner và kênh Zalo */}
+      {/* Chờ duyệt vào nhóm - chỉ hiển thị với admin/owner và kênh Zalo */}
       {channelCap.supportsPendingApproval && groupInfo && canManage(getMyRole(groupInfo, activeAccountId)) && (
         <button
           onClick={() => setPanelView('pending')}
@@ -646,7 +646,7 @@ export default function GroupInfoPanel() {
         </button>
       )}
 
-      {/* Bảng tin nhóm — only for channels that support it */}
+      {/* Bảng tin nhóm - only for channels that support it */}
       {channelCap.supportsGroupBoard && (
       <button
           onClick={() => useAppStore.getState().setShowGroupBoard(true)}
@@ -966,7 +966,7 @@ function MembersPanel({ groupInfo, groupId, onBack, onRefresh, myAccountId, chan
       <div className="flex-1 overflow-y-auto">
         {sorted.map(m => (
           <div key={m.userId} className="flex items-center gap-2 px-3 py-2 hover:bg-gray-700 transition-colors group">
-            {/* Avatar — clickable */}
+            {/* Avatar - clickable */}
             <button
               onClick={(e) => onShowProfile?.(m.userId, e.clientX, e.clientY)}
               className="flex-shrink-0 focus:outline-none hover:opacity-80 transition-opacity"
@@ -987,7 +987,7 @@ function MembersPanel({ groupInfo, groupId, onBack, onRefresh, myAccountId, chan
                 {m.role === 2 && <span className="text-[11px] bg-blue-600/30 text-blue-400 px-1.5 rounded">Phó nhóm</span>}
               </div>
             </div>
-            {/* Context menu — admin only, not for group owner */}
+            {/* Context menu - admin only, not for group owner */}
             {isAdmin && (channelCap?.supportsGroupAdmin ?? true) && m.role !== 1 && m.userId !== myAccountId && (
               <button
                 onClick={(e) => {
@@ -1764,7 +1764,7 @@ export function ManagePanel({ groupInfo, groupId, onBack, myAccountId, asModal, 
         </div>
       </div>
 
-      {/* Danh sách chờ duyệt — visible for admin khi bật joinAppr */}
+      {/* Danh sách chờ duyệt - visible for admin khi bật joinAppr */}
       <PendingMembersSection groupId={groupId} isAdmin={isAdmin} channel={channel || 'zalo'} />
 
       {/* Group link */}
@@ -1793,7 +1793,7 @@ export function ManagePanel({ groupInfo, groupId, onBack, myAccountId, asModal, 
         )}
       </div>
 
-      {/* Danger zone — owner only */}
+      {/* Danger zone - owner only */}
       {isOwner && (
         <div className="border-t border-gray-700 px-4 py-3 mt-auto space-y-2">
           <button

@@ -203,7 +203,7 @@ export default function TargetSelector({ zaloId, allLabels, localLabels, localLa
               avatar: match.avatar_url || match.avatar || '',
             });
           } else {
-            // Not in local contacts — will be resolved at send time via getUserInfo
+            // Not in local contacts - will be resolved at send time via getUserInfo
             next.set(uid, null);
             changed = true;
           }
@@ -230,7 +230,7 @@ export default function TargetSelector({ zaloId, allLabels, localLabels, localLa
               source: 'phone',
             };
           }
-          // Not resolved yet — will be resolved when adding
+          // Not resolved yet - will be resolved when adding
           return { contact_id: `phone:${phone}`, display_name: phone, avatar: '', phone, source: 'phone_pending' };
         })
         .filter(c => {
@@ -252,7 +252,7 @@ export default function TargetSelector({ zaloId, allLabels, localLabels, localLa
               source: 'uid',
             };
           }
-          // Not resolved locally — will be resolved at send time via getUserInfo
+          // Not resolved locally - will be resolved at send time via getUserInfo
           return { contact_id: uid, display_name: '', avatar: '', source: 'uid_pending' };
         })
         .filter(c => {
@@ -284,14 +284,14 @@ export default function TargetSelector({ zaloId, allLabels, localLabels, localLa
     });
   };
 
-  // Confirm phone contacts — unresolved phones are added directly,
+  // Confirm phone contacts - unresolved phones are added directly,
   // Zalo API resolution will happen at send time in CRMQueueService.
   const handleConfirmPhones = () => {
     const contacts = phoneList
       .map(phone => {
         const r = phoneResolved.get(phone);
         if (r) return { contact_id: r.uid, display_name: r.name || phone, avatar: r.avatar || '', phone };
-        // Not resolved — add as pending phone, will be resolved at send time
+        // Not resolved - add as pending phone, will be resolved at send time
         return { contact_id: `phone:${phone}`, display_name: phone, avatar: '', phone };
       })
       .filter(c => {
@@ -305,7 +305,7 @@ export default function TargetSelector({ zaloId, allLabels, localLabels, localLa
       onConfirm(contacts);
       onClose();
     } else if (phoneList.length > 0) {
-      // All phones already exist in campaign — close modal
+      // All phones already exist in campaign - close modal
       onClose();
     }
   };
@@ -318,14 +318,14 @@ export default function TargetSelector({ zaloId, allLabels, localLabels, localLa
     });
   };
 
-  // Confirm UID contacts — unresolved UIDs are added directly,
+  // Confirm UID contacts - unresolved UIDs are added directly,
   // getUserInfo will be called at send time in CRMQueueService.
   const handleConfirmUids = () => {
     const contacts = uidList
       .map(uid => {
         const r = uidResolved.get(uid);
         if (r) return { contact_id: uid, display_name: r.name || uid, avatar: r.avatar || '' };
-        // Not resolved locally — will be resolved at send time
+        // Not resolved locally - will be resolved at send time
         return { contact_id: uid, display_name: '', avatar: '' };
       })
       .filter(c => !existingContactIds.has(c.contact_id));
@@ -333,7 +333,7 @@ export default function TargetSelector({ zaloId, allLabels, localLabels, localLa
       onConfirm(contacts);
       onClose();
     } else if (uidList.length > 0) {
-      // All UIDs already exist in campaign — close modal
+      // All UIDs already exist in campaign - close modal
       onClose();
     }
   };

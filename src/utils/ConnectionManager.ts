@@ -186,7 +186,7 @@ class ConnectionManager {
 
     /**
      * Kiểm tra sức khỏe WebSocket listener trực tiếp qua readyState.
-     * KHÔNG dựa vào flags nội bộ — đọc thẳng từ ws object của zca-js.
+     * KHÔNG dựa vào flags nội bộ - đọc thẳng từ ws object của zca-js.
      *
      * readyState: 0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED
      * Trả về { zaloId, healthy, readyState, reason? }
@@ -216,7 +216,7 @@ class ConnectionManager {
             const ws = listener?.ws || listener?._ws || listener?.socket || listener?._socket || null;
 
             if (!ws) {
-                // Không lấy được ws — dựa vào connected flag
+                // Không lấy được ws - dựa vào connected flag
                 const healthy = conn.connected && conn.listenerStarted;
                 results.push({
                     zaloId,

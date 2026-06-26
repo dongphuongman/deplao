@@ -154,16 +154,16 @@ export default function ErpReportsPage() {
       title: 'Task cần theo dõi',
       empty: 'Không có task nổi bật cần theo dõi',
       items: [
-        ...summary.overdueTasks.slice(0, 5).map(task => ({ key: `overdue-${task.id}`, title: task.title, meta: 'Quá hạn', tone: 'text-red-300' })),
-        ...summary.unassignedTasks.slice(0, 5).map(task => ({ key: `unassigned-${task.id}`, title: task.title, meta: 'Chưa có người thực hiện', tone: 'text-yellow-300' })),
+        ...summary.overdueTasks.slice(0, 5).map(task => ({ key: `overdue-${task.id}`, title: task.title, meta: 'Quá hạn', tone: 'text-red-600' })),
+        ...summary.unassignedTasks.slice(0, 5).map(task => ({ key: `unassigned-${task.id}`, title: task.title, meta: 'Chưa có người thực hiện', tone: 'text-yellow-600' })),
       ],
     },
     {
       title: 'Nhân sự cần xử lý',
       empty: 'Nhân sự đã đồng bộ ổn',
       items: [
-        ...summary.missingCheckIn.slice(0, 5).map((employee: any) => ({ key: `attendance-${employee.employee_id}`, title: employee.display_name, meta: 'Chưa check-in hôm nay', tone: 'text-pink-300' })),
-        ...summary.employeesWithoutProfile.slice(0, 5).map((employee: any) => ({ key: `profile-${employee.employee_id}`, title: employee.display_name, meta: 'Thiếu hồ sơ ERP', tone: 'text-violet-300' })),
+        ...summary.missingCheckIn.slice(0, 5).map((employee: any) => ({ key: `attendance-${employee.employee_id}`, title: employee.display_name, meta: 'Chưa check-in hôm nay', tone: 'text-red-600' })),
+        ...summary.employeesWithoutProfile.slice(0, 5).map((employee: any) => ({ key: `profile-${employee.employee_id}`, title: employee.display_name, meta: 'Thiếu hồ sơ ERP', tone: 'text-violet-600' })),
       ],
     },
     {
@@ -173,7 +173,7 @@ export default function ErpReportsPage() {
         key: `leave-${leave.id}`,
         title: employeeName(leave.requester_id),
         meta: `${leave.leave_type} · ${leave.start_date} → ${leave.end_date}`,
-        tone: 'text-yellow-300',
+        tone: 'text-yellow-600',
       })),
     },
   ];
@@ -218,12 +218,12 @@ export default function ErpReportsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-        <MetricCard label="Task quá hạn" value={summary.overdueTasks.length} tone="text-red-400" />
-        <MetricCard label="Task chưa phân công" value={summary.unassignedTasks.length} tone="text-yellow-300" />
-        <MetricCard label="Task đến hạn sắp tới" value={summary.tasksDueSoon.length} tone="text-blue-300" />
-        <MetricCard label="Đơn nghỉ chờ duyệt" value={pendingLeaves.length} tone="text-orange-300" />
-        <MetricCard label="Chưa check-in hôm nay" value={summary.missingCheckIn.length} tone="text-pink-300" />
-        <MetricCard label="Thiếu hồ sơ ERP" value={summary.employeesWithoutProfile.length} tone="text-violet-300" />
+        <MetricCard label="Task quá hạn" value={summary.overdueTasks.length} tone="text-red-600" />
+        <MetricCard label="Task chưa phân công" value={summary.unassignedTasks.length} tone="text-yellow-600" />
+        <MetricCard label="Task đến hạn sắp tới" value={summary.tasksDueSoon.length} tone="text-blue-600" />
+        <MetricCard label="Đơn nghỉ chờ duyệt" value={pendingLeaves.length} tone="text-orange-600" />
+        <MetricCard label="Chưa check-in hôm nay" value={summary.missingCheckIn.length} tone="text-red-600" />
+        <MetricCard label="Thiếu hồ sơ ERP" value={summary.employeesWithoutProfile.length} tone="text-violet-600" />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">

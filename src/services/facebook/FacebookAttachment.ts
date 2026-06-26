@@ -40,7 +40,7 @@ function buildTextPart(boundary: string, name: string, value: string): Buffer {
  * Build a single multipart field (file value)
  */
 function buildFilePart(boundary: string, name: string, filename: string, contentType: string, data: Buffer): Buffer {
-  // Không dùng Content-Transfer-Encoding — header này không chuẩn trong
+  // Không dùng Content-Transfer-Encoding - header này không chuẩn trong
   // multipart/form-data và gây lỗi parser của Facebook (file về 0KB).
   const header = Buffer.from(
     `--${boundary}\r\n` +
@@ -90,7 +90,7 @@ export async function uploadAttachment(
 
   Logger.log(`[FacebookAttachment] Uploading: ${fileName} (${fileSize} bytes, ${mimeType})`);
 
-  // Build multipart body manually — reliable across all Node.js versions
+  // Build multipart body manually - reliable across all Node.js versions
   const boundary = `----WebKitFormBoundary${Math.random().toString(36).slice(2, 12)}`;
   const parts: Buffer[] = [
     buildTextPart(boundary, 'voice_clip', 'false'),
@@ -127,7 +127,7 @@ export async function uploadAttachment(
     try {
       parsed = typeof resultText === 'string' ? JSON.parse(resultText) : resultText;
     } catch {
-      Logger.error(`[FacebookAttachment] Upload failed: cannot parse response — ${String(resultText).slice(0, 200)}`);
+      Logger.error(`[FacebookAttachment] Upload failed: cannot parse response - ${String(resultText).slice(0, 200)}`);
       return null;
     }
 
@@ -138,7 +138,7 @@ export async function uploadAttachment(
       return null;
     }
 
-    // Parse metadata — FB sometimes returns array, sometimes object keyed by "0"
+    // Parse metadata - FB sometimes returns array, sometimes object keyed by "0"
     let metadata: any = null;
     if (payload?.metadata) {
       if (Array.isArray(payload.metadata)) {

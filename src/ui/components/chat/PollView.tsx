@@ -1,5 +1,5 @@
 /**
- * PollView — shared poll UI dùng chung cho ChatWindow (PollBubble) và GroupBoardPanel (PollBoardCard)
+ * PollView - shared poll UI dùng chung cho ChatWindow (PollBubble) và GroupBoardPanel (PollBoardCard)
  *
  * Logic:
  * - pendingIds = null  → chưa chạm gì, hiển thị serverVotedIds từ API
@@ -34,7 +34,7 @@ export interface PollOptionData {
 
 interface Props {
   detail: PollDetailData;
-  /** ID tài khoản đang dùng — để xác định đã vote chưa */
+  /** ID tài khoản đang dùng - để xác định đã vote chưa */
   activeAccountId: string;
   pollId: string;
   /** Hàm lấy auth token */
@@ -43,7 +43,7 @@ interface Props {
   onRefresh: () => void;
   /** Màu theme: 'blue' (tin nhắn mình gửi) | 'dark' (mặc định) */
   theme?: 'blue' | 'dark';
-  /** Hiển thị voter avatars — cần contacts list */
+  /** Hiển thị voter avatars - cần contacts list */
   contacts?: any[];
   /** Hiển thị nút Khoá bình chọn nếu là creator */
   showLockButton?: boolean;
@@ -370,7 +370,7 @@ export function PollDetailView({
         </div>
       )}
 
-      {/* Nút Lưu — chỉ hiện khi có thay đổi */}
+      {/* Nút Lưu - chỉ hiện khi có thay đổi */}
       {canVote && isDirty && (
         <button
           onClick={handleSave}
@@ -382,7 +382,7 @@ export function PollDetailView({
         </button>
       )}
 
-      {/* Khoá bình chọn — creator only */}
+      {/* Khoá bình chọn - creator only */}
       {showLockButton && isCreator && !isClosed && (
         <button
           onClick={handleLock}

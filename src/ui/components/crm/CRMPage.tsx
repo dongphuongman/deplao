@@ -467,7 +467,7 @@ export default function CRMPage() {
     setApplyingBulkLabel(false);
   };
 
-  /** Bulk leave groups — rời tất cả nhóm được chọn */
+  /** Bulk leave groups - rời tất cả nhóm được chọn */
   const handleBulkLeaveGroup = () => setShowLeaveGroupConfirm(true);
 
   const handleConfirmLeaveGroups = async () => {
@@ -757,7 +757,7 @@ export default function CRMPage() {
           {/* ── Campaigns tab ── */}
           {store.tab === 'campaigns' && (
             <>
-              <div className="w-72 flex-shrink-0 border-r border-gray-700 overflow-hidden flex flex-col">
+              <div className="w-79 flex-shrink-0 border-r border-gray-700 overflow-hidden flex flex-col">
                 <CampaignList
                   campaigns={store.campaigns}
                   loading={store.campaignsLoading}
@@ -866,7 +866,7 @@ export default function CRMPage() {
         />
       )}
 
-      {/* Wizard: Step 2 — Add contacts */}
+      {/* Wizard: Step 2 - Add contacts */}
       {wizardActive && wizardStep === 2 && wizardCampaignId !== null && (
         <TargetSelector
           zaloId={activeAccountId || ''}

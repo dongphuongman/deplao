@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import TopBar from './components/layout/TopBar';
 import Sidebar from './components/layout/Sidebar';
+import AccountPanel from './components/layout/AccountPanel';
 import Dashboard from './components/dashboard/Dashboard';
 import ConversationList from './components/chat/ConversationList';
 import ChatHeader from './components/chat/ChatHeader';
@@ -109,7 +110,8 @@ export default function App() {
     showGroupBoard, setShowGroupBoard,
     showIntegrationQuickPanel, toggleIntegrationQuickPanel,
     showAIQuickPanel, toggleAIQuickPanel,
-    openQuickChat, quickChatOpen, theme, fontSizeScale
+    openQuickChat, quickChatOpen, theme, fontSizeScale,
+    sidebarExpanded
   } = useAppStore();
   const { setAccounts, updateListenerActive, accounts } = useAccountStore();
   const { setContacts } = useChatStore();
@@ -316,7 +318,7 @@ export default function App() {
   }, []);
 
   const reconnectAfterNetworkRestore = useCallback(async () => {
-    // Skip for employee (remote) workspace — boss owns Zalo connections
+    // Skip for employee (remote) workspace - boss owns Zalo connections
     const netActiveWs = await ipc.workspace?.getActive?.().then((r: any) => r?.workspace).catch(() => null);
     if (netActiveWs?.type === 'remote') return;
 
@@ -348,7 +350,7 @@ export default function App() {
     if (!candidates.length) return;
 
     useAppStore.getState().showNotification(
-      `🌐 Mạng đã khôi phục — đang kết nối lại ${candidates.length} tài khoản`,
+      `🌐 Mạng đã khôi phục - đang kết nối lại ${candidates.length} tài khoản`,
       'info',
     );
 
@@ -429,7 +431,7 @@ export default function App() {
     // Each account is checked at most once per app session.
     const accountId = activeAccountId;
     if (channel === 'facebook') {
-      // FB init: simpler flow — just sync threads
+      // FB init: simpler flow - just sync threads
       import('@/lib/fbInitUtils').then(({ checkFBAccountInitNeeds }) => {
         checkFBAccountInitNeeds(accountId).then(needs => {
           if (needs.any) {
@@ -454,15 +456,15 @@ export default function App() {
         return;
       }
       const switchTimeout = setTimeout(() => {
-        console.warn('[App] workspace:switched handler timeout — forcing isSwitching=false');
+        console.warn('[App] workspace:switched handler timeout - forcing isSwitching=false');
         useWorkspaceStore.getState().setIsSwitching(false);
       }, 15000);
       try {
-      // Use workspace from event payload directly — no extra IPC roundtrip
+      // Use workspace from event payload directly - no extra IPC roundtrip
       const ws = data.workspace;
       console.log(`[App] Workspace switched to: ${ws.name} (${ws.id}) type=${ws.type}`);
 
-      // Update workspace store FIRST — so all subsequent checks use the correct activeWorkspaceId
+      // Update workspace store FIRST - so all subsequent checks use the correct activeWorkspaceId
       useWorkspaceStore.getState().setActiveWorkspaceId(ws.id);
 
       // ── Clear init-checked set so account init re-runs for the new workspace ──
@@ -489,7 +491,7 @@ export default function App() {
         empStore.setAssignedAccounts(ws.cachedAssignedAccounts || []);
         empStore.setEmployees(ws.cachedEmployeesData || []);
 
-        // Use snapshot from event payload (merged by main process) — no IPC needed
+        // Use snapshot from event payload (merged by main process) - no IPC needed
         const snapshot = ws._snapshot;
         if (snapshot) {
           empStore.setBossConnected(true);
@@ -507,7 +509,7 @@ export default function App() {
       try {
         let nextAccounts: any[];
         if (ws.type === 'remote') {
-          // Remote: use snapshot or cached accounts — no DB query needed
+          // Remote: use snapshot or cached accounts - no DB query needed
           const snapshotAccounts = ws._snapshot?.accountsData;
           nextAccounts = normalizeWorkspaceAccounts(
             snapshotAccounts?.length ? snapshotAccounts : (ws.cachedAccountsData || [])
@@ -567,7 +569,7 @@ export default function App() {
   }, [setAccounts, setContacts]);
 
   // ─── Handle relay:initialState forwarded from SocketConnectionManager ────────
-  // Fired when employee successfully connects to boss — contains permissions + assignedAccounts.
+  // Fired when employee successfully connects to boss - contains permissions + assignedAccounts.
   useEffect(() => {
     const unsub = window.electronAPI?.on('workspace:initialState', async (data: any) => {
       if (!data?.workspaceId) return;
@@ -757,7 +759,7 @@ export default function App() {
     return () => unsub?.();
   }, []);
 
-  // ─── Handle sync completion — reload data after full/delta sync ────────────
+  // ─── Handle sync completion - reload data after full/delta sync ────────────
   useEffect(() => {
     const unsub = window.electronAPI?.on('workspace:syncComplete', async (data: any) => {
       if (!data?.workspaceId) return;
@@ -796,7 +798,7 @@ export default function App() {
     return () => unsub?.();
   }, [setContacts]);
 
-  // ─── nav:view — navigate to a top-level view from other components ───────────
+  // ─── nav:view - navigate to a top-level view from other components ───────────
   useEffect(() => {
     const handler = (e: Event) => {
       const { view: targetView } = (e as CustomEvent).detail || {};
@@ -972,7 +974,7 @@ export default function App() {
           ipc.app?.setBadge(getFilteredUnreadCount());
 
           // 3. Auto-reconnect saved Zalo accounts (ONLY for boss/local workspace)
-          // Employee (remote) workspace must NOT connect Zalo directly —
+          // Employee (remote) workspace must NOT connect Zalo directly -
           // boss owns all Zalo connections and relays events via SSE.
           const initActiveWs = await ipc.workspace?.getActive?.().then((r: any) => r?.workspace).catch(() => null);
           const isEmployeeMode = initActiveWs?.type === 'remote';
@@ -987,7 +989,7 @@ export default function App() {
           }
 
           // 4. Check + refresh avatar URLs for connected Zalo accounts
-          //    Avatar CDN URLs expire over time — verify validity and refresh if needed.
+          //    Avatar CDN URLs expire over time - verify validity and refresh if needed.
           for (const acc of accountsRes.accounts) {
             if ((acc.channel || 'zalo') !== 'zalo') continue;
             if (!acc.isConnected) continue;
@@ -1063,7 +1065,7 @@ export default function App() {
 
   useEffect(() => {
     const runHealthCheck = async () => {
-      // Skip health check for employee (remote) workspace — boss owns Zalo connections
+      // Skip health check for employee (remote) workspace - boss owns Zalo connections
       const hcActiveWs = await ipc.workspace?.getActive?.().then((r: any) => r?.workspace).catch(() => null);
       if (hcActiveWs?.type === 'remote') return;
 
@@ -1110,7 +1112,7 @@ export default function App() {
   useEffect(() => {
     const handleOffline = () => {
       useAppStore.getState().showNotification(
-        '🌐 Mất kết nối internet — ứng dụng sẽ thử kết nối lại khi mạng trở lại',
+        '🌐 Mất kết nối internet - ứng dụng sẽ thử kết nối lại khi mạng trở lại',
         'warning',
       );
     };
@@ -1171,6 +1173,11 @@ export default function App() {
         {/* Left sidebar: account list + nav */}
         <Sidebar onAddAccount={() => setAddAccountModalOpen(true)} />
 
+        {/* Account panel (sidebar expanded) - chỉ hiện ở chat view */}
+        {view === 'chat' && sidebarExpanded && (
+          <AccountPanel onAddAccount={() => setAddAccountModalOpen(true)} />
+        )}
+
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
           {view === 'chat' && (
@@ -1223,7 +1230,7 @@ export default function App() {
                                 return;
                               }
 
-                              // Message not in DOM — load messages around its timestamp
+                              // Message not in DOM - load messages around its timestamp
                               if (!activeAccountId || !activeThreadId) return;
                               try {
                                 const msgRes = await ipc.db?.getMessageById({ zaloId: activeAccountId, msgId });
@@ -1496,7 +1503,7 @@ export default function App() {
         />
       )}
 
-      {/* Friend Request In-App Notification — show one at a time from queue */}
+      {/* Friend Request In-App Notification - show one at a time from queue */}
       {friendRequestQueue.length > 0 && (
         <FriendRequestNotification
           key={`${friendRequestQueue[0].zaloId}_${friendRequestQueue[0].userId}`}
@@ -1511,7 +1518,7 @@ export default function App() {
       {/* Quick Chat Modal */}
       {quickChatOpen && <QuickChatModal />}
 
-      {/* Account Init Panel — shown once for new/uninitialized accounts */}
+      {/* Account Init Panel - shown once for new/uninitialized accounts */}
       {accountInitId && (
         <AccountInitPanel
           accountId={accountInitId}
@@ -1519,7 +1526,7 @@ export default function App() {
         />
       )}
 
-      {/* Auto-update notification — bottom-right corner */}
+      {/* Auto-update notification - bottom-right corner */}
       <UpdateNotification />
       <AccountSwitcherOverlay />
     </div>

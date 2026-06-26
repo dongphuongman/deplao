@@ -271,7 +271,7 @@ export default function CalendarPage() {
                       key={ev.id}
                       className="group relative h-7 text-[11px] px-2 py-1 rounded-lg truncate cursor-pointer"
                       style={{ background: (ev.color || '#3b82f6') + '33', color: ev.color || '#60a5fa' }}
-                      title={`${ev.title} — ${new Date(ev.start_at).toLocaleString('vi-VN')}`}
+                      title={`${ev.title} - ${new Date(ev.start_at).toLocaleString('vi-VN')}`}
                       onClick={() => setSelectedEvent(ev)}
                     >
                       <span>

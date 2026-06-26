@@ -56,7 +56,7 @@ class FileStorageService {
 
     /**
      * Convert an absolute path to a path relative to the config folder (parent of media/).
-     * Returns "media/zaloId/date/img.jpg" — folder-agnostic: only the part after the
+     * Returns "media/zaloId/date/img.jpg" - folder-agnostic: only the part after the
      * configured storage root is kept, so moving the folder never breaks local_paths.
      * If the path is not under the config folder, returns it as-is (safety fallback).
      */
@@ -86,9 +86,9 @@ class FileStorageService {
             const configFolder = path.dirname(this.getBaseDir());
             return path.join(configFolder, relOrAbsPath);
         }
-        // Absolute path — serve as-is if it exists
+        // Absolute path - serve as-is if it exists
         if (fs.existsSync(relOrAbsPath)) return relOrAbsPath;
-        // File not found (old drive/folder after move) — remap via /media/ marker
+        // File not found (old drive/folder after move) - remap via /media/ marker
         const normalized = relOrAbsPath.replace(/\\/g, '/');
         const mediaIdx = normalized.lastIndexOf('/media/');
         if (mediaIdx >= 0) {
@@ -102,7 +102,7 @@ class FileStorageService {
 
     /**
      * Kiểm tra tính hợp lệ của file ảnh trên đĩa.
-     * Đọc ~20 bytes đầu/cuối file — rất nhanh, không decode ảnh.
+     * Đọc ~20 bytes đầu/cuối file - rất nhanh, không decode ảnh.
      * @returns `{ valid: true }` nếu file hợp lệ, `{ valid: false, reason }` nếu lỗi.
      */
     public static validateImageFile(filePath: string): { valid: boolean; reason?: string } {
@@ -386,7 +386,7 @@ class FileStorageService {
 
             fs.writeFileSync(localPath, Buffer.from(response.data));
             Logger.log(`[FileStorageService] Saved image: ${fname}`);
-            // Store as relative path (folder-agnostic — resolves via local-media:// handler)
+            // Store as relative path (folder-agnostic - resolves via local-media:// handler)
             return this.toRelativePath(localPath);
         } catch (error: any) {
             const status: number | undefined = error?.response?.status;

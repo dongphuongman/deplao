@@ -1,5 +1,5 @@
 /**
- * build-bridge-e2ee.js — Cross-platform Go bridge build script.
+ * build-bridge-e2ee.js - Cross-platform Go bridge build script.
  *
  * Detects the current platform and builds the appropriate binary:
  *   Windows  → fbchat-bridge-e2ee.exe
@@ -12,8 +12,8 @@
  *   node scripts/build-bridge-e2ee.js
  *
  * Exit codes:
- *   0 — success
- *   1 — failure (caller handles via || in npm scripts)
+ *   0 - success
+ *   1 - failure (caller handles via || in npm scripts)
  */
 
 'use strict';
@@ -60,7 +60,7 @@ function main() {
   // ── 1. Clone / update mautrix/meta if missing ─────────────────────────
   const metaGoMod = path.join(META_DIR, 'go.mod');
   if (!fs.existsSync(metaGoMod)) {
-    console.log('[build-bridge] 📥 meta/ not found — cloning mautrix/meta...');
+    console.log('[build-bridge] 📥 meta/ not found - cloning mautrix/meta...');
     if (fs.existsSync(META_DIR)) {
       fs.rmSync(META_DIR, { recursive: true, force: true });
     }

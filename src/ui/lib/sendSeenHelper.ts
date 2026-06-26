@@ -49,7 +49,7 @@ export function sendSeenForThread(
       ipc.zalo?.sendSeenEvent({ auth: finalAuth, messages: seenMessages, type: threadType }).catch(() => {});
     }).catch(() => {});
   } catch {
-    // Silent fail — seen event is best-effort
+    // Silent fail - seen event is best-effort
   }
 }
 

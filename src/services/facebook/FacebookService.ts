@@ -1,7 +1,7 @@
 /**
  * FacebookService.ts
  * Orchestrator singleton per account
- * Tương tự ZaloService — quản lý lifecycle session + listener + API calls
+ * Tương tự ZaloService - quản lý lifecycle session + listener + API calls
  */
 
 import {
@@ -51,9 +51,9 @@ export class FacebookService {
   private listener: FacebookMQTTListener | null = null;
   private status: FBAccountStatus = 'disconnected';
   private statusChangeCallback?: (status: FBAccountStatus) => void;
-  /** Cached real Facebook UID — resolved once from DB, used for broadcasts */
+  /** Cached real Facebook UID - resolved once from DB, used for broadcasts */
   private _facebookId: string | null = null;
-  /** Last known good MQTT seqId — dùng làm fallback khi getLastSeqId thất bại,
+  /** Last known good MQTT seqId - dùng làm fallback khi getLastSeqId thất bại,
    *  tránh connect với seqId=0 → ERROR_QUEUE_OVERFLOW */
   private _lastGoodSeqId: string = '0';
   /** Đếm số lần MQTT listener bị ERROR_QUEUE_OVERFLOW persistent.
@@ -70,13 +70,13 @@ export class FacebookService {
   private e2eeThreads: Set<string> = new Set();
   /** Track thread IDs known to be NON-E2EE (gửi qua bridge sendMessage/MQTT thành công) */
   private _nonE2EEThreads: Set<string> = new Set();
-  /** Debounce avatar refresh — chỉ 1 lần mỗi user/session */
+  /** Debounce avatar refresh - chỉ 1 lần mỗi user/session */
   private avatarRefreshDebounce = new Set<string>();
-  /** Bridge instance ID — tăng mỗi lần startE2EEBridge, dùng để detect stale reconnect timers (BUG #6 fix) */
+  /** Bridge instance ID - tăng mỗi lần startE2EEBridge, dùng để detect stale reconnect timers (BUG #6 fix) */
   private e2eeBridgeGen: number = 0;
   /** Heartbeat timer kiểm tra bridge còn responsive không (BUG #8 fix) */
   private _e2eeHeartbeatTimer: ReturnType<typeof setInterval> | null = null;
-  /** Đếm số lần heartbeat fail liên tiếp — sau 2 lần → kill + respawn */
+  /** Đếm số lần heartbeat fail liên tiếp - sau 2 lần → kill + respawn */
   private _e2eeHeartbeatFailCount: number = 0;
   /** Track message IDs sent locally via this service instance.
    *  Dùng để ngăn self-echo duplicate khi bridge/MQTT echo ngược tin nhắn vừa gửi.
@@ -237,7 +237,7 @@ export class FacebookService {
     this.setStatus('connecting');
     Logger.log(`[FacebookService:${this.accountId}] Connecting...`);
 
-    // Cleanup old listener trước khi tạo mới — tránh memory leak + timer chồng chéo
+    // Cleanup old listener trước khi tạo mới - tránh memory leak + timer chồng chéo
     if (this.listener) {
       try {
         this.listener.disconnect();
@@ -248,7 +248,7 @@ export class FacebookService {
     try {
       // 1. Init session (with proxy support)
       // initSession() now validates REQUIRED_SESSION_FIELDS + FacebookID là số
-      // và throw error nếu thiếu — không cần check thủ công
+      // và throw error nếu thiếu - không cần check thủ công
       this.dataFB = await initSession(this.cookie, this.httpsAgent);
 
       // 2. Fetch latest seqId via GraphQL to avoid ERROR_QUEUE_OVERFLOW
@@ -344,7 +344,7 @@ export class FacebookService {
             this.setStatus('disconnected');
             break;
           case 'cookie_expired':
-            Logger.warn(`[FacebookService:${this.accountId}] MQTT health check — cookie expired`);
+            Logger.warn(`[FacebookService:${this.accountId}] MQTT health check - cookie expired`);
             this.setStatus('cookie_expired');
             try {
               const fbId = this.getFacebookId();
@@ -355,7 +355,7 @@ export class FacebookService {
             } catch {}
             break;
           case 'max_retries':
-            Logger.warn(`[FacebookService:${this.accountId}] MQTT max retries (8) exhausted — marking dead`);
+            Logger.warn(`[FacebookService:${this.accountId}] MQTT max retries (8) exhausted - marking dead`);
             this.setStatus('error');
             try {
               const fbId = this.getFacebookId();
@@ -382,11 +382,11 @@ export class FacebookService {
         }
       });
 
-      // Track ERROR_QUEUE_OVERFLOW — nếu overflow persist + bridge alive,
+      // Track ERROR_QUEUE_OVERFLOW - nếu overflow persist + bridge alive,
       // dừng hẳn MQTT listener vì bridge có MQTT riêng xử lý mọi traffic
       this.listener.on('overflow', (_seqId: string) => {
         this._mqttOverflowCount++;
-        Logger.warn(`[FacebookService:${this.accountId}] MQTT overflow #${this._mqttOverflowCount} — will skip MQTT reconnect if persistent`);
+        Logger.warn(`[FacebookService:${this.accountId}] MQTT overflow #${this._mqttOverflowCount} - will skip MQTT reconnect if persistent`);
         // Khi overflow > 2 lần và bridge đã connected → dừng MQTT listener hẳn
         // Bridge có MQTT nội bộ riêng, không cần TypeScript MQTT listener nữa
         if (this._mqttOverflowCount > 2 && this.e2eeBridge?.isAlive()) {
@@ -398,7 +398,7 @@ export class FacebookService {
         }
       });
 
-      // Gắn health check callback — listener sẽ gọi định kỳ khi đang Phase 2 retry
+      // Gắn health check callback - listener sẽ gọi định kỳ khi đang Phase 2 retry
       // để phát hiện cookie hết hạn và dừng retry đúng lúc
       const fbService = this;
       this.listener.setHealthCheckFn(async () => {
@@ -511,7 +511,7 @@ export class FacebookService {
     //
     // IMPORTANT: Only media types that require download (image, video, audio, file)
     // legitimately need directPath. Link/sticker type attachments do NOT have directPath
-    // by design — they must NOT be caught by the "no directPath" check.
+    // by design - they must NOT be caught by the "no directPath" check.
     // See BUG https://github.com/deplao/builder/issues/...
     const MEDIA_DOWNLOAD_TYPES = new Set(['image', 'video', 'audio', 'file']);
     const isSelfEchoMedia = isSelf && msg.isE2EE && (
@@ -522,7 +522,7 @@ export class FacebookService {
       (/^[🎵🎬🎨📎🖼]/.test(msg.body || ''))
     );
     if (isSelfEchoMedia) {
-      Logger.log(`[FacebookService:${this.accountId}] SELF-ECHO E2EE media with incomplete data — skipping DB save (was already saved by IPC handler)`);
+      Logger.log(`[FacebookService:${this.accountId}] SELF-ECHO E2EE media with incomplete data - skipping DB save (was already saved by IPC handler)`);
       return;
     }
 
@@ -571,7 +571,7 @@ export class FacebookService {
         }
         const msgType = rawType;
 
-        // Build attachment payload — support multiple attachments (batch image send)
+        // Build attachment payload - support multiple attachments (batch image send)
         let attachmentPayload: string | undefined;
         if (msg.allAttachments && msg.allAttachments.length > 1) {
           attachmentPayload = JSON.stringify(msg.allAttachments.map(a => ({
@@ -679,8 +679,8 @@ export class FacebookService {
       }
 
       // Fire-and-forget download non-E2EE attachments to local storage (like Zalo pattern)
-      // Check primary AND allAttachments — batch sends may have URL only in allAttachments
-      // Skip link type attachments — URL links don't need local download
+      // Check primary AND allAttachments - batch sends may have URL only in allAttachments
+      // Skip link type attachments - URL links don't need local download
       const isLinkType = (a: any) => a?.attachmentType === 'link';
       const hasDownloadableUrl = msg.attachments?.url
         ? !msg.attachments.directPath && !isLinkType(msg.attachments)
@@ -695,7 +695,7 @@ export class FacebookService {
       }
     }
 
-    // Broadcast — include isSelf + quote_data (if reply) so UI can display immediately
+    // Broadcast - include isSelf + quote_data (if reply) so UI can display immediately
     let broadcastQuoteData: string | undefined;
     if (msg.replyToMessageId) {
       try {
@@ -795,7 +795,7 @@ export class FacebookService {
           `UPDATE fb_threads SET name = ? WHERE id = ? AND account_id = ?`,
           [data.name, data.threadId, this.accountId]
         );
-        // Update unified contacts table — use display_name
+        // Update unified contacts table - use display_name
         db.run?.(
           `UPDATE contacts SET display_name = ? WHERE owner_zalo_id = ? AND contact_id = ? AND channel = 'facebook'`,
           [data.name, fbIdForContacts, data.threadId]
@@ -904,7 +904,7 @@ export class FacebookService {
    */
   private async startE2EEBridge(fbId: string): Promise<void> {
     if (!this.e2eeEnabled) {
-      Logger.log(`[FacebookService:${this.accountId}] E2EE disabled — skipping bridge`);
+      Logger.log(`[FacebookService:${this.accountId}] E2EE disabled - skipping bridge`);
       return;
     }
 
@@ -937,7 +937,7 @@ export class FacebookService {
         this.e2eeBridge.close().catch(() => {});
         this.e2eeBridge = null;
         this.setE2EEStatus('error');
-        // Still non-fatal — groups work
+        // Still non-fatal - groups work
         return;
       }
 
@@ -976,7 +976,7 @@ export class FacebookService {
         this.setE2EEStatus('disconnected');
         // Auto-reconnect nếu service vẫn connected và bridge chưa được thay thế
         if (this.isConnected()) {
-          Logger.log(`[FacebookService:${this.accountId}] E2EE bridge closed — attempting reconnect in 10s...`);
+          Logger.log(`[FacebookService:${this.accountId}] E2EE bridge closed - attempting reconnect in 10s...`);
           setTimeout(() => {
             // BUG #6 fix: chỉ reconnect nếu bridge instance không thay đổi
             // và e2eeBridgeGen không tăng (không có bridge mới được tạo)
@@ -1006,7 +1006,7 @@ export class FacebookService {
       // NON-FATAL: groups still work via MQTT
       // Auto-retry sau 30s nếu service vẫn connected (BUG #10 fix)
       if (this.isConnected() || this.status === 'connecting') {
-        Logger.log(`[FacebookService:${this.accountId}] E2EE bridge init failed — will retry in 30s`);
+        Logger.log(`[FacebookService:${this.accountId}] E2EE bridge init failed - will retry in 30s`);
         const currentGen = this.e2eeBridgeGen;
         setTimeout(() => {
           if ((this.isConnected() || this.status === 'connecting') && this.e2eeBridgeGen === currentGen) {
@@ -1038,7 +1038,7 @@ export class FacebookService {
         return;
       }
       try {
-        // Gọi isConnected với timeout 5s — nếu bridge treo, call() sẽ timeout
+        // Gọi isConnected với timeout 5s - nếu bridge treo, call() sẽ timeout
         await Promise.race([
           bridgeInstance.call('isConnected', {}, 5000),
           new Promise((_, reject) => setTimeout(() => reject(new Error('heartbeat_timeout')), 6000)),
@@ -1048,7 +1048,7 @@ export class FacebookService {
         this._e2eeHeartbeatFailCount++;
         Logger.warn(`[FacebookService:${this.accountId}] E2EE heartbeat fail #${this._e2eeHeartbeatFailCount}`);
         if (this._e2eeHeartbeatFailCount >= 2) {
-          Logger.error(`[FacebookService:${this.accountId}] E2EE bridge unresponsive — killing + respawning`);
+          Logger.error(`[FacebookService:${this.accountId}] E2EE bridge unresponsive - killing + respawning`);
           this._clearE2EEHeartbeat();
           if (this.e2eeBridge === bridgeInstance) {
             // Kill hung process
@@ -1092,7 +1092,7 @@ export class FacebookService {
         break;
 
       case 'message':
-        // Non-E2EE message from bridge (same as MQTT) — normalize & route
+        // Non-E2EE message from bridge (same as MQTT) - normalize & route
         this.handleBridgeGroupMessage(data);
         break;
 
@@ -1114,7 +1114,7 @@ export class FacebookService {
         break;
 
       case 'raw':
-        // Raw MQTT delta forwarded by bridge — log at debug level only
+        // Raw MQTT delta forwarded by bridge - log at debug level only
         break;
 
       // ─── Bridge event types (C8) ────────────────────────────────────────
@@ -1178,7 +1178,7 @@ export class FacebookService {
       }
 
       case 'e2eeReceipt':
-        // Delivery receipt for E2EE messages — informational only
+        // Delivery receipt for E2EE messages - informational only
         // The bridge handles delivery tracking internally
         break;
 
@@ -1224,7 +1224,7 @@ export class FacebookService {
         // data: { messageId, threadId, newText, editCount, timestampMs }
         if (data?.messageId && data?.newText !== undefined) {
           const stripJid = (id: string) => id.replace(/@.*$/, '');
-          // threadId=0 means bridge couldn't determine thread — pass empty string
+          // threadId=0 means bridge couldn't determine thread - pass empty string
           // so store will search across all threads by messageId
           const threadId = data.threadId != null && data.threadId !== 0
             ? stripJid(String(data.threadId))
@@ -1260,7 +1260,7 @@ export class FacebookService {
    * Normalize E2EE message từ bridge → FBMQTTMessage → handleIncomingMessage()
    * Shape tương thích với MQTT message để UI xử lý thống nhất.
    */
-  // @ts-ignore — gọi từ handleBridgeEvent
+  // @ts-ignore - gọi từ handleBridgeEvent
   private async handleE2EEMessage(data: FBE2EEMessageRaw): Promise<void> {
     if (!data) {
       Logger.log(`[FacebookService:${this.accountId}] handleE2EEMessage: data is null/undefined`);
@@ -1301,7 +1301,7 @@ export class FacebookService {
       isE2EE: true,
       chatJid: data.chatJid,
       senderJid: data.senderJid,
-      // Extract replyTo info from bridge data — tin nhắn trả lời tin nhắn khác
+      // Extract replyTo info from bridge data - tin nhắn trả lời tin nhắn khác
       replyToMessageId: data.replyTo?.messageId,
       replyToSenderId: data.replyTo?.senderId != null ? String(data.replyTo.senderId) : undefined,
     };
@@ -1309,15 +1309,15 @@ export class FacebookService {
     // Parse attachments nếu có
     // Go bridge Attachment struct sends: type (lowercase), url, fileName, mimeType,
     // fileSize, width, height, stickerId, mediaKey, mediaSha256, directPath, ...
-    // KHÔNG có trường "id" hay "attachmentType" — cần map đúng tên
+    // KHÔNG có trường "id" hay "attachmentType" - cần map đúng tên
     // E2EE media (image/video/audio/file) không có URL mà có directPath + mediaKey
-    // để download qua bridge — cần preserve để lưu DB và download sau này
+    // để download qua bridge - cần preserve để lưu DB và download sau này
     if (data.attachments?.length) {
       const raw = data.attachments as any[];
       const mapped = raw.map((a: any, idx: number) => ({
         id: a.stickerId || idx + 1,                    // Go: không có id, dùng index
         url: a.url || null,                             // Go: url (null với E2EE image)
-        attachmentType: a.type || a.attachmentType,     // Go: "type" (lowercase) — image/video/file/audio
+        attachmentType: a.type || a.attachmentType,     // Go: "type" (lowercase) - image/video/file/audio
         name: a.fileName || a.name,                     // Go: "fileName" (not "name")
         fileSize: a.fileSize,
         mimeType: a.mimeType,
@@ -1349,7 +1349,7 @@ export class FacebookService {
     const e2eeAttachments = data.attachments as any[] | undefined;
     if (e2eeAttachments?.length && msg.messageID) {
       // ⚠️ PHẢI await để catch lỗi download, đặc biệt video.
-      // Không fire-and-forget — nếu bridge không support download video,
+      // Không fire-and-forget - nếu bridge không support download video,
       // cần log để debug.
       try {
         await this.downloadE2EEAttachments(e2eeAttachments, msg.messageID, threadId);
@@ -1426,7 +1426,7 @@ export class FacebookService {
 
     Logger.log(`[FacebookService:${this.accountId}] Saving admin message as system: msgId=${data.id} threadId=${threadId} text="${(data.text || '').slice(0, 100)}"`);
 
-    // Save to DB with type='system' — saveFBMessage handles fb_messages + unified messages + thread preview + contacts
+    // Save to DB with type='system' - saveFBMessage handles fb_messages + unified messages + thread preview + contacts
     try {
       DatabaseService.getInstance().saveFBMessage({
         id: data.id,
@@ -1445,7 +1445,7 @@ export class FacebookService {
       Logger.warn(`[FacebookService:${this.accountId}] handleAdminGroupMessage DB error: ${err.message}`);
     }
 
-    // Broadcast as system notification — UI's normalizeFBMessage respects msg_type override
+    // Broadcast as system notification - UI's normalizeFBMessage respects msg_type override
     EventBroadcaster.emit('fb:onMessage', {
       fbAccountId: fbId,
       message: {
@@ -1475,7 +1475,7 @@ export class FacebookService {
       const att = attachments[i];
       if (!att.directPath || !att.mediaKey) {
         if (att.type === 'sticker') {
-          Logger.warn(`[FacebookService:${this.accountId}] [E2EE] Sticker missing directPath/mediaKey — bridge không cung cấp dữ liệu download cho sticker, cần fix Go bridge (mautrix-meta) để extract sticker attachment fields`);
+          Logger.warn(`[FacebookService:${this.accountId}] [E2EE] Sticker missing directPath/mediaKey - bridge không cung cấp dữ liệu download cho sticker, cần fix Go bridge (mautrix-meta) để extract sticker attachment fields`);
         }
         continue;
       }
@@ -1521,7 +1521,7 @@ export class FacebookService {
 
           Logger.log(`[FacebookService:${this.accountId}] E2EE media saved: ${relativePath}`);
         } else {
-          Logger.warn(`[FacebookService:${this.accountId}] E2EE download returned no data — mediaType=${att.type || 'image'} mimeType=${att.mimeType || ''} size=${att.fileSize || 0}. Go bridge may not support downloading this media type.`);
+          Logger.warn(`[FacebookService:${this.accountId}] E2EE download returned no data - mediaType=${att.type || 'image'} mimeType=${att.mimeType || ''} size=${att.fileSize || 0}. Go bridge may not support downloading this media type.`);
         }
       } catch (err: any) {
         Logger.warn(`[FacebookService:${this.accountId}] E2EE download failed: ${err.message}`);
@@ -1531,7 +1531,7 @@ export class FacebookService {
 
   /**
    * Kiểm tra contact đã có tên chưa, nếu chưa thì fetch từ Facebook HTML.
-   * Fire-and-forget — gọi khi nhận message đầu tiên, update DB sau đó.
+   * Fire-and-forget - gọi khi nhận message đầu tiên, update DB sau đó.
    * Chỉ áp dụng cho user 1-1 (group không support).
    */
   private async checkAndFetchUserInfo(fbUserId: string): Promise<void> {
@@ -1592,12 +1592,12 @@ export class FacebookService {
       const att = attachments[i];
       Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: url=${(att.url || '').slice(0,80)}... directPath=${!!att.directPath} attachmentType=${att.attachmentType || '?'}`);
       if (!att.url || att.directPath) {
-        Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: SKIP — no URL or has directPath`);
+        Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: SKIP - no URL or has directPath`);
         continue;
       }
       // Link type attachments (URL shares) don't need local download
       if (att.attachmentType === 'link') {
-        Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: SKIP — type=link, no download needed`);
+        Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: SKIP - type=link, no download needed`);
         continue;
       }
 
@@ -1607,7 +1607,7 @@ export class FacebookService {
         const filename = `fb_${msg.messageID.slice(-8)}_${Date.now()}${ext}`;
         Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: url=${url.slice(0,100)}... ext=${ext} filename=${filename}`);
 
-        // Dùng đúng method theo loại file — audio/file không thể dùng downloadImage
+        // Dùng đúng method theo loại file - audio/file không thể dùng downloadImage
         const attType = att.attachmentType || '';
         let localPath: string;
         if (attType === 'image' || attType === 'sticker') {
@@ -1618,7 +1618,7 @@ export class FacebookService {
           // Nếu URL kết thúc bằng đuôi ảnh → skip download (ko có video để tải)
           const videoExt = ext.toLowerCase();
           if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'].includes(videoExt)) {
-            Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: SKIP — URL is image thumbnail (${ext}), not actual video`);
+            Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: SKIP - URL is image thumbnail (${ext}), not actual video`);
             continue;
           }
           Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: calling downloadVideo`);
@@ -1629,13 +1629,13 @@ export class FacebookService {
           localPath = await FileStorageService.downloadFile(fbId, url, filename, cookies, undefined);
         }
         if (localPath) {
-          Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: SUCCESS — localPath=${localPath}`);
+          Logger.log(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: SUCCESS - localPath=${localPath}`);
           localPaths[`att_${i}`] = localPath;
         } else {
           Logger.warn(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: download returned empty path`);
         }
       } catch (err: any) {
-        Logger.warn(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: ERROR — ${err.message}`);
+        Logger.warn(`[FacebookService:${this.accountId}] [DEBUG_DOWNLOAD] att[${i}]: ERROR - ${err.message}`);
       }
     }
 
@@ -1681,7 +1681,7 @@ export class FacebookService {
   /**
    * Retry E2EE bridge connection on-demand (e.g., when user tries to send 1:1 message).
    * Resets state and re-attempts bridge startup.
-   * @throws Error nếu bridge không thể khởi động — caller nên kiểm tra isE2EEConnected()
+   * @throws Error nếu bridge không thể khởi động - caller nên kiểm tra isE2EEConnected()
    */
   public async retryE2EE(): Promise<void> {
     // Clean up stale bridge
@@ -1697,7 +1697,7 @@ export class FacebookService {
     await this.startE2EEBridge(fbId);
     // If bridge still not connected after startE2EEBridge, throw
     if (!this.isE2EEConnected()) {
-      throw new Error('E2EE bridge retry failed — bridge not connected after startup');
+      throw new Error('E2EE bridge retry failed - bridge not connected after startup');
     }
   }
 
@@ -1899,7 +1899,7 @@ export class FacebookService {
   // ─── Public API methods ──────────────────────────────────────────────────────
 
   private requireSession(): FBSessionData {
-    if (!this.dataFB) throw new Error('Not connected — call connect() first');
+    if (!this.dataFB) throw new Error('Not connected - call connect() first');
     return this.dataFB;
   }
 
@@ -1932,7 +1932,7 @@ export class FacebookService {
           // ── Fallback: DB không có thông tin type → auto-detect ─────────
           // Facebook user ID là số, và luôn != current account's own FB ID.
           // Nếu threadId là số và không phải chính mình → 1:1 user chat.
-          // KHÔNG dùng regex thuần vì nhiều group ID cũng toàn số — chỉ dùng
+          // KHÔNG dùng regex thuần vì nhiều group ID cũng toàn số - chỉ dùng
           // làm fallback khi DB lookup không trả về gì.
           const myFbId = this.getFacebookId();
           if (/^\d+$/.test(threadId) && threadId !== myFbId) {
@@ -1950,7 +1950,7 @@ export class FacebookService {
     }
 
     // ═════════════════════════════════════════════════════════════════════
-    // 1:1 ROUTING — E2EE FIRST, REST fallback
+    // 1:1 ROUTING - E2EE FIRST, REST fallback
     // ═════════════════════════════════════════════════════════════════════
 
     if (is1on1) {
@@ -1961,7 +1961,7 @@ export class FacebookService {
         let e2eeReady = this.isE2EEConnected();
         if (!e2eeReady && this.e2eeBridge?.isAlive()) {
           try {
-            Logger.log(`[FacebookService:${this.accountId}] 1:1 send — E2EE not ready, retrying...`);
+            Logger.log(`[FacebookService:${this.accountId}] 1:1 send - E2EE not ready, retrying...`);
             await this.retryE2EE();
             e2eeReady = this.isE2EEConnected();
           } catch {}
@@ -1985,11 +1985,11 @@ export class FacebookService {
                 this._nonE2EEThreads.delete(threadId);
               }
               this.markMessageLocallySent(r.messageId);
-              Logger.log(`[FacebookService:${this.accountId}] 1:1 E2EE OK: msgId=${r.messageId} — marked thread as E2EE`);
+              Logger.log(`[FacebookService:${this.accountId}] 1:1 E2EE OK: msgId=${r.messageId} - marked thread as E2EE`);
               return { success: true, messageId: r.messageId, timestamp: r.timestampMs };
             }
           } catch (err: any) {
-            Logger.warn(`[FacebookService:${this.accountId}] 1:1 E2EE failed: ${err.message} — falling back to REST`);
+            Logger.warn(`[FacebookService:${this.accountId}] 1:1 E2EE failed: ${err.message} - falling back to REST`);
           }
         }
       }
@@ -2000,7 +2000,7 @@ export class FacebookService {
         // REST success → non-E2EE thread
         if (!this._nonE2EEThreads.has(threadId)) {
           this._nonE2EEThreads.add(threadId);
-          Logger.log(`[FacebookService:${this.accountId}] 1:1 REST OK — marked thread as non-E2EE`);
+          Logger.log(`[FacebookService:${this.accountId}] 1:1 REST OK - marked thread as non-E2EE`);
         }
         this.markMessageLocallySent(restResult.messageId);
         return restResult;
@@ -2009,7 +2009,7 @@ export class FacebookService {
       // ── PATH C: REST failed → có thể là E2EE conversation ───────────
       // HTTP 500 / 403 / 400 thường là dấu hiệu E2EE (FB không chấp nhận REST)
       if (/HTTP 5\d{2}|HTTP 403|HTTP 400/i.test(restResult.error || '')) {
-        Logger.warn(`[FacebookService:${this.accountId}] 1:1 REST failed (${restResult.error}) — treating as E2EE, retrying bridge`);
+        Logger.warn(`[FacebookService:${this.accountId}] 1:1 REST failed (${restResult.error}) - treating as E2EE, retrying bridge`);
         this.e2eeThreads.add(threadId);
         try { DatabaseService.getInstance().markFBThreadE2EE(threadId, this.accountId); } catch {}
 
@@ -2080,7 +2080,7 @@ export class FacebookService {
 
     // REST failed for group → thử bridge sendMessage như fallback
     if (this.e2eeBridge?.isAlive()) {
-      Logger.warn(`[FacebookService:${this.accountId}] Group REST failed (${result.error}) — trying bridge sendMessage`);
+      Logger.warn(`[FacebookService:${this.accountId}] Group REST failed (${result.error}) - trying bridge sendMessage`);
       try {
         const r: any = await Promise.race([
           this.e2eeBridge.sendMessage({ threadId, text: body, replyToId: opts?.replyToMessageId || '' }),
@@ -2187,7 +2187,7 @@ export class FacebookService {
    *   2. Download ảnh về local với Facebook cookie → local path không bh hết hn
    *   3. Fallback: re-fetch thread list GraphQL → URL CDN fresh
    *
-   * Dùng khi avatar CDN c (403) — URL oe ã ht hn.
+   * Dùng khi avatar CDN c (403) - URL oe ã ht hn.
    */
   public async refreshContactAvatar(fbUserId: string): Promise<string | null> {
     // Server-side debounce: chỉ refresh 1 lần mỗi user/session
@@ -2421,7 +2421,7 @@ export class FacebookService {
 
   /**
    * Kiểm tra MQTT listener thực sự còn kết nối không (BUG #3 fix).
-   * Khác với isConnected() chỉ check status flag — method này check actual socket.
+   * Khác với isConnected() chỉ check status flag - method này check actual socket.
    * Dùng trước khi gửi tin nhắn để đảm bảo kết nối thực sự alive.
    */
   public isListenerActuallyConnected(): boolean {
@@ -2447,7 +2447,7 @@ export class FacebookService {
     // Nếu _mqttOverflowCount > 2, việc tạo listener mới chỉ gây thêm overflow.
     // Bridge không alive → refresh session để dùng REST API.
     if (this._mqttOverflowCount > 2) {
-      Logger.warn(`[FacebookService:${this.accountId}] MQTT overflow persistent (${this._mqttOverflowCount}x) — using REST only`);
+      Logger.warn(`[FacebookService:${this.accountId}] MQTT overflow persistent (${this._mqttOverflowCount}x) - using REST only`);
       try {
         this.dataFB = await initSession(this.cookie, this.httpsAgent);
         Logger.log(`[FacebookService:${this.accountId}] Session refreshed for overflow fallback`);
@@ -2469,7 +2469,7 @@ export class FacebookService {
     // MQTT đã connect thành công, hoặc MQTT reconnect thành công nhưng có 1 event
     // 'disconnected' cũ từ listener cũ đến sau. Tránh reconnect không cần thiết.
     if (this.isListenerActuallyConnected()) {
-      Logger.warn(`[FacebookService:${this.accountId}] Listener alive but status=${this.status} — correcting to 'connected'`);
+      Logger.warn(`[FacebookService:${this.accountId}] Listener alive but status=${this.status} - correcting to 'connected'`);
       this.setStatus('connected');
       return true;
     }
@@ -2477,7 +2477,7 @@ export class FacebookService {
 
     // Service says connected but listener actually dead → force reconnect
     if (this.status === 'connected' && !this.isListenerActuallyConnected()) {
-      Logger.warn(`[FacebookService:${this.accountId}] Status is 'connected' but listener is dead — forcing reconnect`);
+      Logger.warn(`[FacebookService:${this.accountId}] Status is 'connected' but listener is dead - forcing reconnect`);
       try {
         // Ngắt listener cũ và tạo lại
         if (this.listener) {
@@ -2497,7 +2497,7 @@ export class FacebookService {
 
     // Not connected at all → try to connect
     if (this.status !== 'connected' && this.status !== 'connecting') {
-      Logger.log(`[FacebookService:${this.accountId}] Not connected — attempting connect`);
+      Logger.log(`[FacebookService:${this.accountId}] Not connected - attempting connect`);
       try {
         await this.connect();
         // Đợi listener thực sự connected + ổn định, vì connect() → _doConnect() start MQTT async
@@ -2510,7 +2510,7 @@ export class FacebookService {
 
     // Already connecting → wait a bit
     if (this.status === 'connecting') {
-      Logger.log(`[FacebookService:${this.accountId}] Already connecting — waiting...`);
+      Logger.log(`[FacebookService:${this.accountId}] Already connecting - waiting...`);
       if (this._connectPromise) {
         try {
           const waitPromise = this._connectPromise;
@@ -2573,10 +2573,10 @@ export class FacebookService {
       }
 
       // Connection died during stability window (likely overflow) → retry
-      Logger.warn(`[FacebookService:${this.accountId}] Connection lost during stability check (attempt ${attempt}/${MAX_ATTEMPTS}) — retrying`);
+      Logger.warn(`[FacebookService:${this.accountId}] Connection lost during stability check (attempt ${attempt}/${MAX_ATTEMPTS}) - retrying`);
     }
 
-    Logger.warn(`[FacebookService:${this.accountId}] Connection unstable after ${MAX_ATTEMPTS} attempts — giving up`);
+    Logger.warn(`[FacebookService:${this.accountId}] Connection unstable after ${MAX_ATTEMPTS} attempts - giving up`);
     return false;
   }
 

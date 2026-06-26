@@ -25,7 +25,7 @@ interface ErpTaskState {
   loading: boolean;
   error: string | null;
 
-  // Actions — actor IDs are resolved server-side via ErpAuthContext;
+  // Actions - actor IDs are resolved server-side via ErpAuthContext;
   // callers no longer need to pass them (kept optional for back-compat).
   loadProjects: () => Promise<void>;
   createProject: (params: any) => Promise<ErpProject | null>;

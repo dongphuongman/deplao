@@ -31,7 +31,7 @@
  * ── COOKIE ───────────────────────────────────────────────────────────────────────
  * Bridge cần Facebook cookie chứa ít nhất c_user + xs.
  * Các cookie khác (datr, fr, sb) là optional.
- * wd, presence là ephemeral do JavaScript set — KHÔNG cần.
+ * wd, presence là ephemeral do JavaScript set - KHÔNG cần.
  *
  * Tham khảo: https://github.com/m008v/fbchat-v2
  */
@@ -78,7 +78,7 @@ export class BridgeError extends Error {
 
 export class BridgeNotReadyError extends BridgeError {
   constructor() {
-    super('E2EE bridge chưa được khởi tạo — gọi connect() trước.');
+    super('E2EE bridge chưa được khởi tạo - gọi connect() trước.');
     this.name = 'BridgeNotReadyError';
   }
 }
@@ -116,7 +116,7 @@ export class FacebookE2EEBridge extends EventEmitter {
     return bridge;
   }
 
-  // Private constructor — chỉ dùng qua create() để tránh TS 5.9 EventEmitter conflict
+  // Private constructor - chỉ dùng qua create() để tránh TS 5.9 EventEmitter conflict
   private constructor() { super(); }
 
 
@@ -149,7 +149,7 @@ export class FacebookE2EEBridge extends EventEmitter {
     // ─── Stdout reader (brace-counting JSON parser) ─────────────────────
     //
     // Không dùng split('\n') vì Windows pipe có thể chunk data ở bất kỳ
-    // vị trí nào — kể cả giữa JSON value. Split theo \n sẽ cắt hỏng JSON
+    // vị trí nào - kể cả giữa JSON value. Split theo \n sẽ cắt hỏng JSON
     // nếu chunk boundary không trùng với \n boundary.
     //
     // Giải pháp: đếm { và } (đúng chuẩn JSON string escape) để tách
@@ -157,11 +157,11 @@ export class FacebookE2EEBridge extends EventEmitter {
     //
     this.process.stdout?.on('data', (chunk: Buffer) => {
       this.buffer += chunk.toString('utf8');
-      // Cap buffer at 50MB — đủ cho E2EE media download (FB limit ~25MB/file,
+      // Cap buffer at 50MB - đủ cho E2EE media download (FB limit ~25MB/file,
       // base64 ~33MB + JSON overhead). Không để unlimited vì bridge lỗi có thể
       // sinh output vô tận gây OOM.
       if (this.buffer.length > 1024 * 1024 * 50) {
-        Logger.warn('[FBE2EEBridge] Buffer exceeded 50MB — resetting');
+        Logger.warn('[FBE2EEBridge] Buffer exceeded 50MB - resetting');
         this.buffer = '';
         return;
       }
@@ -201,7 +201,7 @@ export class FacebookE2EEBridge extends EventEmitter {
             try {
               const msg = JSON.parse(jsonStr);
               this.processMessage(msg);
-              // Remove processed content — keep remaining buffer
+              // Remove processed content - keep remaining buffer
               this.buffer = this.buffer.slice(i + 1);
               // Reset loop state for the rest of the buffer
               depth = 0;
@@ -212,9 +212,9 @@ export class FacebookE2EEBridge extends EventEmitter {
               continue;
             } catch {
               // False positive: } xuat hien ngoai string context
-              // KHONG discard buffer — keep for next chunk
+              // KHONG discard buffer - keep for next chunk
               const preview = this.buffer.slice(0, 300);
-              Logger.warn(`[FBE2EEBridge] False depth=0 (offset=${i}, buffer=${this.buffer.length}b) — waiting. Start: ${preview}`);
+              Logger.warn(`[FBE2EEBridge] False depth=0 (offset=${i}, buffer=${this.buffer.length}b) - waiting. Start: ${preview}`);
               break;
             }
           }
@@ -238,7 +238,7 @@ export class FacebookE2EEBridge extends EventEmitter {
         try {
           const msg = JSON.parse(this.buffer.trim());
           this.processMessage(msg);
-        } catch { /* ignore — incomplete */ }
+        } catch { /* ignore - incomplete */ }
         this.buffer = '';
       }
       this.onProcessExited(this.process?.exitCode ?? null);
@@ -305,7 +305,7 @@ export class FacebookE2EEBridge extends EventEmitter {
     this.closed = true;
     this.process = null; // Cleanup process reference on unexpected exit
 
-    // Drain tất cả pending requests — bridge đã chết
+    // Drain tất cả pending requests - bridge đã chết
     for (const [, pending] of this.pending) {
       pending.reject(new BridgeError(`Bridge exited (code=${code})`));
     }
@@ -404,7 +404,7 @@ export class FacebookE2EEBridge extends EventEmitter {
 
   /**
    * Login handshake (non-E2EE)
-   * Bridge may respond with { ok: true } without data — handle gracefully.
+   * Bridge may respond with { ok: true } without data - handle gracefully.
    * @returns User info (id, name) or empty if not provided
    */
   public async connect(timeout: number = 120000): Promise<{ user?: { id: string; name?: string } }> {
@@ -618,7 +618,7 @@ export class FacebookE2EEBridge extends EventEmitter {
     try {
       await this.call('disconnect', undefined, 5000);
     } catch {
-      // ignore — bridge may already be dead
+      // ignore - bridge may already be dead
     }
 
     this.closed = true;
@@ -640,7 +640,7 @@ export class FacebookE2EEBridge extends EventEmitter {
       }
     }, 5000);
 
-    // Đợi process exit rồi mới null reference — tránh race với spawn()
+    // Đợi process exit rồi mới null reference - tránh race với spawn()
     proc.on('exit', () => {
       clearTimeout(forceKill);
       if (this.process === proc) {
@@ -649,8 +649,8 @@ export class FacebookE2EEBridge extends EventEmitter {
       Logger.log('[FBE2EEBridge] Process exited after close');
     });
 
-    // KHÔNG set this.process = null ở đây — đợi 'exit' event
-    Logger.log('[FBE2EEBridge] Close requested — waiting for process exit');
+    // KHÔNG set this.process = null ở đây - đợi 'exit' event
+    Logger.log('[FBE2EEBridge] Close requested - waiting for process exit');
   }
 
   /**

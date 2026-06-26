@@ -60,16 +60,16 @@ function httpPost(url: string, body: any, timeoutMs = 15000): Promise<any> {
 
         req.on('error', (err: any) => {
             if (err.code === 'ECONNREFUSED') {
-                reject(new Error('Không thể kết nối — kiểm tra lại IP và Port, đảm bảo boss đã bật Relay Server'));
+                reject(new Error('Không thể kết nối - kiểm tra lại IP và Port, đảm bảo boss đã bật Relay Server'));
             } else if (err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT') {
-                reject(new Error('Hết thời gian kết nối — kiểm tra lại mạng'));
+                reject(new Error('Hết thời gian kết nối - kiểm tra lại mạng'));
             } else {
                 reject(new Error(`Lỗi kết nối: ${err.message}`));
             }
         });
         req.on('timeout', () => {
             req.destroy();
-            reject(new Error(`Hết thời gian kết nối (${timeoutMs / 1000}s) — kiểm tra lại địa chỉ Boss`));
+            reject(new Error(`Hết thời gian kết nối (${timeoutMs / 1000}s) - kiểm tra lại địa chỉ Boss`));
         });
 
         req.write(data);
@@ -78,7 +78,7 @@ function httpPost(url: string, body: any, timeoutMs = 15000): Promise<any> {
 }
 
 /**
- * registerWorkspaceIpc — IPC handlers for Workspace CRUD + switching.
+ * registerWorkspaceIpc - IPC handlers for Workspace CRUD + switching.
  * 8 channels total.
  */
 export function registerWorkspaceIpc(mainWindow: BrowserWindow | null): void {
@@ -233,7 +233,7 @@ export function registerWorkspaceIpc(mainWindow: BrowserWindow | null): void {
                 if (result.workspace.type === 'remote' && result.workspace.bossUrl && result.workspace.token) {
                     const scm = HttpConnectionManager.getInstance();
                     if (!scm.isConnected(id)) {
-                        Logger.log(`[workspaceIpc] Remote workspace "${result.workspace.name}" not connected — auto-reconnecting...`);
+                        Logger.log(`[workspaceIpc] Remote workspace "${result.workspace.name}" not connected - auto-reconnecting...`);
                         try {
                             await scm.connect(id, result.workspace.bossUrl, result.workspace.token);
                         } catch (err: any) {

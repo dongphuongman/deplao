@@ -1,7 +1,7 @@
 /**
  * fbInitUtils.ts
  *
- * Facebook account first-run initialization — syncs threads/conversations
+ * Facebook account first-run initialization - syncs threads/conversations
  * when a new FB account first enters the Chat view.
  *
  * Much simpler than Zalo init (only 1 task: threads).
@@ -77,7 +77,7 @@ export async function checkFBAccountInitNeeds(accountId: string): Promise<FBInit
     return { threads: true, any: true };
   }
 
-  // Already done — check if contacts exist in DB
+  // Already done - check if contacts exist in DB
   try {
     const res = await ipc.db?.getContacts(accountId);
     const contacts: any[] = res?.contacts ?? res ?? [];

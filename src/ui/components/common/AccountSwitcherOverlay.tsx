@@ -4,7 +4,7 @@ import { useAccountStore } from '@/store/accountStore';
 import { toLocalMediaUrl } from '@/lib/localMedia';
 
 /**
- * AccountSwitcherOverlay — Ctrl+Tab quick account switcher
+ * AccountSwitcherOverlay - Ctrl+Tab quick account switcher
  *
  * Hiển thị danh sách tài khoản dạng horizontal cards ở giữa màn hình.
  * Giống Windows Alt+Tab: giữ Ctrl + Tab để navigate, thả Ctrl để chọn.

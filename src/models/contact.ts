@@ -1,4 +1,4 @@
-/** Contact unified — Zalo + Facebook */
+/** Contact unified - Zalo + Facebook */
 export interface Contact {
     id?: number;
     owner_zalo_id: string;

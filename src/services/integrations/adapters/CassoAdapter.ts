@@ -22,7 +22,7 @@ export class CassoAdapter extends IntegrationAdapter {
         timeout: 10000,
       });
       const name = res.data?.data?.fullname || res.data?.data?.business_name || 'Casso';
-      return { success: true, message: `Kết nối Casso thành công — tài khoản: ${name}` };
+      return { success: true, message: `Kết nối Casso thành công - tài khoản: ${name}` };
     } catch (e: any) {
       return { success: false, message: `Lỗi kết nối Casso: ${e.response?.data?.error || e.message}` };
     }

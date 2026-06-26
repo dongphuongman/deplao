@@ -10,7 +10,7 @@ import { useAppStore } from '@/store/appStore';
 export default function EmployeeConnectionBanner() {
     const { previewEmployeeId } = useEmployeeStore();
 
-    // Boss/standalone simulation mode — immersive employee simulation bar
+    // Boss/standalone simulation mode - immersive employee simulation bar
     if (previewEmployeeId) {
         const store = useEmployeeStore.getState();
         const previewEmp = store.employees.find((e: any) => e.employee_id === previewEmployeeId);

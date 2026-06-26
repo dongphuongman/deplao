@@ -14,9 +14,10 @@ import WorkspaceSettings from './WorkspaceSettings';
 import ProxySettings from './ProxySettings';
 import LockScreenSettings from './LockScreenSettings';
 import AccountSettings from './AccountSettings';
+import TunnelSettings from './TunnelSettings';
 import { loadSeenTabs, markTabSeen, SETTINGS_WATCHLIST, hasUnseenChangelog, markChangelogSeen } from '@/utils/settingsSeenTabs';
 
-type SettingsTab = 'notifications' | 'accounts' | 'storage' | 'conversation' | 'employees' | 'workspace' | 'introduction' | 'changelog' | 'appearance' | 'proxy' | 'security';
+type SettingsTab = 'notifications' | 'accounts' | 'storage' | 'conversation' | 'employees' | 'workspace' | 'introduction' | 'changelog' | 'appearance' | 'proxy' | 'security' | 'webhooks';
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('conversation');
@@ -27,7 +28,7 @@ export default function Settings() {
   const [defaultStoragePath, setDefaultStoragePath] = useState<string>('');
   const [actualDbPath, setActualDbPath] = useState<string>('');
   const [changingStorage, setChangingStorage] = useState(false);
-  // Pending folder with existing data — shown in choice modal
+  // Pending folder with existing data - shown in choice modal
   const [pendingFolder, setPendingFolder] = useState<string | null>(null);
   // Live progress khi đang copy media
   const [copyProgress, setCopyProgress] = useState<number>(0);
@@ -100,7 +101,7 @@ export default function Settings() {
     }
   };
 
-  /** Áp dụng đổi thư mục — useExisting=true: chỉ đổi con trỏ, không copy */
+  /** Áp dụng đổi thư mục - useExisting=true: chỉ đổi con trỏ, không copy */
   const applyStorageChange = async (newFolder: string, useExisting: boolean) => {
     setChangingStorage(true);
     setCopyProgress(0);
@@ -152,6 +153,7 @@ export default function Settings() {
     { id: 'accounts',      icon: '👤', label: 'Tài khoản', requiredPerm: 'settings_accounts' },
     { id: 'proxy',         icon: '🔒', label: 'Proxy' },
     { id: 'security',      icon: '🛡️', label: 'Bảo mật' },
+    { id: 'webhooks',      icon: '🔗', label: 'Webhooks' },
     { id: 'employees',     icon: '👥', label: 'Nhân viên', requiredPerm: 'settings_employees' },
     { id: 'workspace',     icon: '🗂️', label: 'Workspace' },
     { id: 'storage',       icon: '📁', label: 'Lưu trữ' },
@@ -159,7 +161,7 @@ export default function Settings() {
     { id: 'changelog',     icon: '🗒️', label: 'Log phiên bản' },
   ];
 
-  // Filter nav items by permission — employee/simulation mode may hide certain tabs
+  // Filter nav items by permission - employee/simulation mode may hide certain tabs
   const { mode: empMode, permissions: empPermissions } = useEmployeeStore();
   const hasSettingsPerm = (perm?: string) => {
     if (!perm) return true; // no permission required
@@ -191,11 +193,11 @@ export default function Settings() {
               }`}>
               <span className="text-base leading-none">{item.icon}</span>
               <span className="font-medium">{item.label}</span>
-              {/* Chấm đỏ "mới" — chỉ hiện khi tab chưa được xem lần nào */}
+              {/* Chấm đỏ "mới" - chỉ hiện khi tab chưa được xem lần nào */}
               {(SETTINGS_WATCHLIST as readonly string[]).includes(item.id) && !seenTabs.has(item.id) && (
                 <span className="ml-auto w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
               )}
-              {/* Chấm đỏ cho changelog — hiện khi có bản cập nhật chưa đọc */}
+              {/* Chấm đỏ cho changelog - hiện khi có bản cập nhật chưa đọc */}
               {item.id === 'changelog' && unreadChangelog && (
                 <span className="ml-auto w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
               )}
@@ -393,7 +395,7 @@ export default function Settings() {
               </div>
               <ul className="space-y-1.5 pl-1">
                 {[
-                  { icon: '💾', text: 'Ổ C: thường là ổ hệ thống, dung lượng trống ít — tin nhắn, ảnh, video sẽ tích lũy nhanh theo thời gian.' },
+                  { icon: '💾', text: 'Ổ C: thường là ổ hệ thống, dung lượng trống ít - tin nhắn, ảnh, video sẽ tích lũy nhanh theo thời gian.' },
                   { icon: '🔄', text: 'Khi cài lại Windows, toàn bộ dữ liệu trên ổ C: bị xóa. Lưu ở ổ D:, E:... giúp bảo toàn lịch sử chat qua mọi lần cài lại.' },
                   { icon: '⚡', text: 'Trên máy SSD đa ổ, tách DB sang ổ phụ giảm áp lực I/O cho ổ hệ thống, app chạy mượt hơn.' },
                   { icon: '📦', text: 'Dễ backup: chỉ cần copy một thư mục sang ổ ngoài / cloud là có toàn bộ dữ liệu.' },
@@ -464,6 +466,7 @@ export default function Settings() {
 
         {/* ── Employees ── */}
         {activeTab === 'proxy' && <ProxySettings />}
+        {activeTab === 'webhooks' && <TunnelSettings />}
         {activeTab === 'employees' && <EmployeeSettings />}
         {activeTab === 'workspace' && <WorkspaceSettings />}
 
@@ -566,7 +569,7 @@ export default function Settings() {
                     </div>
                     {copyTotal > 0 && (
                       <p className="text-[11px] text-gray-500 mt-1">
-                        {((copyProgress / copyTotal) * 100).toFixed(0)}% — vui lòng không đóng ứng dụng
+                        {((copyProgress / copyTotal) * 100).toFixed(0)}% - vui lòng không đóng ứng dụng
                       </p>
                     )}
                   </>

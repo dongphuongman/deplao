@@ -201,7 +201,7 @@ export function registerEmployeeIpc(): void {
         try {
             AppModeManager.getInstance().setMode('employee');
 
-            // Extract employee_id from JWT payload (no verification needed — boss already verified)
+            // Extract employee_id from JWT payload (no verification needed - boss already verified)
             try {
                 const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
                 if (payload.employee_id) {

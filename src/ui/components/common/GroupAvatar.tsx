@@ -73,7 +73,7 @@ interface GroupAvatarProps {
   avatarUrl?: string;
   /** Cache info nhóm (chứa members để render composite) */
   groupInfo?: CachedGroupInfo | null;
-  /** Tên nhóm — dùng cho fallback chữ cái đầu */
+  /** Tên nhóm - dùng cho fallback chữ cái đầu */
   name: string;
   /** Kích thước: xs(32) sm(36) md(40) lg(64) */
   size?: GroupAvatarSize;
@@ -82,7 +82,7 @@ interface GroupAvatarProps {
 }
 
 /**
- * GroupAvatar — hiển thị avatar nhóm Zalo giống gốc:
+ * GroupAvatar - hiển thị avatar nhóm Zalo giống gốc:
  * 1. Nếu có avatarUrl → hiển thị ảnh
  * 2. Nếu không → composite grid từ members (2/3/4 ô)
  * 3. Fallback → chữ cái đầu trên nền tím

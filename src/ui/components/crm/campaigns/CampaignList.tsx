@@ -2,6 +2,15 @@ import React, { useState, useMemo } from 'react';
 import type { CRMCampaign } from '@/store/crmStore';
 import { showConfirm } from '@/components/common/ConfirmDialog';
 
+function fmtDelayRange(min: number, max: number): string {
+  const fmt = (s: number) => {
+    if (s < 60) return `${s}s`;
+    if (s < 3600) return `${Math.round(s / 60)}ph`;
+    return `${Math.round(s / 3600)}h`;
+  };
+  return min === max ? fmt(min) : `${fmt(min)}-${fmt(max)}`;
+}
+
 interface CampaignListProps {
   campaigns: CRMCampaign[];
   loading: boolean;
@@ -117,7 +126,7 @@ export default function CampaignList({ campaigns, loading, activeId, onSelect, o
                       <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">🔀 Hỗn hợp</span>
                     )}
                     <span className="text-[11px] text-gray-500">
-                      ⏱ {c.delay_seconds}s delay
+                      ⏱ {fmtDelayRange(c.delay_min_seconds || Math.max(30, c.delay_seconds - 10), c.delay_max_seconds || c.delay_seconds + 10)}
                       {c.created_at ? <> · 📅 {fmtDate(c.created_at)}</> : null}
                     </span>
                   </div>
@@ -142,19 +151,19 @@ export default function CampaignList({ campaigns, loading, activeId, onSelect, o
               <div className="flex gap-1.5 mt-1.5" onClick={e => e.stopPropagation()}>
                 {c.status === 'draft' && (
                   <button onClick={() => onUpdateStatus(c.id, 'active')}
-                    className="flex-1 text-[11px] py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white">▶ Bắt đầu</button>
+                    className="flex-1 text-[12px] py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white">▶ Bắt đầu</button>
                 )}
                 {c.status === 'active' && (
                   <button onClick={() => onUpdateStatus(c.id, 'paused')}
-                    className="flex-1 text-[11px] py-1 rounded-lg bg-yellow-600 hover:bg-yellow-700 text-white">⏸ Tạm dừng</button>
+                    className="flex-1 text-[12px] py-1 rounded-lg bg-yellow-600 hover:bg-yellow-700 text-white">⏸ Tạm dừng</button>
                 )}
                 {c.status === 'paused' && (
                   <button onClick={() => onUpdateStatus(c.id, 'active')}
-                    className="flex-1 text-[11px] py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white">▶ Tiếp tục</button>
+                    className="flex-1 text-[12px] py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white">▶ Tiếp tục</button>
                 )}
                 <button onClick={() => onClone(c.id)}
                   title="Nhân bản chiến dịch"
-                  className="px-2 text-[11px] py-1 rounded-lg bg-gray-700 hover:bg-blue-700/50 text-gray-400 hover:text-blue-300 transition-colors">📋</button>
+                  className="px-2 text-[12px] py-1 rounded-lg bg-gray-700 hover:bg-blue-700/50 text-gray-400 hover:text-blue-300 transition-colors">📋 Nhân bản</button>
                 <button
                   onClick={async () => {
                     const ok = await showConfirm({
@@ -165,7 +174,7 @@ export default function CampaignList({ campaigns, loading, activeId, onSelect, o
                     });
                     if (ok) onDelete(c.id);
                   }}
-                  className="px-2 text-[11px] py-1 rounded-lg bg-gray-700 hover:bg-red-700/50 text-gray-400 hover:text-red-300 transition-colors">🗑</button>
+                  className="px-2 text-[12px] py-1 rounded-lg bg-gray-700 hover:bg-red-700/50 text-gray-400 hover:text-red-300 transition-colors">🗑</button>
               </div>
             </div>
           );

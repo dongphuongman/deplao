@@ -26,7 +26,7 @@ export const CustomDeletableEdge = memo((props: EdgeProps) => {
         interactionWidth={12}
       />
       <EdgeLabelRenderer>
-        {/* Delete button — always visible as a faint dot, turns red ✕ on hover/select */}
+        {/* Delete button - always visible as a faint dot, turns red ✕ on hover/select */}
         <div
           style={{
             position: 'absolute',
@@ -80,7 +80,7 @@ function NodeBase({ data, color, children }: { data: any; color: string; childre
         <span className={`text-xs font-semibold truncate flex-1 ${isLight ? 'text-gray-800' : 'text-white'}`}>
           {data.label || getNodeLabel(data.type)}
         </span>
-        {/* Delete button — visible on hover */}
+        {/* Delete button - visible on hover */}
         <button
           onClick={handleDelete}
           className="w-4 h-4 rounded flex items-center justify-center opacity-0 group-hover/node:opacity-100 transition-opacity hover:bg-red-500/30 text-gray-500 hover:text-red-400 flex-shrink-0"

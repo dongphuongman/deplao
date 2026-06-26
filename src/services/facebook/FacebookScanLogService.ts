@@ -34,7 +34,7 @@ export class FacebookScanLogService {
     try {
       const db = DatabaseService.getInstance();
 
-      // Tạo table — dùng run() thay vì exec() để tránh transaction conflict
+      // Tạo table - dùng run() thay vì exec() để tránh transaction conflict
       db.run(`
         CREATE TABLE IF NOT EXISTS fb_scan_history (
           id                INTEGER PRIMARY KEY AUTOINCREMENT,

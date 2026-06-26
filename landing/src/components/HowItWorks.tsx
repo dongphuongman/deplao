@@ -71,7 +71,7 @@ const HowItWorks: React.FC = () => {
 
         <div className="mt-12 text-center aos-element">
           <p className="text-slate-500 text-sm">
-            Gặp vấn đề? Liên hệ hỗ trợ qua Facebook hoặc Telegram — đội ngũ sẽ phản hồi bạn sớm nhất.
+            Gặp vấn đề? Liên hệ hỗ trợ qua Facebook hoặc Telegram - đội ngũ sẽ phản hồi bạn sớm nhất.
           </p>
         </div>
       </div>

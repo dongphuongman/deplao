@@ -1,4 +1,4 @@
-/** Tin nhắn unified — Zalo + Facebook */
+/** Tin nhắn unified - Zalo + Facebook */
 export interface Message {
     id?: number;
     msg_id: string;

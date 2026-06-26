@@ -377,7 +377,7 @@ export default function TaskInboxPage() {
                     className="w-full text-left rounded-lg border border-red-500/10 bg-gray-900/30 px-3 py-2 hover:border-red-400/40"
                   >
                     <div className="text-sm text-white truncate">{task.title}</div>
-                    <div className="text-[11px] text-red-300 mt-1">Quá hạn từ {task.due_date ? new Date(task.due_date).toLocaleDateString('vi-VN') : '—'}</div>
+                    <div className="text-[11px] text-red-300 mt-1">Quá hạn từ {task.due_date ? new Date(task.due_date).toLocaleDateString('vi-VN') : '-'}</div>
                   </button>
                 ))}
               </div>

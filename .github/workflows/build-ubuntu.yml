@@ -35,7 +35,7 @@ on:
       - 'v*'
 
 # ─── SECRETS cần cấu hình ────────────────────────────────────────────────────
-#   GH_TOKEN — GitHub Personal Access Token (repo scope)
+#   GH_TOKEN - GitHub Personal Access Token (repo scope)
 
 jobs:
   build-ubuntu:
@@ -56,7 +56,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 'stable'
-          cache: false  # don't cache Go modules — meta clone is side-effect
+          cache: false  # don't cache Go modules - meta clone is side-effect
 
       - name: 📦 Install system dependencies
         run: |
@@ -96,7 +96,7 @@ jobs:
           fi
           echo "✅ Tag: $(grep '^tag=' $GITHUB_OUTPUT | cut -d= -f2)"
 
-      - name: 📦 Build Linux app (x64 — AppImage + deb)
+      - name: 📦 Build Linux app (x64 - AppImage + deb)
         run: npx electron-builder --linux --x64 --publish never
 
       - name: 🚀 Publish lên GitHub Releases

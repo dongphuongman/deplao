@@ -9,7 +9,7 @@ interface AddAccountModalProps {
   onClose: () => void;
 }
 
-/** Footer điều khoản — dùng chung cho cả QR và Cookie tab */
+/** Footer điều khoản - dùng chung cho cả QR và Cookie tab */
 function TosFooter() {
   const { setView, setAddAccountModalOpen } = useAppStore();
   return (
@@ -95,7 +95,7 @@ export default function AddAccountModal({ onClose }: AddAccountModalProps) {
           </button>
         </div>
 
-        {/* Step 1 — Channel Selection */}
+        {/* Step 1 - Channel Selection */}
         {step === 'channel' && (
           <div className="p-6 space-y-4">
             <p className="text-gray-400 text-sm text-center mb-6">Chọn kênh bạn muốn thêm tài khoản</p>
@@ -148,7 +148,7 @@ export default function AddAccountModal({ onClose }: AddAccountModalProps) {
           </div>
         )}
 
-        {/* Step 2 — Proxy selection (chỉ Zalo) */}
+        {/* Step 2 - Proxy selection (chỉ Zalo) */}
         {step === 'proxy' && (
           <ProxySelectStep
             proxies={proxies}
@@ -159,7 +159,7 @@ export default function AddAccountModal({ onClose }: AddAccountModalProps) {
           />
         )}
 
-        {/* Step 3 — Login Detail */}
+        {/* Step 3 - Login Detail */}
         {step === 'detail' && channel === 'zalo' && (
           <>
             {/* Proxy indicator */}
@@ -701,7 +701,7 @@ function FacebookAccountLoginTab({ onSuccess, proxyId }: { onSuccess: () => void
         />
       </div>
 
-      {/* 2FA field — luôn hiển thị */}
+      {/* 2FA field - luôn hiển thị */}
       <div className={`rounded-xl p-3 border transition-all ${
         need2FA
           ? 'bg-red-900/20 border-red-700/40'
@@ -803,7 +803,7 @@ function FacebookCookieLoginTab({ onSuccess, proxyId }: { onSuccess: () => void;
       if (result?.success) {
         showNotification('Đăng nhập Facebook thành công! 🎉 Đang hoàn tất thiết lập tài khoản...', 'success');
 
-        // Reload accounts — FB account is now in unified accounts table
+        // Reload accounts - FB account is now in unified accounts table
         const res = await ipc.login?.getAccounts();
         if (res?.accounts) setAccounts(res.accounts);
 
@@ -825,7 +825,7 @@ function FacebookCookieLoginTab({ onSuccess, proxyId }: { onSuccess: () => void;
       <div>
         <label className="text-xs text-gray-400 mb-1 block font-medium">
           Cookie Facebook{' '}
-          <span className="text-gray-600 font-normal">— dán chuỗi cookie từ trình duyệt</span>
+          <span className="text-gray-600 font-normal">- dán chuỗi cookie từ trình duyệt</span>
         </label>
         <textarea
           value={cookie}
@@ -1014,7 +1014,7 @@ function CookieLoginTab({ onSuccess, proxyId }: { onSuccess: () => void; proxyId
         <label className="text-xs text-gray-400 mb-1 block font-medium">
           Auth JSON{' '}
           <span className="text-gray-600 font-normal">
-            — dán nguyên khối từ tool extract
+            - dán nguyên khối từ tool extract
           </span>
         </label>
         <textarea
@@ -1098,7 +1098,7 @@ function SecretKeyGuidePopup({ onClose }: { onClose: () => void }) {
                 : 'text-gray-400 hover:text-gray-200'
             }`}
           >
-            ✅ Đã có 2FA — Cách lấy Secret Key
+            ✅ Đã có 2FA - Cách lấy Secret Key
           </button>
           <button
             onClick={() => setTab('setup-2fa')}
@@ -1108,7 +1108,7 @@ function SecretKeyGuidePopup({ onClose }: { onClose: () => void }) {
                 : 'text-gray-400 hover:text-gray-200'
             }`}
           >
-            🛠 Chưa có 2FA — Cách thiết lập
+            🛠 Chưa có 2FA - Cách thiết lập
           </button>
         </div>
 
@@ -1140,7 +1140,7 @@ function Have2FAGuide() {
     },
     {
       title: 'Chọn Trung tâm tài khoản (Accounts Center)',
-      desc: 'Trong menu bên trái, tìm và chọn "Trung tâm tài khoản" (Accounts Center) — mục này thường nằm ở phía trên cùng hoặc dưới phần "Đăng nhập".',
+      desc: 'Trong menu bên trái, tìm và chọn "Trung tâm tài khoản" (Accounts Center) - mục này thường nằm ở phía trên cùng hoặc dưới phần "Đăng nhập".',
     },
     {
       title: 'Mật khẩu và bảo mật → Xác thực hai yếu tố',
@@ -1152,7 +1152,7 @@ function Have2FAGuide() {
     },
     {
       title: 'Chọn "Ứng dụng xác thực" (Authentication App)',
-      desc: 'Phương thức xác thực bạn cần tìm là "Ứng dụng xác thực" — bấm vào đó để xem chi tiết.',
+      desc: 'Phương thức xác thực bạn cần tìm là "Ứng dụng xác thực" - bấm vào đó để xem chi tiết.',
     },
     {
       title: 'Tìm tùy chọn hiện mã bí mật',
@@ -1178,7 +1178,7 @@ function Have2FAGuide() {
           <code className="block bg-gray-900 text-indigo-300 px-3 py-2 rounded-lg my-2 text-center text-xs font-mono tracking-widest select-all">
             ABCD EFGH IJKL MNOP QRST UVWX YZ12 3456
           </code>
-          Đó là mã bí mật 2FA (Secret Key) — <strong className="text-indigo-300">copy nguyên chuỗi này</strong> (kể cả khoảng trắng, app tự xử lý) và dán vào ô "Mã bí mật 2FA" phía trên.
+          Đó là mã bí mật 2FA (Secret Key) - <strong className="text-indigo-300">copy nguyên chuỗi này</strong> (kể cả khoảng trắng, app tự xử lý) và dán vào ô "Mã bí mật 2FA" phía trên.
         </span>
       ),
     },
@@ -1208,7 +1208,7 @@ function Have2FAGuide() {
       <div className="bg-emerald-600 border border-emerald-700/30 rounded-xl p-3 mt-4 space-y-2">
         <p className="text-emerald-300 text-xs font-semibold">💡 Mẹo nhỏ</p>
         <ul className="text-white-important text-[11px] space-y-1.5 list-disc list-inside leading-relaxed">
-          <li>Nếu đã thấy mục "Ứng dụng xác thực" hiển thị trạng thái "Đã bật" — bấm vào để xem lại mã.</li>
+          <li>Nếu đã thấy mục "Ứng dụng xác thực" hiển thị trạng thái "Đã bật" - bấm vào để xem lại mã.</li>
           <li>Dùng trình duyệt trên máy tính (không dùng app điện thoại) để dễ thao tác.</li>
           <li>Secret Key không thay đổi trừ khi bạn tắt và thiết lập lại 2FA.</li>
         </ul>
@@ -1236,7 +1236,7 @@ function Setup2FAGuide() {
       desc: (
         <span>
           Nếu chưa có phương thức nào, Facebook sẽ yêu cầu chọn loại xác thực. Chọn <strong className="text-indigo-300">"Ứng dụng xác thực"</strong>
-          {' '}(Authentication App) — <strong className="text-indigo-300">KHÔNG chọn SMS</strong> vì SMS không cung cấp Secret Key.
+          {' '}(Authentication App) - <strong className="text-indigo-300">KHÔNG chọn SMS</strong> vì SMS không cung cấp Secret Key.
         </span>
       ),
     },
@@ -1245,7 +1245,7 @@ function Setup2FAGuide() {
       desc: 'Facebook sẽ yêu cầu nhập lại mật khẩu để xác nhận quyền truy cập.',
     },
     {
-      title: 'Quét mã QR — nhưng hãy tìm Secret Key',
+      title: 'Quét mã QR - nhưng hãy tìm Secret Key',
       desc: (
         <span>
           Facebook hiển thị mã QR để quét. <strong className="text-indigo-300">Đừng vội quét!</strong> Hãy tìm một trong các liên kết sau:
@@ -1290,7 +1290,7 @@ function Setup2FAGuide() {
       <div className="bg-amber-900/20 border border-amber-700/30 rounded-xl p-3 mb-4">
         <p className="text-amber-300 text-xs leading-relaxed">
           <strong>⚠️ Hướng dẫn dành cho tài khoản CHƯA bật 2FA</strong>
-          {' — hoặc đã bật 2FA nhưng không tìm thấy Secret Key, cần thiết lập lại từ đầu.'}
+          {' - hoặc đã bật 2FA nhưng không tìm thấy Secret Key, cần thiết lập lại từ đầu.'}
         </p>
       </div>
 
@@ -1310,7 +1310,7 @@ function Setup2FAGuide() {
       <div className="bg-red-900/20 border border-red-700/30 rounded-xl p-3 mt-4">
         <p className="text-red-300 text-xs font-semibold mb-2">❓ Vẫn không thấy Secret Key?</p>
         <ul className="text-red-400 text-[11px] space-y-1.5 list-disc list-inside leading-relaxed">
-          <li>Bạn đã bật 2FA từ trước — Facebook chỉ hiện QR mà không hiện khóa thủ công.</li>
+          <li>Bạn đã bật 2FA từ trước - Facebook chỉ hiện QR mà không hiện khóa thủ công.</li>
           <li>Tài khoản đang dùng Passkey hoặc phương thức bảo mật khác.</li>
         </ul>
         <div className="bg-gray-900/50 rounded-lg p-3 mt-2">

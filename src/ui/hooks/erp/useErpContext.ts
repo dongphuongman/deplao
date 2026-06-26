@@ -16,7 +16,7 @@ import {
  *                     (role will be upgraded from backend Phase 2 profile).
  *
  * IMPORTANT: The main process ALSO re-derives the employeeId server-side
- * (see `ErpAuthContext`). Never trust this value for authorisation alone —
+ * (see `ErpAuthContext`). Never trust this value for authorisation alone -
  * it is used only for convenience in UI calls and optimistic rendering.
  */
 export function useErpContext(): { employeeId: string; role: ErpRole; permissionOverrides: ErpPermissionOverrides } {

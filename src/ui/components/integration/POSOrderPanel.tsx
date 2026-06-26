@@ -9,7 +9,7 @@ import { adaptOrderForPlatform, type GenericOrderData } from './platformOrderAda
 import { IS_DEV_BUILD } from '../../../configs/BuildConfig';
 
 /**
- * POSOrderPanel — Giao diện tạo đơn hàng POS đầy đủ
+ * POSOrderPanel - Giao diện tạo đơn hàng POS đầy đủ
  * Flow mới: 1 màn hình duy nhất
  * - Thông tin khách + địa chỉ là bắt buộc
  * - Chọn sản phẩm, chỉnh giỏ hàng, phí/ghi chú và submit ngay trên cùng màn hình
@@ -235,7 +235,7 @@ export default function POSOrderPanel({
             setDefaultBranchId(String(branchId));
           }
         } catch {
-          // keep silent — branch remains optional
+          // keep silent - branch remains optional
         }
       }
       if (active) setProvinces(getProvinces());
@@ -586,7 +586,7 @@ export default function POSOrderPanel({
           <div>
             <label className={labelCls}>Tỉnh/Thành phố <span className="text-red-400">*</span></label>
             <select value={provinceId} onChange={e => setProvinceId(e.target.value)} className={selectCls}>
-              <option value="">— Tỉnh/Thành —</option>
+              <option value="">- Tỉnh/Thành -</option>
               {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           </div>
@@ -595,14 +595,14 @@ export default function POSOrderPanel({
             <div>
               <label className={labelCls}>Quận/Huyện <span className="text-red-400">*</span></label>
               <select value={districtId} onChange={e => setDistrictId(e.target.value)} className={selectCls} disabled={!provinceId}>
-                <option value="">— Quận/Huyện —</option>
+                <option value="">- Quận/Huyện -</option>
                 {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
             </div>
             <div>
               <label className={labelCls}>Phường/Xã <span className="text-red-400">*</span></label>
               <select value={wardId} onChange={e => setWardId(e.target.value)} className={selectCls} disabled={!districtId}>
-                <option value="">— Phường/Xã —</option>
+                <option value="">- Phường/Xã -</option>
                 {wards.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
               </select>
             </div>
@@ -793,7 +793,7 @@ export default function POSOrderPanel({
             <span className="text-[10px] px-2 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20">{integrationName}</span>
           </div>
           <div className="text-xs text-gray-400 space-y-1">
-            <p>👤 {custName || '—'} {custPhone ? `· ${custPhone}` : ''}</p>
+            <p>👤 {custName || '-'} {custPhone ? `· ${custPhone}` : ''}</p>
             <p>📍 {displayAddress || 'Chưa có địa chỉ đầy đủ'}</p>
             <p>📦 {totalItems} sản phẩm trong giỏ</p>
           </div>

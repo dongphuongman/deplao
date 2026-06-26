@@ -1,7 +1,7 @@
 /**
  * FacebookSession.ts
  * Port từ Python _core/_session.py
- * Khởi tạo Facebook session từ cookie — parse fb_dtsg, jazoest, FacebookID, etc.
+ * Khởi tạo Facebook session từ cookie - parse fb_dtsg, jazoest, FacebookID, etc.
  */
 
 import axios from 'axios';
@@ -76,7 +76,7 @@ export async function fetchFBHomepage(cookie: string, httpsAgent?: any): Promise
  * Khởi tạo session từ cookie string
  * Trả về FBSessionData với tất cả thông tin cần thiết cho mọi request.
  *
- * Port từ Python _core/_session.py dataGetHome() — bao gồm:
+ * Port từ Python _core/_session.py dataGetHome() - bao gồm:
  * - Parse tất cả session fields từ homepage HTML
  * - Validate REQUIRED_SESSION_FIELDS
  * - Throw error nếu thiếu field bắt buộc hoặc HTTP request thất bại
@@ -131,7 +131,7 @@ export async function initSession(cookie: string, httpsAgent?: any): Promise<FBS
 export async function checkCookieAlive(cookie: string, httpsAgent?: any): Promise<boolean> {
   try {
     await initSession(cookie, httpsAgent);
-    // initSession() đã validate required fields + FacebookID — nếu không throw là OK
+    // initSession() đã validate required fields + FacebookID - nếu không throw là OK
     return true;
   } catch (err: any) {
     Logger.warn(`[FacebookSession] checkCookieAlive error: ${err.message}`);
@@ -204,11 +204,11 @@ export async function fetchBasicProfileFromHome(html: string): Promise<{ name: s
 
 /**
  * Fetch avatar URL cho 1 user Facebook cụ thể bằng cách scrape profile page.
- * Không phụ thuộc vào GraphQL hay cache — luôn trả về URL CDN fresh.
+ * Không phụ thuộc vào GraphQL hay cache - luôn trả về URL CDN fresh.
  *
  * Chiến lược:
- *   1. www.facebook.com/profile.php?id={userId} — parse xlink:href hoặc profile_pic_uri
- *   2. Fallback: mbasic.facebook.com/{userId} — HTML nhẹ, parse <img src>
+ *   1. www.facebook.com/profile.php?id={userId} - parse xlink:href hoặc profile_pic_uri
+ *   2. Fallback: mbasic.facebook.com/{userId} - HTML nhẹ, parse <img src>
  */
 export async function fetchUserAvatarFromProfile(cookie: string, userId: string, httpsAgent?: any): Promise<string | null> {
   // Dùng getUserInfoFacebookHtml để tái sử dụng logic fetch + parse
@@ -353,7 +353,7 @@ async function tryFetchWww(cookie: string, userId: string, httpsAgent?: any): Pr
     });
     const html = response.data as string;
 
-    // Priority 1: <image style="height:168px;width:168px"> — profile picture circle
+    // Priority 1: <image style="height:168px;width:168px"> - profile picture circle
     // Facebook dùng 168px là kích thước cố định cho profile picture thumbnail
     // Match cả thẻ <image> có style 168px, rồi extract xlink:href
     const imgTagRe = /<image[^>]*style="[^"]*height:\s*168px[^"]*width:\s*168px[^"]*"[^>]*>/i;

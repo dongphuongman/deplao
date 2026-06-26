@@ -75,7 +75,7 @@ export function useEmployeeDisplay(employeeId: string | undefined | null): { nam
   const employee = useEmployeeStore(s =>
     employeeId ? s.employees.find((p: any) => p.employee_id === employeeId) : undefined
   );
-  if (!employeeId) return { name: '—' };
+  if (!employeeId) return { name: '-' };
   if (employeeId === 'boss') {
     return { name: 'Boss', avatar: null };
   }
@@ -119,7 +119,7 @@ export function EmployeeAvatar({
   );
 }
 
-// ─── MarkdownRenderer — safe, no external deps ────────────────────────────────
+// ─── MarkdownRenderer - safe, no external deps ────────────────────────────────
 // Lightweight: escapes HTML first then applies inline + block rules.
 // Supports: headings (#..######), bold **x**, italic *x*/_x_, inline `code`,
 // code blocks ```…```, links [a](b), unordered lists (- / *), ordered lists,

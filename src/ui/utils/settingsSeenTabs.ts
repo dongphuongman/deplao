@@ -25,7 +25,7 @@ export function loadSeenTabs(): Set<string> {
 export function markTabSeen(tab: string): void {
   try {
     const seen = loadSeenTabs();
-    if (seen.has(tab)) return; // already seen — no-op
+    if (seen.has(tab)) return; // already seen - no-op
     seen.add(tab);
     localStorage.setItem(LS_KEY, JSON.stringify([...seen]));
     window.dispatchEvent(new CustomEvent('settings:tabSeen'));

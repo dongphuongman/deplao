@@ -9,7 +9,7 @@ interface AddFriendModalProps {
 }
 
 /**
- * Modal soạn lời mời kết bạn — dùng chung ở FriendList, ConversationList, v.v.
+ * Modal soạn lời mời kết bạn - dùng chung ở FriendList, ConversationList, v.v.
  * UserProfilePopup dùng inline compose riêng bên trong popup.
  */
 export default function AddFriendModal({ displayName, avatar, sending, onConfirm, onClose }: AddFriendModalProps) {

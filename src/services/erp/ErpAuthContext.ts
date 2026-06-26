@@ -1,5 +1,5 @@
 /**
- * ErpAuthContext — Main-process helper that resolves the "current" ERP
+ * ErpAuthContext - Main-process helper that resolves the "current" ERP
  * actor for IPC handlers & services. Renderer MUST NOT be trusted to
  * pass `employeeId` directly; it is derived here from AppModeManager.
  *
@@ -76,7 +76,7 @@ export default class ErpAuthContext {
     return actor;
   }
 
-  /** Best-effort access lookup from `erp_employee_profiles` (Phase 2 — may not exist). */
+  /** Best-effort access lookup from `erp_employee_profiles` (Phase 2 - may not exist). */
   private static _lookupAccess(employeeId: string): { role: ErpRole | null; permissionOverrides: ErpPermissionOverrides } {
     try {
       const activeWorkspace = WorkspaceManager.getInstance().getActiveWorkspace();
@@ -107,7 +107,7 @@ export default class ErpAuthContext {
         };
       }
     } catch {
-      // Table not yet created (Phase 1) — silently fall back.
+      // Table not yet created (Phase 1) - silently fall back.
     }
 
 

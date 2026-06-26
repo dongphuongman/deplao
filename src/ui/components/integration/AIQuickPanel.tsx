@@ -1,6 +1,6 @@
 /**
  * AIQuickPanel.tsx
- * Side panel chat trực tiếp với AI — hiển thị bên phải khung chat.
+ * Side panel chat trực tiếp với AI - hiển thị bên phải khung chat.
  * Cho phép chọn trợ lý, chat hỏi đáp, insert câu trả lời vào MessageInput.
  * Tự động inject ngữ cảnh hội thoại Zalo hiện tại khi gửi câu hỏi.
  */
@@ -144,7 +144,7 @@ export default function AIQuickPanel({ onClose }: { onClose: () => void }) {
       const zaloContext = getZaloChatContext();
       if (zaloContext) {
         msgsToSend.push(
-          { role: 'user', content: `[Ngữ cảnh hội thoại Zalo hiện tại — ${effectiveContextMsgCount} tin nhắn gần nhất]\n${zaloContext}` },
+          { role: 'user', content: `[Ngữ cảnh hội thoại Zalo hiện tại - ${effectiveContextMsgCount} tin nhắn gần nhất]\n${zaloContext}` },
           { role: 'assistant', content: 'Đã nắm được ngữ cảnh hội thoại. Tôi sẽ trả lời dựa trên ngữ cảnh này.' },
         );
       }
@@ -271,7 +271,7 @@ export default function AIQuickPanel({ onClose }: { onClose: () => void }) {
             className="w-full bg-gray-800 border border-gray-600 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
             {assistants.map(a => (
               <option key={a.id} value={a.id}>
-                {PLATFORM_ICONS[a.platform] || '🤖'} {a.name} — {a.model}
+                {PLATFORM_ICONS[a.platform] || '🤖'} {a.name} - {a.model}
                 {a.isDefault ? ' ⭐' : ''}
               </option>
             ))}
@@ -342,9 +342,9 @@ export default function AIQuickPanel({ onClose }: { onClose: () => void }) {
             <p className="text-xs text-gray-500">
               {canUseZaloContext
                 ? (hasZaloContext
-                    ? 'Hỏi bất kỳ điều gì — AI sẽ tự động nắm ngữ cảnh hội thoại Zalo hiện tại'
-                    : 'Hỏi bất kỳ điều gì — đang chat với AI nội bộ, không tự gửi ngữ cảnh Zalo')
-                : 'Hỏi bất kỳ điều gì — AI sẽ trả lời dựa trên prompt và dữ liệu đã cấu hình'}
+                    ? 'Hỏi bất kỳ điều gì - AI sẽ tự động nắm ngữ cảnh hội thoại Zalo hiện tại'
+                    : 'Hỏi bất kỳ điều gì - đang chat với AI nội bộ, không tự gửi ngữ cảnh Zalo')
+                : 'Hỏi bất kỳ điều gì - AI sẽ trả lời dựa trên prompt và dữ liệu đã cấu hình'}
             </p>
           </div>
         )}

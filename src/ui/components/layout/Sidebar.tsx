@@ -8,6 +8,7 @@ import { useVisibleAccounts } from '@/hooks/useVisibleAccounts';
 import { hasUnseenSettingsTabs } from '@/utils/settingsSeenTabs';
 import { useErpPermissions } from '@/hooks/erp/useErpContext';
 
+
 interface SidebarProps {
   onAddAccount: () => void;
 }
@@ -43,7 +44,7 @@ export default function Sidebar({ onAddAccount }: SidebarProps) {
   const canErpAccess = canErp('erp.access');
   // Use visible (filtered) accounts for rendering
   const accounts = visibleAccounts;
-  const { view, setView, mergedInboxMode, mergedInboxAccounts, mergedInboxFilterAccount, setMergedInboxFilter, exitMergedInbox } = useAppStore();
+  const { view, setView, mergedInboxMode, mergedInboxAccounts, mergedInboxFilterAccount, setMergedInboxFilter, exitMergedInbox, sidebarExpanded, toggleSidebarExpanded } = useAppStore();
   const crmRequestUnseenByAccount = useAppStore(s => s.crmRequestUnseenByAccount);
   const { contacts, activeThreadId, activeThreadType, saveAccountThread } = useChatStore();
   const { othersConversations: allOthers } = useAppStore();
@@ -53,7 +54,7 @@ export default function Sidebar({ onAddAccount }: SidebarProps) {
   const [showToolsGuide, setShowToolsGuide] = useState(false);
   const hasNewCRMRequests = Object.values(crmRequestUnseenByAccount || {}).some(Boolean);
 
-  // Chấm đỏ trên nút Settings — tắt khi người dùng đã xem hết các tab quan trọng
+  // Chấm đỏ trên nút Settings - tắt khi người dùng đã xem hết các tab quan trọng
   const [hasNewSettings, setHasNewSettings] = useState(() => hasUnseenSettingsTabs());
   useEffect(() => {
     const handler = () => setHasNewSettings(hasUnseenSettingsTabs());
@@ -82,39 +83,72 @@ export default function Sidebar({ onAddAccount }: SidebarProps) {
     setDragOverIndex(null);
   };
 
+  const showExpanded = sidebarExpanded && view === 'chat';
+
   return (
     <div className="flex flex-col w-16 bg-gray-900 border-r border-gray-700 h-full">
-      {/* Danh sách tài khoản — chế độ Gộp trang: hiện các avatar dùng làm bộ lọc */}
-      {mergedInboxMode ? (
-        <div className="flex-1 overflow-y-auto py-2 flex flex-col items-center gap-2">
-          {/* Exit button — ở trên cùng */}
+      {/* ─── Toggle expand/collapse - chỉ hiện ở màn hình Chat ─── */}
+      {view === 'chat' && (
+        <div className="pt-2 pb-1 flex justify-center">
           <button
-            onClick={exitMergedInbox}
-            title="Thoát chế độ Gộp tài khoản"
-            className="w-8 h-8 rounded-lg bg-red-900/30 border border-red-700/40 flex items-center justify-center text-red-400 hover:bg-red-900/60 hover:text-red-300 transition-colors flex-shrink-0"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-
-          {/* "Tất cả" — bỏ lọc */}
-          <button
-            onClick={() => setMergedInboxFilter(null)}
-            title="Tất cả tài khoản"
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all flex-shrink-0 ring-2 ${
-              mergedInboxFilterAccount === null
-                ? 'bg-blue-600 text-white ring-blue-400'
-                : 'bg-gray-700 text-gray-400 hover:bg-gray-600 ring-transparent'
+            onClick={toggleSidebarExpanded}
+            title={showExpanded ? 'Ẩn danh sách tài khoản đầy đủ' : 'Hiện danh sách tài khoản đầy đủ'}
+            className={`font-semibold w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+              showExpanded
+                ? 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30'
+                : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 hover:text-white'
             }`}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
+            {showExpanded ? (
+              /* X - đóng */
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              /* Hamburger - mở rộng */
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+              </svg>
+            )}
           </button>
+        </div>
+      )}
+
+      {/* ─── Danh sách tài khoản ─── */}
+      {showExpanded ? (
+        /* ── Expanded: ẩn avatar thu gọn, nav đẩy lên ── */
+        <div className="" />
+      ) : mergedInboxMode ? (
+        <div className="flex-1 overflow-y-auto py-2 flex flex-col items-center gap-2">
+          {/* "Tất cả" - bỏ lọc, với nút thoát ở góc trên-phải */}
+          <div className="relative flex-shrink-0">
+            <button
+              onClick={() => setMergedInboxFilter(null)}
+              title="Chọn tất cả tài khoản"
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all flex-shrink-0 ring-2 ${
+                mergedInboxFilterAccount === null
+                  ? 'bg-blue-600 text-white ring-blue-400'
+                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600 ring-transparent'
+              }`}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </button>
+            {/* Exit button - góc trên phải */}
+            <button
+              onClick={exitMergedInbox}
+              title="Thoát chế độ Gộp tài khoản"
+              className="absolute -top-2 -right-3 w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 hover:bg-gray-600 hover:text-gray-200 transition-colors z-10"
+            >
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
 
           {/* Account filter avatars */}
           {mergedInboxAccounts.map(zaloId => {
@@ -132,7 +166,7 @@ export default function Sidebar({ onAddAccount }: SidebarProps) {
               <div key={zaloId} className="relative flex-shrink-0">
                 <button
                   onClick={() => setMergedInboxFilter(isSelected ? null : zaloId)}
-                  title={`${account.full_name || zaloId}${isSelected ? ' — đang lọc' : ' — nhấn để lọc'}`}
+                  title={`${account.full_name || zaloId}${isSelected ? ' - đang lọc' : ' - nhấn để lọc'}`}
                   className={`w-10 h-10 rounded-full overflow-hidden ring-2 transition-all flex-shrink-0 ${
                     isSelected
                       ? 'ring-blue-500 scale-110'
@@ -173,121 +207,122 @@ export default function Sidebar({ onAddAccount }: SidebarProps) {
 
         </div>
       ) : (
-      <div className="flex-1 overflow-y-auto py-2 flex flex-col items-center gap-2">
-        {accounts.map((account, index) => {
-          const accountContacts = contacts[account.zalo_id] || [];
-          const acctOthers = allOthers[account.zalo_id] || new Set();
-          const unreadConvCount = accountContacts.reduce((s, c) => {
-            if (acctOthers.has(c.contact_id)) return s;
-            return s + (c.unread_count > 0 ? 1 : 0);
-          }, 0);
-          const listenerDead = account.isConnected && account.listenerActive === false;
-          const isDragOver = dragOverIndex === index;
+        /* ── Collapsed / non-chat: danh sách avatar thu gọn ── */
+        <div className="flex-1 overflow-y-auto py-2 flex flex-col items-center gap-2">
+          {accounts.map((account, index) => {
+            const accountContacts = contacts[account.zalo_id] || [];
+            const acctOthers = allOthers[account.zalo_id] || new Set();
+            const unreadConvCount = accountContacts.reduce((s, c) => {
+              if (acctOthers.has(c.contact_id)) return s;
+              return s + (c.unread_count > 0 ? 1 : 0);
+            }, 0);
+            const listenerDead = account.isConnected && account.listenerActive === false;
+            const isDragOver = dragOverIndex === index;
 
-          const tooltipLines = [
-            account.full_name || account.zalo_id,
-            account.is_business ? '💼 Tài khoản Zalo Business' : null,
-            listenerDead ? '⚠ Listener chết' : null,
-          ].filter(Boolean).join('\n');
+            const tooltipLines = [
+              account.full_name || account.zalo_id,
+              account.is_business ? '💼 Tài khoản Zalo Business' : null,
+              listenerDead ? '⚠ Listener chết' : null,
+            ].filter(Boolean).join('\n');
 
-          return (
-            <div
-              key={account.zalo_id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, index)}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDrop={(e) => handleDrop(e, index)}
-              onDragEnd={handleDragEnd}
-              className={`relative flex-shrink-0 transition-all ${isDragOver ? 'scale-110 opacity-70' : ''}`}
-              style={{ cursor: 'grab' }}
-            >
-              <button
-                onClick={() => {
-                  if (activeAccountId && activeThreadId) {
-                    saveAccountThread(activeAccountId, activeThreadId, activeThreadType);
-                  }
-                  setActiveAccount(account.zalo_id);
-                  setView('chat');
-                }}
-                title={tooltipLines}
-                className={`relative w-10 h-10 rounded-full overflow-visible ring-2 transition-all flex-shrink-0 ${
-                  activeAccountId === account.zalo_id
-                    ? 'ring-blue-500'
-                    : listenerDead
-                      ? 'ring-red-600'
-                        : 'ring-transparent hover:ring-gray-500'
-                }`}
-                style={{ cursor: 'pointer' }}
+            return (
+              <div
+                key={account.zalo_id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragEnd={handleDragEnd}
+                className={`relative flex-shrink-0 transition-all ${isDragOver ? 'scale-110 opacity-70' : ''}`}
+                style={{ cursor: 'grab' }}
               >
-                <div className="w-10 h-10 rounded-full overflow-hidden">
-                  {account.avatar_url ? (
-                    <img
-                      src={account.avatar_url}
-                      alt={account.full_name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).src = ''; }}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                      {(account.full_name || account.zalo_id).charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
+                <button
+                  onClick={() => {
+                    if (activeAccountId && activeThreadId) {
+                      saveAccountThread(activeAccountId, activeThreadId, activeThreadType);
+                    }
+                    setActiveAccount(account.zalo_id);
+                    setView('chat');
+                  }}
+                  title={tooltipLines}
+                  className={`relative w-10 h-10 rounded-full overflow-visible ring-2 transition-all flex-shrink-0 ${
+                    activeAccountId === account.zalo_id
+                      ? 'ring-blue-500'
+                      : listenerDead
+                        ? 'ring-red-600'
+                          : 'ring-transparent hover:ring-gray-500'
+                  }`}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="w-10 h-10 rounded-full overflow-hidden">
+                    {account.avatar_url ? (
+                      <img
+                        src={account.avatar_url}
+                        alt={account.full_name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = ''; }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                        {(account.full_name || account.zalo_id).charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
 
-                {/* ── Top-right: listener dead / unread badge ── */}
-                {listenerDead ? (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-gray-900 flex items-center justify-center z-10">
-                    <span className="text-white text-[8px] font-bold leading-none">!</span>
-                  </span>
-                ) : unreadConvCount > 0 ? (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5 leading-none z-10 shadow-md">
-                    {unreadConvCount > 99 ? '99+' : unreadConvCount}
-                  </span>
-                ) : null}
+                  {/* ── Top-right: listener dead / unread badge ── */}
+                  {listenerDead ? (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-gray-900 flex items-center justify-center z-10">
+                      <span className="text-white text-[8px] font-bold leading-none">!</span>
+                    </span>
+                  ) : unreadConvCount > 0 ? (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5 leading-none z-10 shadow-md">
+                      {unreadConvCount > 99 ? '99+' : unreadConvCount}
+                    </span>
+                  ) : null}
 
-                {/* ── Bottom-left: Zalo Business badge ── */}
-                {account.is_business ? (
-                  <span
-                    className="absolute -bottom-1 -left-1 bg-amber-500 text-white text-[7px] font-bold rounded-full border border-gray-900 z-10 leading-none flex items-center justify-center"
-                    style={{ minWidth: '0.875rem', height: '0.875rem', padding: '0 0.125rem' }}
-                    title="Zalo Business"
-                  >
-                    💼
-                  </span>
-                ) : null}
+                  {/* ── Bottom-left: Zalo Business badge ── */}
+                  {account.is_business ? (
+                    <span
+                      className="absolute -bottom-1 -left-1 bg-amber-500 text-white text-[7px] font-bold rounded-full border border-gray-900 z-10 leading-none flex items-center justify-center"
+                      style={{ minWidth: '0.875rem', height: '0.875rem', padding: '0 0.125rem' }}
+                      title="Zalo Business"
+                    >
+                      💼
+                    </span>
+                  ) : null}
 
-                {/* ── Channel badge (Zalo/Facebook) ── */}
-                <div className="absolute -bottom-0.5 -left-0.5 z-10">
-                  <ChannelBadge channel={(account.channel as any) || 'zalo'} size="xs" />
-                </div>
+                  {/* ── Channel badge (Zalo/Facebook) ── */}
+                  <div className="absolute -bottom-0.5 -left-0.5 z-10">
+                    <ChannelBadge channel={(account.channel as any) || 'zalo'} size="xs" />
+                  </div>
 
-                {/* ── Disconnected indicator (bottom-right) ── */}
-                {!account.isConnected && !listenerDead ? (
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-gray-800 rounded-full border-2 border-gray-900 flex items-center justify-center z-10" title="Chưa kết nối">
-                    <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-red-400">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                  </span>
-                ) : null}
-              </button>
-            </div>
-          );
-        })}
+                  {/* ── Disconnected indicator (bottom-right) ── */}
+                  {!account.isConnected && !listenerDead ? (
+                    <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-gray-800 rounded-full border-2 border-gray-900 flex items-center justify-center z-10" title="Chưa kết nối">
+                      <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-red-400">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </span>
+                  ) : null}
+                </button>
+              </div>
+            );
+          })}
 
-        {/* Add Account Button — hidden in employee mode and during employee simulation */}
-        {empMode !== 'employee' && !isSimulating && (
-        <button
-          onClick={onAddAccount}
-          title="Thêm tài khoản"
-          className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-400 hover:text-white transition-colors border-2 border-dashed border-gray-600"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 2a.75.75 0 0 1 .75.75v4.5h4.5a.75.75 0 0 1 0 1.5h-4.5v4.5a.75.75 0 0 1-1.5 0v-4.5h-4.5a.75.75 0 0 1 0-1.5h4.5v-4.5A.75.75 0 0 1 8 2Z" />
-          </svg>
-        </button>
-        )}
-      </div>
-      )} {/* end: !mergedInboxMode account list */}
+          {/* Add Account Button - hidden in employee mode and during employee simulation */}
+          {empMode !== 'employee' && !isSimulating && (
+          <button
+            onClick={onAddAccount}
+            title="Thêm tài khoản"
+            className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-400 hover:text-white transition-colors border-2 border-dashed border-gray-600"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 2a.75.75 0 0 1 .75.75v4.5h4.5a.75.75 0 0 1 0 1.5h-4.5v4.5a.75.75 0 0 1-1.5 0v-4.5h-4.5a.75.75 0 0 1 0-1.5h4.5v-4.5A.75.75 0 0 1 8 2Z" />
+            </svg>
+          </button>
+          )}
+        </div>
+      )}
 
       {/* Nav bottom */}
       <div className="border-t border-gray-700 py-2 flex flex-col items-center gap-1">
@@ -313,7 +348,7 @@ export default function Sidebar({ onAddAccount }: SidebarProps) {
         {hasPerm('analytics') && (
         <NavBtn icon="analytics"  label="Báo cáo"      active={view === 'analytics'}  onClick={() => setView('analytics')} />
         )}
-        {/* ERP — gated by module permission AND ERP RBAC (`erp.access`).
+        {/* ERP - gated by module permission AND ERP RBAC (`erp.access`).
             Inside ERP, fine-grained writes enforced via `useErpPermissions().can(...)` +
             IPC middleware `withErpAuth`. */}
         {hasPerm('erp') && canErpAccess && (
@@ -456,7 +491,7 @@ function NavFlyout({ icon, label, active, items, onGuide }: { icon: string; labe
         <NavIcon name={icon} />
       </button>
 
-      {/* Flyout submenu — appears to the right */}
+      {/* Flyout submenu - appears to the right */}
       {open && (
         <div
           className="absolute left-full -bottom-12 ml-1.5 z-[9999] min-w-[160px] bg-gray-800 border border-gray-600 rounded-xl shadow-2xl py-1.5 animate-in fade-in slide-in-from-left-2 duration-150"
@@ -601,10 +636,10 @@ function NavIcon({ name }: { name: string }) {
 const TOOLS_GUIDE = [
   {
     id: 'crm' as const,
-    icon: '📊', title: 'CRM — Quản lý khách hàng',
+    icon: '📊', title: 'CRM - Quản lý khách hàng',
     color: 'border-blue-500/40 bg-blue-900/10',
     badgeColor: 'bg-blue-600/30 text-blue-300',
-    purpose: 'Quản lý toàn bộ danh sách liên hệ Zalo, phân loại khách hàng bằng nhãn, ghi chú nội bộ, và chạy chiến dịch nhắn tin hàng loạt — biến Zalo thành CRM chuyên nghiệp.',
+    purpose: 'Quản lý toàn bộ danh sách liên hệ Zalo, phân loại khách hàng bằng nhãn, ghi chú nội bộ, và chạy chiến dịch nhắn tin hàng loạt - biến Zalo thành CRM chuyên nghiệp.',
     sections: [
       {
         title: '👥 Quản lý liên hệ',
@@ -618,7 +653,7 @@ const TOOLS_GUIDE = [
       {
         title: '🏷️ Hệ thống nhãn kép',
         items: [
-          'Nhãn Zalo (Zalo Label): đồng bộ 2 chiều với app Zalo trên điện thoại — gán từ Deplao, thấy trên Zalo và ngược lại',
+          'Nhãn Zalo (Zalo Label): đồng bộ 2 chiều với app Zalo trên điện thoại - gán từ Deplao, thấy trên Zalo và ngược lại',
           'Nhãn Local: nhãn riêng của Deplao, tùy biến màu sắc + emoji, không giới hạn số lượng',
           'Dùng nhãn làm điều kiện lọc trong chiến dịch (chỉ gửi cho khách có nhãn "VIP")',
           'Dùng nhãn làm Trigger trong Workflow: khi gắn nhãn → tự động chạy luồng xử lý',
@@ -627,7 +662,7 @@ const TOOLS_GUIDE = [
       {
         title: '📝 Ghi chú nội bộ (Notes)',
         items: [
-          'Thêm ghi chú riêng cho từng liên hệ — khách hàng không thấy được',
+          'Thêm ghi chú riêng cho từng liên hệ - khách hàng không thấy được',
           'Chỉnh sửa / xóa ghi chú bất kỳ lúc nào',
           'Xem lại toàn bộ ghi chú theo dòng thời gian trong panel chi tiết',
         ],
@@ -638,7 +673,7 @@ const TOOLS_GUIDE = [
           'Tạo chiến dịch: chọn đối tượng theo nhãn / bộ lọc → soạn mẫu tin → gửi',
           'Hỗ trợ biến động: chèn tên khách, SĐT, nhãn... vào nội dung tin nhắn tự động',
           'Giới hạn tốc độ gửi tự động: tối đa 60 tin/giờ, delay giữa mỗi tin (tránh spam)',
-          'Theo dõi realtime: đã gửi / thất bại / phản hồi — dừng/tiếp tục chiến dịch mọi lúc',
+          'Theo dõi realtime: đã gửi / thất bại / phản hồi - dừng/tiếp tục chiến dịch mọi lúc',
           'Lịch sử gửi chi tiết: xem từng tin đã gửi, trạng thái, thời gian',
         ],
       },
@@ -646,13 +681,13 @@ const TOOLS_GUIDE = [
   },
   {
     id: 'workflow' as const,
-    icon: '⚙️', title: 'Workflow — Tự động hoá',
+    icon: '⚙️', title: 'Workflow - Tự động hoá',
     color: 'border-purple-500/40 bg-purple-900/10',
     badgeColor: 'bg-purple-600/30 text-gray-300',
     purpose: 'Tạo các luồng xử lý tự động bằng giao diện kéo-thả trực quan: nhận sự kiện → xử lý logic → thực hiện hành động. Không cần viết code, có sẵn 20+ mẫu workflow.',
     sections: [
       {
-        title: '⚡ Trigger — 8 loại sự kiện kích hoạt',
+        title: '⚡ Trigger - 8 loại sự kiện kích hoạt',
         items: [
           'Khi nhận tin nhắn: lọc theo từ khóa, loại hội thoại (cá nhân/nhóm), regex',
           'Khi có lời mời kết bạn → tự động chấp nhận + gửi lời chào',
@@ -665,7 +700,7 @@ const TOOLS_GUIDE = [
         ],
       },
       {
-        title: '💬 Action — 15+ thao tác trên Zalo',
+        title: '💬 Action - 15+ thao tác trên Zalo',
         items: [
           'Gửi tin nhắn văn bản (hỗ trợ biến động {{ tên }}, {{ sdt }}...)',
           'Hiệu ứng "đang gõ..." + delay → tạo cảm giác tự nhiên như người thật',
@@ -689,9 +724,9 @@ const TOOLS_GUIDE = [
       {
         title: '🤖 AI & Tích hợp ngoài',
         items: [
-          'AI tạo nội dung: ChatGPT, Gemini, Deepseek, Grok — chatbot thông minh',
+          'AI tạo nội dung: ChatGPT, Gemini, Deepseek, Grok - chatbot thông minh',
           'AI phân loại tin nhắn: tự nhận diện hỏi giá / khiếu nại / hỗ trợ kỹ thuật...',
-          'Google Sheets: ghi dữ liệu, đọc dữ liệu, cập nhật ô — biến Sheets thành database',
+          'Google Sheets: ghi dữ liệu, đọc dữ liệu, cập nhật ô - biến Sheets thành database',
           'Gửi thông báo Telegram, Discord, Email, ghi vào Notion Database',
           'Gọi API/Webhook HTTP bên ngoài: kết nối bất kỳ hệ thống nào',
         ],
@@ -700,7 +735,7 @@ const TOOLS_GUIDE = [
         title: '🏪 POS & Vận chuyển trong Workflow',
         items: [
           'KiotViet / Haravan / Sapo / Nhanh: tra cứu KH, đơn hàng, sản phẩm, tạo đơn',
-          'GHN / GHTK: tạo đơn vận chuyển, tra cứu vận đơn — ngay trong luồng tự động',
+          'GHN / GHTK: tạo đơn vận chuyển, tra cứu vận đơn - ngay trong luồng tự động',
           'Casso / SePay (VietQR): lấy lịch sử giao dịch, đối soát thanh toán',
         ],
       },
@@ -708,7 +743,7 @@ const TOOLS_GUIDE = [
   },
   {
     id: 'integration' as const,
-    icon: '🔗', title: 'Tích hợp — Kết nối bên thứ 3',
+    icon: '🔗', title: 'Tích hợp - Kết nối bên thứ 3',
     color: 'border-green-500/40 bg-green-900/10',
     badgeColor: 'bg-green-600/30 text-green-500',
     purpose: 'Kết nối Deplao với hệ sinh thái bán hàng, thanh toán, vận chuyển Việt Nam. Tra cứu dữ liệu ngay trong khung chat, nhận webhook tự động, kết hợp Workflow để xử lý end-to-end.',
@@ -716,7 +751,7 @@ const TOOLS_GUIDE = [
       {
         title: '🛒 POS / Bán hàng (4 nền tảng)',
         items: [
-          'KiotViet: tra cứu khách hàng, đơn hàng, sản phẩm, tạo đơn — phổ biến nhất VN',
+          'KiotViet: tra cứu khách hàng, đơn hàng, sản phẩm, tạo đơn - phổ biến nhất VN',
           'Haravan: nền tảng TMĐT, tra cứu đơn hàng online, khách hàng',
           'Sapo: quản lý bán hàng đa kênh, tra cứu đơn/khách theo SĐT',
           'Nhanh.vn: tra cứu đơn, sản phẩm, khách hàng, tạo đơn',
@@ -726,7 +761,7 @@ const TOOLS_GUIDE = [
       {
         title: '💳 Thanh toán (2 nền tảng)',
         items: [
-          'Casso: kết nối ngân hàng, nhận webhook khi có chuyển khoản mới — realtime',
+          'Casso: kết nối ngân hàng, nhận webhook khi có chuyển khoản mới - realtime',
           'SePay (VietQR): tương tự Casso, hỗ trợ nhiều ngân hàng VN',
           'Webhook tự nhận về app tại http://127.0.0.1:9888/webhook/{type}',
           'Kết hợp Workflow trigger.payment → gửi tin cảm ơn + xác nhận đơn tự động',
@@ -736,16 +771,16 @@ const TOOLS_GUIDE = [
         title: '🚚 Vận chuyển (2 nền tảng)',
         items: [
           'GHN Express: tạo đơn giao hàng, tra cứu mã vận đơn + trạng thái',
-          'GHTK: tạo đơn + tra cứu tracking — đối soát COD',
+          'GHTK: tạo đơn + tra cứu tracking - đối soát COD',
         ],
       },
       {
-        title: '🌐 Tunnel — Mở kết nối ra internet',
+        title: '🌐 Tunnel - Mở kết nối ra internet',
         items: [
           'Bật thủ công khi cần: tạo URL công khai (https://xxx.loca.lt) trỏ về app',
           'Cho phép bên ngoài (Casso, SePay, n8n cloud...) gửi webhook về Deplao',
           'Không bật = webhook chỉ hoạt động trên localhost (cùng máy)',
-          'Tắt bất cứ lúc nào — không ảnh hưởng các tính năng khác',
+          'Tắt bất cứ lúc nào - không ảnh hưởng các tính năng khác',
         ],
       },
       {
@@ -753,7 +788,7 @@ const TOOLS_GUIDE = [
         items: [
           'Ghim các nút tra cứu POS/vận chuyển ngay trên thanh công cụ chat',
           'Bấm 1 lần → tra cứu đơn hàng / khách hàng theo SĐT người đang chat',
-          'Kết quả hiển thị ngay trong popup — không cần rời khung chat',
+          'Kết quả hiển thị ngay trong popup - không cần rời khung chat',
         ],
       },
     ],
@@ -842,7 +877,7 @@ function ToolsGuideModal({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-700/60 flex-shrink-0">
           <div>
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <span>📖</span> Hướng dẫn — Công cụ nâng cao
+              <span>📖</span> Hướng dẫn - Công cụ nâng cao
             </h2>
             <p className="text-[11px] text-gray-400 mt-0.5">Mô tả chi tiết tính năng và cách phối hợp các công cụ</p>
           </div>

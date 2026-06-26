@@ -4,7 +4,7 @@ import { WorkflowTemplate } from './workflowTemplates';
 // ── Integration Templates ──────────────────────────────────────────────────────
 // Các workflow mẫu kết hợp với tích hợp: KiotViet, Haravan, Sapo, Nhanh.vn,
 // GHN, GHTK, Casso/SePay (payment trigger), Google Sheets, Telegram.
-// Không sửa workflowTemplates.ts — file này chỉ chứa các template MỚI.
+// Không sửa workflowTemplates.ts - file này chỉ chứa các template MỚI.
 // ──────────────────────────────────────────────────────────────────────────────
 
 export const INTEGRATION_TEMPLATES: WorkflowTemplate[] = [
@@ -95,7 +95,7 @@ export const INTEGRATION_TEMPLATES: WorkflowTemplate[] = [
           ...DEFAULT_CONFIGS['zalo.sendMessage'],
           message:
             '✅ Đã nhận {{ $trigger.amount | formatVND }} từ bạn!\n\n' +
-            '⏳ Hệ thống chưa ghép được đơn hàng — bộ phận CSKH sẽ liên hệ xác nhận trong vòng 15 phút.',
+            '⏳ Hệ thống chưa ghép được đơn hàng - bộ phận CSKH sẽ liên hệ xác nhận trong vòng 15 phút.',
         },
       },
     ],
@@ -204,7 +204,7 @@ export const INTEGRATION_TEMPLATES: WorkflowTemplate[] = [
         config: {
           template:
             '🏷️ Kết quả tìm kiếm "{{ $trigger.content }}":\n\n' +
-            '{{ $node.n3.products | map("• " + _.name + " — " + _.basePrice + "đ (còn " + _.onHand + ")") | join("\n") }}\n\n' +
+            '{{ $node.n3.products | map("• " + _.name + " - " + _.basePrice + "đ (còn " + _.onHand + ")") | join("\n") }}\n\n' +
             '_Nhắn tên sản phẩm cụ thể để đặt hàng nhé!_',
         },
       },
@@ -445,7 +445,7 @@ export const INTEGRATION_TEMPLATES: WorkflowTemplate[] = [
             '💰 Tổng thu: `{{ $node.n2.transactions | sumBy("amount") | formatVND }}`\n' +
             '📋 Số GD: `{{ $node.n2.transactions.length }}` giao dịch\n' +
             '⬆️ Cao nhất: `{{ $node.n2.transactions | maxBy("amount") | formatVND }}`\n\n' +
-            '— _Deplao AutoReport_ 🤖',
+            '- _Deplao AutoReport_ 🤖',
         },
       },
       {

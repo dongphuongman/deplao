@@ -1,5 +1,5 @@
 /**
- * ConfirmDialog — Beautiful confirm dialog, replacement for window.confirm()
+ * ConfirmDialog - Beautiful confirm dialog, replacement for window.confirm()
  *
  * Usage (imperative, anywhere):
  *   import { showConfirm } from '../common/ConfirmDialog';
@@ -133,7 +133,7 @@ export function ConfirmDialog({
 // ─── Imperative API ───────────────────────────────────────────────────────────
 
 /**
- * showConfirm — Imperative confirm dialog (returns Promise<boolean>)
+ * showConfirm - Imperative confirm dialog (returns Promise<boolean>)
  * Replaces window.confirm() globally.
  *
  * @example
@@ -166,7 +166,7 @@ export function showConfirm(options: ConfirmOptions): Promise<boolean> {
 // ─── useConfirm hook ──────────────────────────────────────────────────────────
 
 /**
- * useConfirm — React hook for inline confirm dialog (renders in component tree)
+ * useConfirm - React hook for inline confirm dialog (renders in component tree)
  *
  * @example
  * const { confirm, ConfirmModal } = useConfirm();

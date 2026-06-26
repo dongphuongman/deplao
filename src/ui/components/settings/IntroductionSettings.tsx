@@ -122,7 +122,7 @@ function OverviewPanel() {
           {([
             ['🏢', 'Doanh nghiệp vừa và nhỏ (SME)', 'Quản lý nhiều tài khoản Zalo/Facebook cùng lúc, phân công nhân viên chăm sóc từng kênh, theo dõi hiệu suất qua báo cáo tập trung.'],
             ['📣', 'Marketing Agency / Freelancer Marketing', 'Chạy chiến dịch gửi tin hàng loạt, quản lý danh sách khách hàng của nhiều client, tự động hóa nuture lead qua Zalo & Facebook.'],
-            ['🛒', 'Shop online / Kinh doanh thương mại điện tử', 'Nhận đơn, CSKH, gửi thông báo đơn hàng và tương tác với khách qua Zalo & Facebook — kết nối trực tiếp với POS, GHN, VNPay.'],
+            ['🛒', 'Shop online / Kinh doanh thương mại điện tử', 'Nhận đơn, CSKH, gửi thông báo đơn hàng và tương tác với khách qua Zalo & Facebook - kết nối trực tiếp với POS, GHN, VNPay.'],
             ['📞', 'Sales & Telesales', 'Quản lý pipeline khách hàng trên Zalo & Facebook, tự động gửi follow-up, lọc khách theo trạng thái chiến dịch và tương tác gần nhất.'],
             ['🎓', 'Trung tâm đào tạo / Giáo dục', 'Gửi thông báo lịch học, nhắc học viên, chăm sóc phụ huynh hàng loạt, phân nhóm theo lớp/khóa học.'],
             ['🏥', 'Phòng khám / Spa / Làm đẹp', 'Nhắc lịch hẹn tự động, gửi chăm sóc sau dịch vụ, chúc mừng sinh nhật khách hàng đúng ngày để tạo thiện cảm và kéo khách quay lại.'],
@@ -167,7 +167,7 @@ function OverviewPanel() {
       <Card>
         <SectionTitle>💡 Yêu cầu hệ thống</SectionTitle>
         <BulletList items={[
-          'Windows 10/11 (64-bit) hoặc MacOS — đề xuất chạy trên PC/máy chủ ổn định',
+          'Windows 10/11 (64-bit) hoặc MacOS - đề xuất chạy trên PC/máy chủ ổn định',
           'RAM tối thiểu: <strong class="text-gray-200">4 GB</strong> (đề xuất 8 GB trở lên)',
           'Kết nối Internet ổn định để đồng bộ tin nhắn Zalo theo thời gian thực',
           'Chạy <strong class="text-gray-200">24/7</strong> để nhận tin nhắn, workflow và Tự động hoá hoạt động liên tục',
@@ -197,10 +197,10 @@ function MultiAccountPanel() {
       </Card>
 
       <Card>
-        <SectionTitle>🔒 Proxy — Chọn proxy trước khi đăng nhập</SectionTitle>
+        <SectionTitle>🔒 Proxy - Chọn proxy trước khi đăng nhập</SectionTitle>
         <div className="flex items-center gap-3 bg-blue-900/20 border border-blue-700/40 rounded-lg px-3 py-2 mb-2">
           <span className="text-blue-400 text-sm flex-shrink-0">✨</span>
-          <p className="text-blue-300 text-xs font-medium">Mỗi tài khoản Zalo có thể dùng proxy riêng — không ảnh hưởng lẫn nhau</p>
+          <p className="text-blue-300 text-xs font-medium">Mỗi tài khoản Zalo có thể dùng proxy riêng - không ảnh hưởng lẫn nhau</p>
         </div>
         <Paragraph>
           Deplao hỗ trợ cấu hình proxy trước khi đăng nhập tài khoản Zalo. Hữu ích khi cần tách biệt IP cho từng tài khoản,
@@ -209,9 +209,9 @@ function MultiAccountPanel() {
         <BulletList items={[
           '<strong class="text-gray-200">Hỗ trợ giao thức:</strong> HTTP · HTTPS · SOCKS5',
           '<strong class="text-gray-200">Cấu hình:</strong> Nhấn nút Proxy trên màn hình đăng nhập QR → nhập địa chỉ proxy (host:port) và thông tin xác thực nếu có',
-          '<strong class="text-gray-200">Gán theo tài khoản:</strong> Mỗi tài khoản Zalo lưu proxy riêng — đổi tài khoản là đổi proxy tự động',
+          '<strong class="text-gray-200">Gán theo tài khoản:</strong> Mỗi tài khoản Zalo lưu proxy riêng - đổi tài khoản là đổi proxy tự động',
           '<strong class="text-gray-200">Kiểm tra proxy:</strong> Nhấn "Test" để xác nhận proxy hoạt động trước khi quét QR đăng nhập',
-          '<strong class="text-gray-200">Bỏ proxy:</strong> Để trống địa chỉ proxy và lưu lại — tài khoản đó sẽ kết nối trực tiếp không qua proxy',
+          '<strong class="text-gray-200">Bỏ proxy:</strong> Để trống địa chỉ proxy và lưu lại - tài khoản đó sẽ kết nối trực tiếp không qua proxy',
         ]} />
       </Card>
 
@@ -219,18 +219,18 @@ function MultiAccountPanel() {
         <SectionTitle>🔀 Chế độ Gộp trang</SectionTitle>
         <div className="flex items-center gap-3 bg-blue-900/20 border border-blue-700/40 rounded-lg px-3 py-2 mb-2">
           <span className="text-blue-400 text-sm flex-shrink-0">✨</span>
-          <p className="text-blue-300 text-xs font-medium">Tính năng độc quyền — quản lý nhiều Zalo chỉ trong một hộp thư duy nhất</p>
+          <p className="text-blue-300 text-xs font-medium">Tính năng độc quyền - quản lý nhiều Zalo chỉ trong một hộp thư duy nhất</p>
         </div>
         <Paragraph>
           Chế độ Gộp trang cho phép bạn xem và trả lời hội thoại từ <strong className="text-green-500">tất cả tài khoản Zalo</strong> trong một danh sách
-          hội thoại hợp nhất, sắp xếp theo thời gian thực — không cần chuyển tab qua lại từng tài khoản.
+          hội thoại hợp nhất, sắp xếp theo thời gian thực - không cần chuyển tab qua lại từng tài khoản.
         </Paragraph>
         <BulletList items={[
           '<strong class="text-gray-200">Kích hoạt:</strong> Vào Dashboard → nhấn nút <em>"Gộp tài khoản"</em> → chọn các tài khoản muốn gộp → Xác nhận',
           '<strong class="text-gray-200">Sidebar hiển thị bộ lọc nhanh:</strong> Icon "tất cả tài khoản" + avatar từng tài khoản → nhấn để lọc chỉ xem hội thoại của tài khoản đó',
           '<strong class="text-gray-200">Badge tài khoản:</strong> Mỗi hội thoại trong danh sách hiển thị avatar nhỏ của tài khoản sở hữu để dễ nhận biết',
           '<strong class="text-gray-200">Tự động chuyển tài khoản:</strong> Khi click vào hội thoại, app tự động chuyển sang đúng tài khoản chủ sở hữu trước khi hiển thị chat',
-          '<strong class="text-gray-200">Bộ lọc đầy đủ:</strong> Tất cả · Chưa đọc · Phân loại nhãn · Khác — tất cả hoạt động xuyên suốt mọi tài khoản được gộp',
+          '<strong class="text-gray-200">Bộ lọc đầy đủ:</strong> Tất cả · Chưa đọc · Phân loại nhãn · Khác - tất cả hoạt động xuyên suốt mọi tài khoản được gộp',
           '<strong class="text-gray-200">Nhãn gộp thông minh:</strong> Nhãn cùng tên từ nhiều tài khoản được hợp nhất thành một nhãn duy nhất trong bộ lọc',
           '<strong class="text-gray-200">Tìm kiếm tên:</strong> Tìm kiếm theo tên/biệt danh hoạt động trực tiếp trên toàn bộ hội thoại đã gộp',
           '<strong class="text-gray-200">Tìm kiếm số điện thoại:</strong> Khi nhập SĐT, app yêu cầu chọn tài khoản để tra cứu (vì mỗi tài khoản Zalo tra cứu độc lập)',
@@ -243,8 +243,8 @@ function MultiAccountPanel() {
         <BulletList items={[
           'Tài khoản Zalo phải là tài khoản <strong class="text-gray-200">cá nhân hoặc tài khoản doanh nghiệp</strong> hợp lệ',
           'App không hỗ trợ tài khoản đã bị Zalo khóa hoặc giới hạn tính năng',
-          'Đăng nhập thông qua QR Code — ứng dụng không lưu mật khẩu Zalo',
-          'Tài khoản đã bị ngắt kết nối (cookie hết hạn) sẽ không tự động gọi lên Zalo — cần kết nối lại thủ công hoặc quét QR mới',
+          'Đăng nhập thông qua QR Code - ứng dụng không lưu mật khẩu Zalo',
+          'Tài khoản đã bị ngắt kết nối (cookie hết hạn) sẽ không tự động gọi lên Zalo - cần kết nối lại thủ công hoặc quét QR mới',
           'Với chế độ Gộp trang: chỉ gộp các tài khoản <strong class="text-gray-200">đang online</strong> để đảm bảo nhận tin nhắn đầy đủ',
         ]} />
       </Card>
@@ -256,7 +256,7 @@ function MessagingPanel() {
   return (
     <div className="space-y-4">
       <Card>
-        <SectionTitle>💬 Hộp thư tập trung — Danh sách hội thoại</SectionTitle>
+        <SectionTitle>💬 Hộp thư tập trung - Danh sách hội thoại</SectionTitle>
         <Paragraph>
           Toàn bộ hội thoại từ tất cả tài khoản Zalo cá nhân & Facebook cá nhân (beta) hiển thị trong một màn hình duy nhất.
           Hệ thống bộ lọc giúp bạn tập trung vào đúng hội thoại cần xử lý ngay lập tức.
@@ -273,7 +273,7 @@ function MessagingPanel() {
       </Card>
 
       <Card>
-        <SectionTitle>✏️ Soạn tin nhắn — Đầy đủ tính năng Zalo</SectionTitle>
+        <SectionTitle>✏️ Soạn tin nhắn - Đầy đủ tính năng Zalo</SectionTitle>
         <div className="grid grid-cols-2 gap-2">
           {[
             { icon: '📝', feat: 'Định dạng văn bản', desc: 'In đậm, in nghiêng, gạch chân, gạch ngang' },
@@ -298,11 +298,11 @@ function MessagingPanel() {
       <Card>
         <SectionTitle>⚡ Tin nhắn nhanh (Quick Messages)</SectionTitle>
         <Paragraph>
-          Lưu sẵn các mẫu tin nhắn thường dùng, gõ <code style={{color:'#86efac',background:'#1f2937',padding:'0.0625rem 0.3125rem',borderRadius:'0.1875rem'}}>/từ_khóa</code> để gợi ý và gửi ngay — tiết kiệm thời gian soạn tin lặp lại mỗi ngày.
+          Lưu sẵn các mẫu tin nhắn thường dùng, gõ <code style={{color:'#86efac',background:'#1f2937',padding:'0.0625rem 0.3125rem',borderRadius:'0.1875rem'}}>/từ_khóa</code> để gợi ý và gửi ngay - tiết kiệm thời gian soạn tin lặp lại mỗi ngày.
         </Paragraph>
         <div className="flex items-center gap-3 bg-green-900/20 border border-green-700/40 rounded-lg px-3 py-2 mb-1">
           <span className="text-green-400 text-sm flex-shrink-0">🏆</span>
-          <p className="text-green-300 text-xs"><strong>Không giới hạn</strong> số lượng mẫu tin — Zalo gốc chỉ cho lưu <strong>1 tin nhắn nhanh</strong></p>
+          <p className="text-green-300 text-xs"><strong>Không giới hạn</strong> số lượng mẫu tin - Zalo gốc chỉ cho lưu <strong>1 tin nhắn nhanh</strong></p>
         </div>
         <BulletList items={[
           '<strong class="text-gray-200">2 chế độ:</strong> Tin nhắn nhanh đồng bộ từ Zalo (dùng được trên điện thoại) và Tin nhắn nhanh cục bộ chỉ trong app',
@@ -316,7 +316,7 @@ function MessagingPanel() {
         <SectionTitle>📌 Tin nhắn ghim & Ghi chú nhóm</SectionTitle>
         <div className="flex items-center gap-3 bg-green-900/20 border border-green-700/40 rounded-lg px-3 py-2 mb-1">
           <span className="text-green-400 text-sm flex-shrink-0">🏆</span>
-          <p className="text-green-300 text-xs"><strong>Ghim không giới hạn</strong> số tin nhắn — Zalo gốc chỉ cho ghim tối đa <strong>3 tin</strong> mỗi hội thoại</p>
+          <p className="text-green-300 text-xs"><strong>Ghim không giới hạn</strong> số tin nhắn - Zalo gốc chỉ cho ghim tối đa <strong>3 tin</strong> mỗi hội thoại</p>
         </div>
         <BulletList items={[
           'Ghim bất kỳ tin nhắn nào lên thanh ghim ở đầu cửa sổ chat',
@@ -399,7 +399,7 @@ function ErpPanel() {
         <div className="flex items-start gap-3">
           <span className="text-3xl leading-none">🗂️</span>
           <div>
-            <SectionTitle>ERP quản trị nội bộ — giao việc, lịch, note, nhân sự</SectionTitle>
+            <SectionTitle>ERP quản trị nội bộ - giao việc, lịch, note, nhân sự</SectionTitle>
             <Paragraph>
               Module ERP giúp đội nhóm quản lý công việc nội bộ ngay trong Deplao: từ giao task, theo dõi deadline,
               quản lý lịch, ghi chú nghiệp vụ đến phân quyền nhân sự giữa boss và nhân viên.
@@ -475,10 +475,10 @@ function CrmPanel() {
         <Paragraph>
           Toàn bộ <strong className="text-gray-200">bạn bè cá nhân</strong> và <strong className="text-gray-200">thành viên các nhóm Zalo</strong> bạn đang tham gia
           đều được đồng bộ tự động vào CRM. Mỗi liên hệ có thể lưu đầy đủ hồ sơ bao gồm ảnh đại diện, tên, số điện thoại,
-          <strong className="text-gray-200"> giới tính</strong> và <strong className="text-gray-200">ngày sinh</strong> — đồng bộ từ profile Zalo thực tế.
+          <strong className="text-gray-200"> giới tính</strong> và <strong className="text-gray-200">ngày sinh</strong> - đồng bộ từ profile Zalo thực tế.
         </Paragraph>
         <BulletList items={[
-          '<strong class="text-gray-200">Nguồn dữ liệu:</strong> Bạn bè Zalo + thành viên tất cả các nhóm bạn đang tham gia — không bỏ sót ai',
+          '<strong class="text-gray-200">Nguồn dữ liệu:</strong> Bạn bè Zalo + thành viên tất cả các nhóm bạn đang tham gia - không bỏ sót ai',
           '<strong class="text-gray-200">Phân loại liên hệ:</strong> Bạn bè cá nhân · Nhóm Zalo · Người lạ chưa kết bạn',
           '<strong class="text-gray-200">Thông tin hồ sơ:</strong> Tên · SĐT · Giới tính (Nam/Nữ) · Ngày sinh (ngày/tháng/năm)',
           '<strong class="text-gray-200">Tìm kiếm:</strong> Theo tên, số điện thoại, Zalo ID, nội dung ghi chú',
@@ -498,14 +498,14 @@ function CrmPanel() {
         <div className="mt-3 space-y-2">
           <p className="text-white font-semibold text-xs">🔍 Quét thành viên nhóm nâng cao</p>
           <BulletList items={[
-            '<strong class="text-gray-200">Quét thành viên nhóm ẩn:</strong> Với các nhóm lớn, Zalo chỉ trả về một phần thành viên trong danh sách thông thường. Tính năng quét nâng cao gửi thêm request để lấy toàn bộ thành viên thực tế — bao gồm cả những thành viên bị ẩn do giới hạn API.',
-            '<strong class="text-gray-200">Quét nhóm chưa tham gia:</strong> Nhập Link nhóm Zalo (link mời) để quét danh sách thành viên của nhóm mà tài khoản <em>chưa là thành viên</em> — không cần tham gia nhóm vẫn lấy được danh sách.',
+            '<strong class="text-gray-200">Quét thành viên nhóm ẩn:</strong> Với các nhóm lớn, Zalo chỉ trả về một phần thành viên trong danh sách thông thường. Tính năng quét nâng cao gửi thêm request để lấy toàn bộ thành viên thực tế - bao gồm cả những thành viên bị ẩn do giới hạn API.',
+            '<strong class="text-gray-200">Quét nhóm chưa tham gia:</strong> Nhập Link nhóm Zalo (link mời) để quét danh sách thành viên của nhóm mà tài khoản <em>chưa là thành viên</em> - không cần tham gia nhóm vẫn lấy được danh sách.',
             '<strong class="text-gray-200">Xuất danh sách:</strong> Sau khi quét xong, có thể thêm toàn bộ hoặc chọn lọc thành viên vào chiến dịch CRM hoặc danh sách gửi tin.',
           ]} />
           <div className="bg-yellow-900/20 border border-yellow-700/40 rounded-lg px-3 py-2 mt-1">
             <p className="text-yellow-300 text-[11px] font-semibold mb-1">⚠️ Lưu ý khi quét</p>
             <BulletList items={[
-              'Quét nhóm lớn (hàng nghìn thành viên) mất nhiều thời gian — không đóng cửa sổ trong khi quét.',
+              'Quét nhóm lớn (hàng nghìn thành viên) mất nhiều thời gian - không đóng cửa sổ trong khi quét.',
               'Quét nhóm chưa tham gia yêu cầu link mời còn hiệu lực và nhóm không đặt chế độ phê duyệt kín hoàn toàn.',
               'Sử dụng ở mức độ hợp lý để tránh tài khoản Zalo bị giới hạn do gọi API quá nhiều.',
             ]} />
@@ -514,7 +514,7 @@ function CrmPanel() {
       </Card>
 
       <Card>
-        <SectionTitle>🏷️ Nhãn Zalo (Label) — Phân nhóm thông minh</SectionTitle>
+        <SectionTitle>🏷️ Nhãn Zalo (Label) - Phân nhóm thông minh</SectionTitle>
         <Paragraph>
           Nhãn được đồng bộ trực tiếp từ tính năng nhãn chính thức của Zalo.
           Khi bạn gán nhãn trong app, nhãn sẽ hiển thị luôn trên ứng dụng Zalo điện thoại.
@@ -542,7 +542,7 @@ function CrmPanel() {
       <Card>
         <SectionTitle>🎂 Chăm sóc khách hàng theo Giới tính & Ngày sinh & Tương tác cuối</SectionTitle>
         <Paragraph>
-          Dữ liệu giới tính và ngày sinh trong hồ sơ liên hệ mở ra khả năng <strong className="text-gray-200">cá nhân hoá chiến dịch</strong> —
+          Dữ liệu giới tính và ngày sinh trong hồ sơ liên hệ mở ra khả năng <strong className="text-gray-200">cá nhân hoá chiến dịch</strong> -
           gửi đúng người, đúng thời điểm để tăng tỷ lệ phản hồi và giữ chân khách hàng cũ.
         </Paragraph>
         <div className="space-y-2">
@@ -550,7 +550,7 @@ function CrmPanel() {
           <div className="space-y-1.5">
             {([
               ['🎂', 'Chúc mừng sinh nhật theo ngày', 'Lọc liên hệ có ngày sinh = hôm nay (hoặc trong tuần) → tạo campaign gửi lời chúc + ưu đãi cá nhân hoá. Tỷ lệ mở và phản hồi sinh nhật thường cao nhất trong năm.'],
-              ['📅', 'Chiến dịch theo tháng sinh', 'Mỗi đầu tháng, lọc toàn bộ khách sinh trong tháng → gửi ưu đãi tháng sinh. Ví dụ: "Tháng 5 — Tặng quà khách sinh nhật tháng 5"'],
+              ['📅', 'Chiến dịch theo tháng sinh', 'Mỗi đầu tháng, lọc toàn bộ khách sinh trong tháng → gửi ưu đãi tháng sinh. Ví dụ: "Tháng 5 - Tặng quà khách sinh nhật tháng 5"'],
               ['♀️♂️', 'Ưu đãi theo giới tính', 'Ngày 8/3 → chiến dịch riêng cho khách nữ. Ngày 20/10 tương tự. Ngày 14/2, 22/12 → khách nam. Lọc theo giới tính và bắn chiến dịch chỉ định.'],
               ['🔁', 'Kéo lại khách cũ đúng dịp', 'Kết hợp: khách cũ chưa nhắn tin lại > 30 ngày + sinh nhật trong tháng này → ưu tiên liên hệ lại nhóm này trước.'],
             ] as [string,string,string][]).map(([icon, title, desc], i) => (
@@ -607,7 +607,7 @@ function WorkflowPanel() {
   return (
     <div className="space-y-4">
       <Card>
-        <SectionTitle>⚙️ Workflow Engine — Tự động hoá không cần code</SectionTitle>
+        <SectionTitle>⚙️ Workflow Engine - Tự động hoá không cần code</SectionTitle>
         <Paragraph>
           Workflow là hệ thống Tự động hoá dạng kéo-thả theo mô hình <strong className="text-white font-semibold">Trigger → Node → Action</strong>.
           Mỗi workflow chạy nền liên tục 24/7, xử lý sự kiện và thực hiện hành động theo logic bạn thiết lập.
@@ -621,20 +621,20 @@ function WorkflowPanel() {
       </Card>
 
       <Card>
-        <SectionTitle>🟣 Triggers — Sự kiện kích hoạt</SectionTitle>
+        <SectionTitle>🟣 Triggers - Sự kiện kích hoạt</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">Tin nhắn mới</strong> — kích hoạt khi nhận tin, lọc theo từ khóa, loại hội thoại (cá nhân/nhóm)',
-          '<strong class="text-gray-200">Lời mời kết bạn</strong> — khi có người gửi friend request đến tài khoản',
-          '<strong class="text-gray-200">Sự kiện nhóm</strong> — khi ai đó tham gia, rời nhóm, hoặc thay đổi quyền admin',
-          '<strong class="text-gray-200">Cảm xúc (React)</strong> — khi ai đó react vào tin nhắn bất kỳ',
-          '<strong class="text-gray-200">Gán / Gỡ nhãn</strong> — khi một hội thoại được gán hoặc gỡ nhãn Zalo',
-          '<strong class="text-gray-200">Lịch trình (Cron)</strong> — chạy theo lịch cố định: mỗi X phút, mỗi ngày lúc HH:MM, hàng tuần...',
-          '<strong class="text-gray-200">Chạy thủ công</strong> — nhấn nút Test trong UI để chạy ngay một lần',
+          '<strong class="text-gray-200">Tin nhắn mới</strong> - kích hoạt khi nhận tin, lọc theo từ khóa, loại hội thoại (cá nhân/nhóm)',
+          '<strong class="text-gray-200">Lời mời kết bạn</strong> - khi có người gửi friend request đến tài khoản',
+          '<strong class="text-gray-200">Sự kiện nhóm</strong> - khi ai đó tham gia, rời nhóm, hoặc thay đổi quyền admin',
+          '<strong class="text-gray-200">Cảm xúc (React)</strong> - khi ai đó react vào tin nhắn bất kỳ',
+          '<strong class="text-gray-200">Gán / Gỡ nhãn</strong> - khi một hội thoại được gán hoặc gỡ nhãn Zalo',
+          '<strong class="text-gray-200">Lịch trình (Cron)</strong> - chạy theo lịch cố định: mỗi X phút, mỗi ngày lúc HH:MM, hàng tuần...',
+          '<strong class="text-gray-200">Chạy thủ công</strong> - nhấn nút Test trong UI để chạy ngay một lần',
         ]} />
       </Card>
 
       <Card>
-        <SectionTitle>🔵 Zalo Actions — Hành động trực tiếp trên Zalo</SectionTitle>
+        <SectionTitle>🔵 Zalo Actions - Hành động trực tiếp trên Zalo</SectionTitle>
         <div className="grid grid-cols-2 gap-1.5">
           {[
             ['💬 Gửi tin nhắn', 'Text với biến động, template'],
@@ -664,49 +664,49 @@ function WorkflowPanel() {
       </Card>
 
       <Card>
-        <SectionTitle>🟡 Logic — Điều kiện & Điều khiển luồng</SectionTitle>
+        <SectionTitle>🟡 Logic - Điều kiện & Điều khiển luồng</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">IF điều kiện</strong> — rẽ nhánh True/False dựa trên giá trị biến, nội dung tin nhắn',
-          '<strong class="text-gray-200">Switch nhiều nhánh</strong> — xử lý nhiều case khác nhau trong một node',
-          '<strong class="text-gray-200">Chờ N giây (Delay)</strong> — dừng workflow trong khoảng thời gian cấu hình',
-          '<strong class="text-gray-200">Lưu biến</strong> — lưu dữ liệu vào biến để dùng ở các bước sau',
-          '<strong class="text-gray-200">Dừng nếu (Stop If)</strong> — kết thúc workflow khi thỏa điều kiện nhất định',
-          '<strong class="text-gray-200">Vòng lặp forEach</strong> — lặp qua danh sách và xử lý từng phần tử',
+          '<strong class="text-gray-200">IF điều kiện</strong> - rẽ nhánh True/False dựa trên giá trị biến, nội dung tin nhắn',
+          '<strong class="text-gray-200">Switch nhiều nhánh</strong> - xử lý nhiều case khác nhau trong một node',
+          '<strong class="text-gray-200">Chờ N giây (Delay)</strong> - dừng workflow trong khoảng thời gian cấu hình',
+          '<strong class="text-gray-200">Lưu biến</strong> - lưu dữ liệu vào biến để dùng ở các bước sau',
+          '<strong class="text-gray-200">Dừng nếu (Stop If)</strong> - kết thúc workflow khi thỏa điều kiện nhất định',
+          '<strong class="text-gray-200">Vòng lặp forEach</strong> - lặp qua danh sách và xử lý từng phần tử',
         ]} />
       </Card>
 
       <Card>
         <SectionTitle>🟢 Tích hợp Google Sheets</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">Ghi thêm dòng</strong> — Append dữ liệu mới vào cuối sheet (lưu lead, đơn hàng...)',
-          '<strong class="text-gray-200">Đọc dữ liệu</strong> — Đọc giá trị các ô để dùng làm điều kiện hoặc nội dung tin',
-          '<strong class="text-gray-200">Cập nhật ô</strong> — Ghi đè giá trị vào ô cụ thể trong sheet',
+          '<strong class="text-gray-200">Ghi thêm dòng</strong> - Append dữ liệu mới vào cuối sheet (lưu lead, đơn hàng...)',
+          '<strong class="text-gray-200">Đọc dữ liệu</strong> - Đọc giá trị các ô để dùng làm điều kiện hoặc nội dung tin',
+          '<strong class="text-gray-200">Cập nhật ô</strong> - Ghi đè giá trị vào ô cụ thể trong sheet',
         ]} />
       </Card>
 
       <Card>
         <SectionTitle>🟣 AI</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">Tạo nội dung AI</strong> — Sinh câu trả lời, tóm tắt, viết lại nội dung bằng GPT với prompt tùy chỉnh',
-          '<strong class="text-gray-200">Phân loại văn bản</strong> — Phân tích ý định hoặc cảm xúc của tin nhắn (mua hàng / hỏi giá / khiếu nại...)',
+          '<strong class="text-gray-200">Tạo nội dung AI</strong> - Sinh câu trả lời, tóm tắt, viết lại nội dung bằng GPT với prompt tùy chỉnh',
+          '<strong class="text-gray-200">Phân loại văn bản</strong> - Phân tích ý định hoặc cảm xúc của tin nhắn (mua hàng / hỏi giá / khiếu nại...)',
         ]} />
       </Card>
 
       <Card>
         <SectionTitle>🟠 Thông báo & Tích hợp ngoài</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">Gửi Telegram Bot</strong> — Nhận cảnh báo hoặc báo cáo ngay trên Telegram',
-          '<strong class="text-gray-200">Gửi Discord</strong> — Đẩy thông báo vào kênh Discord của nhóm',
-          '<strong class="text-gray-200">Gửi Email (SMTP)</strong> — Gửi email tự động qua tài khoản SMTP cấu hình sẵn',
-          '<strong class="text-gray-200">Ghi vào Notion DB</strong> — Tạo record mới trong Notion Database',
-          '<strong class="text-gray-200">HTTP Request</strong> — Gọi bất kỳ API ngoài (webhook, REST API, n8n...)',
+          '<strong class="text-gray-200">Gửi Telegram Bot</strong> - Nhận cảnh báo hoặc báo cáo ngay trên Telegram',
+          '<strong class="text-gray-200">Gửi Discord</strong> - Đẩy thông báo vào kênh Discord của nhóm',
+          '<strong class="text-gray-200">Gửi Email (SMTP)</strong> - Gửi email tự động qua tài khoản SMTP cấu hình sẵn',
+          '<strong class="text-gray-200">Ghi vào Notion DB</strong> - Tạo record mới trong Notion Database',
+          '<strong class="text-gray-200">HTTP Request</strong> - Gọi bất kỳ API ngoài (webhook, REST API, n8n...)',
         ]} />
       </Card>
 
       <Card>
         <SectionTitle>⚠️ Lưu ý khi dùng Workflow</SectionTitle>
         <BulletList items={[
-          'Workflow chạy hoàn toàn cục bộ — app phải đang chạy thì workflow mới hoạt động',
+          'Workflow chạy hoàn toàn cục bộ - app phải đang chạy thì workflow mới hoạt động',
           'Dùng node <strong class="text-gray-200">Chờ N giây</strong> giữa các tin nhắn để tránh Zalo rate-limit',
           'Tab <strong class="text-gray-200">Lịch sử chạy</strong> ghi lại toàn bộ log thực thi để debug dễ dàng',
           'Có thể test workflow bằng Trigger thủ công trước khi bật chính thức',
@@ -723,7 +723,7 @@ function IntegrationPOSPanel() {
         <SectionTitle>🛒 Tích hợp POS / Bán hàng</SectionTitle>
         <Paragraph>
           Kết nối Deplao với phần mềm quản lý bán hàng (POS) cho phép tra cứu đơn hàng, khách hàng, sản phẩm
-          ngay trong khung chat Zalo — không cần chuyển qua lại giữa các ứng dụng.
+          ngay trong khung chat Zalo - không cần chuyển qua lại giữa các ứng dụng.
           Bạn cũng có thể tạo đơn hàng trực tiếp từ hội thoại hoặc tự động hoá qua Workflow.
         </Paragraph>
         <div className="flex items-center gap-3 bg-blue-900/20 border border-blue-700/40 rounded-lg px-3 py-2">
@@ -767,7 +767,7 @@ function IntegrationPOSPanel() {
           {[
             { icon: '🔍', name: 'Tra cứu đơn hàng', desc: 'Nhập mã đơn hoặc SĐT khách → thông tin đơn hàng hiện ra ngay trong chat.' },
             { icon: '👤', name: 'Tra cứu khách hàng', desc: 'Xem lịch sử mua hàng, tổng chi tiêu, công nợ của khách.' },
-            { icon: '📦', name: 'Tra cứu sản phẩm', desc: 'Tìm sản phẩm theo tên/mã — hiển thị giá, tồn kho, hình ảnh.' },
+            { icon: '📦', name: 'Tra cứu sản phẩm', desc: 'Tìm sản phẩm theo tên/mã - hiển thị giá, tồn kho, hình ảnh.' },
             { icon: '➕', name: 'Tạo đơn hàng', desc: 'Tạo đơn hàng mới cho khách ngay trong hội thoại Zalo.' },
             { icon: '⚙️', name: 'Tích hợp Workflow', desc: 'Workflow tự động tra cứu thông tin khi nhận tin nhắn từ khách.' },
             { icon: '📊', name: 'Đồng bộ dữ liệu', desc: 'Dữ liệu đơn hàng, khách hàng đồng bộ realtime từ POS.' },
@@ -797,7 +797,7 @@ function IntegrationPOSPanel() {
         <SectionTitle>⚠️ Lưu ý</SectionTitle>
         <BulletList items={[
           'API Key và credential cần lấy từ trang quản trị của nền tảng POS tương ứng',
-          'Mỗi nền tảng có giới hạn rate-limit riêng — không gọi API quá nhiều lần trong thời gian ngắn',
+          'Mỗi nền tảng có giới hạn rate-limit riêng - không gọi API quá nhiều lần trong thời gian ngắn',
           'Nếu kết nối thất bại, kiểm tra lại credential và thử "Test kết nối" trước khi bật',
         ]} />
       </Card>
@@ -809,10 +809,10 @@ function IntegrationPaymentPanel() {
   return (
     <div className="space-y-4">
       <Card>
-        <SectionTitle>💳 Tích hợp Thanh toán — Tự động xác nhận chuyển khoản</SectionTitle>
+        <SectionTitle>💳 Tích hợp Thanh toán - Tự động xác nhận chuyển khoản</SectionTitle>
         <Paragraph>
           Kết nối Deplao với các cổng thanh toán để nhận thông báo ngay khi có giao dịch chuyển khoản vào tài khoản ngân hàng.
-          Kết hợp Workflow để tự động xác nhận đơn hàng, gửi tin cảm ơn và kích hoạt các bước chăm sóc tiếp theo —
+          Kết hợp Workflow để tự động xác nhận đơn hàng, gửi tin cảm ơn và kích hoạt các bước chăm sóc tiếp theo -
           không cần ngồi kiểm tra sao kê thủ công.
         </Paragraph>
         <div className="flex items-center gap-3 bg-blue-900/20 border border-blue-700/40 rounded-lg px-3 py-2">
@@ -877,11 +877,11 @@ function IntegrationPaymentPanel() {
         <Paragraph>
           Deplao chạy webhook server trên máy tính cá nhân (cục bộ). Để Casso/SePay có thể gửi webhook đến máy bạn,
           máy cần có một địa chỉ công khai trên Internet. Tunnel (Cloudflare Quick Tunnel) tạo một URL công khai
-          tạm thời trỏ về máy bạn — <strong className="text-white font-semibold">không cần VPS, không cần cấu hình router</strong>.
+          tạm thời trỏ về máy bạn - <strong className="text-white font-semibold">không cần VPS, không cần cấu hình router</strong>.
         </Paragraph>
         <BulletList items={[
           '<strong class="text-gray-200">URL mẫu:</strong> https://random-name.trycloudflare.com',
-          '<strong class="text-gray-200">Lưu ý:</strong> URL thay đổi mỗi lần bật lại Tunnel — cần cập nhật trong Casso/SePay',
+          '<strong class="text-gray-200">Lưu ý:</strong> URL thay đổi mỗi lần bật lại Tunnel - cần cập nhật trong Casso/SePay',
           '<strong class="text-gray-200">Bảo mật:</strong> Chỉ dùng cho webhook, không ảnh hưởng đến dữ liệu khác',
         ]} />
       </Card>
@@ -889,7 +889,7 @@ function IntegrationPaymentPanel() {
       <Card>
         <SectionTitle>⚠️ Lưu ý</SectionTitle>
         <BulletList items={[
-          'App phải đang chạy thì webhook mới hoạt động — tắt app là webhook không nhận được',
+          'App phải đang chạy thì webhook mới hoạt động - tắt app là webhook không nhận được',
           'Mỗi lần khởi động lại app, cần bật lại Tunnel (nếu đã tắt trước đó)',
           'Nếu không nhận được webhook, kiểm tra: Tunnel đã bật chưa, URL đã cấu hình đúng chưa',
           'Dùng riêng mỗi nền tảng một webhook path riêng (VD: /webhook/casso, /webhook/sepay)',
@@ -903,10 +903,10 @@ function IntegrationShippingPanel() {
   return (
     <div className="space-y-4">
       <Card>
-        <SectionTitle>📦 Tích hợp Vận chuyển — Tạo & Tra cứu vận đơn tự động</SectionTitle>
+        <SectionTitle>📦 Tích hợp Vận chuyển - Tạo & Tra cứu vận đơn tự động</SectionTitle>
         <Paragraph>
           Kết nối Deplao với các đơn vị vận chuyển để tạo đơn giao hàng, tra cứu trạng thái vận đơn
-          ngay trong hội thoại Zalo. Khi khách hỏi "đơn hàng tới đâu rồi?", Workflow tự động tra cứu và trả lời —
+          ngay trong hội thoại Zalo. Khi khách hỏi "đơn hàng tới đâu rồi?", Workflow tự động tra cứu và trả lời -
           không cần copy tracking ID qua các tab trình duyệt.
         </Paragraph>
         <div className="flex items-center gap-3 bg-blue-900/20 border border-blue-700/40 rounded-lg px-3 py-2">
@@ -919,8 +919,8 @@ function IntegrationShippingPanel() {
         <SectionTitle>📋 Các đơn vị vận chuyển hỗ trợ</SectionTitle>
         <div className="space-y-2">
           {[
-            { icon: '📦', name: 'GHN Express', desc: 'Giao Hàng Nhanh — tạo đơn, tra cứu vận đơn, tính phí giao hàng.', token: 'Token GHN + Shop ID', note: 'Hỗ trợ Sandbox để test thử trước khi dùng thật.' },
-            { icon: '🚚', name: 'GHTK', desc: 'Giao Hàng Tiết Kiệm — tạo đơn, tra cứu trạng thái giao hàng.', token: 'GHTK API Token', note: 'Phù hợp đơn hàng giá trị thấp, giao hàng tiết kiệm.' },
+            { icon: '📦', name: 'GHN Express', desc: 'Giao Hàng Nhanh - tạo đơn, tra cứu vận đơn, tính phí giao hàng.', token: 'Token GHN + Shop ID', note: 'Hỗ trợ Sandbox để test thử trước khi dùng thật.' },
+            { icon: '🚚', name: 'GHTK', desc: 'Giao Hàng Tiết Kiệm - tạo đơn, tra cứu trạng thái giao hàng.', token: 'GHTK API Token', note: 'Phù hợp đơn hàng giá trị thấp, giao hàng tiết kiệm.' },
           ].map((p, i) => (
             <div key={i} className="bg-gray-700/30 rounded-lg p-3">
               <div className="flex items-start gap-3">
@@ -945,7 +945,7 @@ function IntegrationShippingPanel() {
           { title: 'Lấy Token từ đơn vị vận chuyển', desc: 'Đăng nhập GHN/GHTK → Quản lý API → Tạo Token mới. Copy Token + Shop ID.' },
           { title: 'Mở Công cụ → Tích hợp', desc: 'Chọn tab <strong class="text-gray-200">Vận chuyển</strong> → Nhấn GHN hoặc GHTK.' },
           { title: 'Nhập Token và cấu hình', desc: 'Dán Token và Shop ID vào các trường. Với GHN, chọn môi trường Production hoặc Sandbox.' },
-          { title: 'Test kết nối', desc: 'Nhấn "Test" — nếu thành công, hệ thống sẽ trả về thông tin shop của bạn.' },
+          { title: 'Test kết nối', desc: 'Nhấn "Test" - nếu thành công, hệ thống sẽ trả về thông tin shop của bạn.' },
           { title: 'Bật tích hợp', desc: 'Bật trạng thái → đã sẵn sàng tạo đơn và tra cứu từ chat và Workflow.' },
         ]} />
       </Card>
@@ -975,7 +975,7 @@ function IntegrationShippingPanel() {
             '<strong class="text-gray-200">Trigger:</strong> Tin nhắn chứa "đơn hàng", "shipping", "giao hàng"',
             '<strong class="text-gray-200">Action 1:</strong> Tra cứu đơn hàng POS theo SĐT khách → lấy mã vận đơn',
             '<strong class="text-gray-200">Action 2:</strong> Tra cứu vận đơn GHN/GHTK theo mã vận đơn',
-            '<strong class="text-gray-200">Action 3:</strong> Gửi kết quả: "Đơn hàng đang ở [trạng thái] — dự kiến giao [ngày]"',
+            '<strong class="text-gray-200">Action 3:</strong> Gửi kết quả: "Đơn hàng đang ở [trạng thái] - dự kiến giao [ngày]"',
           ]} />
         </div>
       </Card>
@@ -984,8 +984,8 @@ function IntegrationShippingPanel() {
         <SectionTitle>⚠️ Lưu ý</SectionTitle>
         <BulletList items={[
           'Nên dùng môi trường Sandbox của GHN để test trước khi chuyển sang Production',
-          'Token GHN/GHTK có thể hết hạn — cần refresh định kỳ nếu gặp lỗi xác thực',
-          'Phí giao hàng là ước tính — phí thực tế có thể thay đổi dựa trên cân nặng/kích thước thực tế',
+          'Token GHN/GHTK có thể hết hạn - cần refresh định kỳ nếu gặp lỗi xác thực',
+          'Phí giao hàng là ước tính - phí thực tế có thể thay đổi dựa trên cân nặng/kích thước thực tế',
         ]} />
       </Card>
     </div>
@@ -996,7 +996,7 @@ function AIAssistantPanel() {
   return (
     <div className="space-y-4">
       <Card>
-        <SectionTitle>🤖 Trợ lý AI — Tăng tốc chăm sóc khách hàng</SectionTitle>
+        <SectionTitle>🤖 Trợ lý AI - Tăng tốc chăm sóc khách hàng</SectionTitle>
         <Paragraph>
           Trợ lý AI trong Deplao cho phép bạn tạo nhiều chatbot AI với tính cách, prompt và mục đích khác nhau.
           Mỗi trợ lý có thể được gán cho một hội thoại cụ thể hoặc dùng trong Workflow để tự động trả lời tin nhắn.
@@ -1011,12 +1011,12 @@ function AIAssistantPanel() {
         <SectionTitle>📋 Tính năng Trợ lý AI</SectionTitle>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { icon: '👤', name: 'Đa trợ lý', desc: 'Tạo nhiều trợ lý với prompt riêng — mỗi trợ lý phục vụ mục đích khác nhau.' },
-            { icon: '💬', name: 'Chat trong hội thoại', desc: 'Gán trợ lý vào hội thoại — AI tự động hỗ trợ khi có tin nhắn mới.' },
+            { icon: '👤', name: 'Đa trợ lý', desc: 'Tạo nhiều trợ lý với prompt riêng - mỗi trợ lý phục vụ mục đích khác nhau.' },
+            { icon: '💬', name: 'Chat trong hội thoại', desc: 'Gán trợ lý vào hội thoại - AI tự động hỗ trợ khi có tin nhắn mới.' },
             { icon: '⚙️', name: 'Workflow node AI', desc: 'Node AI trong Workflow: tạo nội dung, phân loại tin nhắn, tóm tắt hội thoại.' },
             { icon: '📊', name: 'Báo cáo sử dụng', desc: 'Theo dõi token, request, chi phí ước tính theo từng trợ lý.' },
-            { icon: '🔌', name: 'Nhiều model', desc: 'GPT, Gemini, Claude, Deepseek, Claude — chọn model phù hợp.' },
-            { icon: '📝', name: 'Custom Prompt', desc: 'Viết prompt tùy chỉnh cho từng trợ lý — định hình phong cách trả lời.' },
+            { icon: '🔌', name: 'Nhiều model', desc: 'GPT, Gemini, Claude, Deepseek, Claude - chọn model phù hợp.' },
+            { icon: '📝', name: 'Custom Prompt', desc: 'Viết prompt tùy chỉnh cho từng trợ lý - định hình phong cách trả lời.' },
           ].map((f, i) => (
             <div key={i} className="bg-gray-700/30 rounded-lg p-2.5">
               <p className="text-gray-200 text-[11px] font-medium">{f.icon} {f.name}</p>
@@ -1029,7 +1029,7 @@ function AIAssistantPanel() {
       <Card>
         <SectionTitle>🔧 Hướng dẫn sử dụng Trợ lý AI</SectionTitle>
         <StepList steps={[
-          { title: 'Cấu hình API Key', desc: 'Vào <strong class="text-gray-200">Cài đặt → AI Assistant</strong> — nhập API Key của OpenAI hoặc Gemini.' },
+          { title: 'Cấu hình API Key', desc: 'Vào <strong class="text-gray-200">Cài đặt → AI Assistant</strong> - nhập API Key của OpenAI hoặc Gemini.' },
           { title: 'Tạo trợ lý', desc: 'Nhấn <strong class="text-gray-200">"Tạo trợ lý mới"</strong> → đặt tên, viết prompt mô tả tính cách và nhiệm vụ.' },
           { title: 'Chọn model', desc: 'Chọn model AI phù hợp (GPT-4o nhanh & rẻ, GPT-4o-chính xác cho nghiệp vụ phức tạp).' },
           { title: 'Gán vào hội thoại', desc: 'Mở hội thoại Zalo → nhấn icon AI → chọn trợ lý muốn dùng. AI sẽ đề xuất câu trả lời.' },
@@ -1042,7 +1042,7 @@ function AIAssistantPanel() {
         <div className="flex items-start gap-3 mb-4">
           <span className="text-3xl leading-none">🔄</span>
           <div>
-            <h3 className="text-white font-bold text-base">Tích hợp 9Router — Proxy AI giá rẻ & miễn phí</h3>
+            <h3 className="text-white font-bold text-base">Tích hợp 9Router - Proxy AI giá rẻ & miễn phí</h3>
             <p className="text-gray-400 text-xs mt-0.5 leading-relaxed">
               9Router là dịch vụ proxy API AI cho phép bạn gọi các model GPT, Claude, Gemini với giá rẻ hơn so với gọi trực tiếp
               từ nhà cung cấp - Một số model miễn phí phù hợp với nhu cầu cơ bản. Chạy trên máy local, quản lý API key tập trung, tự động luân chuyển key và giảm chi phí.
@@ -1058,10 +1058,10 @@ function AIAssistantPanel() {
         <Card>
           <SectionTitle>🎯 Tại sao dùng 9Router với Deplao?</SectionTitle>
           <BulletList items={[
-            '<strong class="text-gray-200">Giảm 30-50% chi phí AI</strong> — 9Router tự động chọn provider rẻ nhất cho mỗi request',
-            '<strong class="text-gray-200">Quản lý tập trung</strong> — Một API key duy nhất cho tất cả model, quên chuyện key hết hạn hay leak key',
-            '<strong class="text-gray-200">Tự động fallback</strong> — Provider A lỗi → tự động chuyển sang provider B, không gián đoạn',
-            '<strong class="text-gray-200">Hỗ trợ đa model</strong> — GPT, Claude, Gemini, DeepSeek, Qwen... — tất cả qua một endpoint',
+            '<strong class="text-gray-200">Giảm 30-50% chi phí AI</strong> - 9Router tự động chọn provider rẻ nhất cho mỗi request',
+            '<strong class="text-gray-200">Quản lý tập trung</strong> - Một API key duy nhất cho tất cả model, quên chuyện key hết hạn hay leak key',
+            '<strong class="text-gray-200">Tự động fallback</strong> - Provider A lỗi → tự động chuyển sang provider B, không gián đoạn',
+            '<strong class="text-gray-200">Hỗ trợ đa model</strong> - GPT, Claude, Gemini, DeepSeek, Qwen... - tất cả qua một endpoint',
           ]} />
         </Card>
 
@@ -1069,7 +1069,7 @@ function AIAssistantPanel() {
           <SectionTitle>📦 Cài đặt 9Router</SectionTitle>
           <div className="space-y-2 mb-3">
             <div className="bg-gray-900/60 border border-blue-700/40 rounded-lg p-3 space-y-2">
-              <p className="text-gray-200 text-xs font-semibold">⚡ Hướng dẫn nhanh — 2 lệnh trong Terminal:</p>
+              <p className="text-gray-200 text-xs font-semibold">⚡ Hướng dẫn nhanh - 2 lệnh trong Terminal:</p>
               <div className="bg-gray-900/80 border border-gray-700 rounded-lg p-2.5 font-mono text-xs space-y-1.5">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-green-900/40 text-green-400 flex items-center justify-center text-[10px] font-bold flex-shrink-0">1</span>
@@ -1090,7 +1090,7 @@ function AIAssistantPanel() {
           <StepList steps={[
             { title: 'Cài Node.js (nếu chưa có)', desc: 'Tải và cài Node.js phiên bản 18+ từ <strong class="text-gray-200">https://nodejs.org</strong>. Kiểm tra: <code style={{color:"#86efac",background:"#1f2937",padding:"1px 5px",borderRadius:"3px"}}>node -v</code>' },
             { title: 'Cài đặt 9Router', desc: 'Mở Terminal (CMD/PowerShell) và chạy: <code style={{color:"#86efac",background:"#1f2937",padding:"1px 5px",borderRadius:"3px"}}>npm install -g 9router</code>' },
-            { title: 'Chạy 9Router', desc: 'Sau khi cài xong, gõ lệnh: <code style={{color:"#86efac",background:"#1f2937",padding:"1px 5px",borderRadius:"3px"}}>9router</code> — giữ Terminal chạy nền.' },
+            { title: 'Chạy 9Router', desc: 'Sau khi cài xong, gõ lệnh: <code style={{color:"#86efac",background:"#1f2937",padding:"1px 5px",borderRadius:"3px"}}>9router</code> - giữ Terminal chạy nền.' },
             { title: 'Kết nối Provider', desc: 'Mở Dashboard tại <strong class="text-gray-200">http://localhost:20128</strong> → Settings → Add Provider → nhập API Key (OpenAI, Claude, Gemini...).' },
             { title: 'Dùng trong Deplao', desc: 'Vào <strong class="text-gray-200">Cài đặt → Giới thiệu → Trợ lý AI</strong> hoặc <strong class="text-gray-200">Tích hợp → Trợ lý AI</strong>, chọn nền tảng <strong class="text-gray-200">9Router</strong> và chọn model miễn phí.' },
           ]} />
@@ -1147,7 +1147,7 @@ function AIAssistantPanel() {
                   <code className="text-blue-400 text-xs font-mono select-all">9router</code>
                 </div>
                 <p className="text-gray-500 text-[10px] mt-1">
-                  ⏳ Lần đầu chạy có thể hơi lâu — đợi đến khi thấy <strong className="text-gray-400">Dashboard ready at http://localhost:20128</strong>
+                  ⏳ Lần đầu chạy có thể hơi lâu - đợi đến khi thấy <strong className="text-gray-400">Dashboard ready at http://localhost:20128</strong>
                 </p>
               </div>
             </div>
@@ -1177,7 +1177,7 @@ function AIAssistantPanel() {
                 <p className="text-blue-300 text-[11px] font-semibold">Model tự động đồng bộ từ 9Router</p>
                 <p className="text-gray-400 text-[10px] leading-relaxed mt-0.5">
                   Sau khi kết nối thành công, danh sách model trong Deplao sẽ tự động cập nhật theo các provider bạn đã thêm vào 9Router.
-                  Nếu có model mới xuất hiện trong Dashboard 9Router, bạn chỉ cần reload trang Deplao để thấy — không cần cấu hình thêm.{' '}
+                  Nếu có model mới xuất hiện trong Dashboard 9Router, bạn chỉ cần reload trang Deplao để thấy - không cần cấu hình thêm.{' '}
                   <button
                     onClick={() => ipc.shell?.openExternal('https://github.com/babyvibe/deplao-builder/issues/31')}
                     className="text-blue-400 hover:text-blue-300 underline underline-offset-2 inline-flex items-center gap-0.5"
@@ -1248,8 +1248,8 @@ function AIAssistantPanel() {
         <Card>
           <SectionTitle>💡 Mẹo & Lưu ý</SectionTitle>
           <BulletList items={[
-            '<strong class="text-gray-200">9Router phải chạy cùng lúc với Deplao</strong> — nếu tắt 9Router, AI request qua 9Router sẽ thất bại',
-            '<strong class="text-gray-200">Dashboard 9Router</strong> mở tại <strong class="text-gray-200">http://localhost:20128</strong> — theo dõi request, chi phí, provider health',
+            '<strong class="text-gray-200">9Router phải chạy cùng lúc với Deplao</strong> - nếu tắt 9Router, AI request qua 9Router sẽ thất bại',
+            '<strong class="text-gray-200">Dashboard 9Router</strong> mở tại <strong class="text-gray-200">http://localhost:20128</strong> - theo dõi request, chi phí, provider health',
             '<strong class="text-gray-200">Tự động chạy cùng Windows:</strong> Thêm 9Router vào startup (Task Scheduler) để không phải chạy thủ công mỗi lần',
             '<strong class="text-gray-200">Nạp key nhiều provider:</strong> Càng nhiều provider, 9Router càng tối ưu được giá và fallback khi có lỗi',
             '<strong class="text-gray-200">Kiểm tra kết nối:</strong> Sau khi cấu hình, dùng thử AI Assistant trong Deplao để xác nhận hoạt động',
@@ -1281,14 +1281,14 @@ function AnalyticsPanel() {
   return (
     <div className="space-y-4">
       <Card>
-        <SectionTitle>📈 Báo cáo & Phân tích — Nắm bắt toàn diện hoạt động</SectionTitle>
+        <SectionTitle>📈 Báo cáo & Phân tích - Nắm bắt toàn diện hoạt động</SectionTitle>
         <Paragraph>
           Trang Báo cáo tổng hợp mọi dữ liệu hoạt động trên Zalo thành biểu đồ trực quan,
           giúp bạn đánh giá hiệu quả kinh doanh, chăm sóc khách hàng và Tự động hoá.
         </Paragraph>
         <div className="flex items-center gap-3 bg-blue-900/20 border border-blue-700/40 rounded-lg px-3 py-2">
           <span className="text-blue-400 text-sm flex-shrink-0">📊</span>
-          <p className="text-blue-300 text-xs font-medium">Truy cập: Sidebar → Báo cáo — hoặc nhấn icon biểu đồ trên thanh điều hướng.</p>
+          <p className="text-blue-300 text-xs font-medium">Truy cập: Sidebar → Báo cáo - hoặc nhấn icon biểu đồ trên thanh điều hướng.</p>
         </div>
       </Card>
 
@@ -1296,15 +1296,15 @@ function AnalyticsPanel() {
         <SectionTitle>🎛️ Bộ lọc dữ liệu linh hoạt</SectionTitle>
         <BulletList items={[
           '<strong class="text-gray-200">Chọn tài khoản:</strong> Xem báo cáo cho từng tài khoản Zalo riêng lẻ hoặc tất cả cùng lúc',
-          '<strong class="text-gray-200">Khoảng thời gian:</strong> Hôm nay · Hôm qua · 7 ngày · 30 ngày · 90 ngày · Tuỳ chọn ngày bắt đầu — kết thúc',
-          '<strong class="text-gray-200">Loại liên hệ:</strong> Tất cả · Cá nhân · Nhóm — lọc riêng để phân tích từng nhóm đối tượng',
+          '<strong class="text-gray-200">Khoảng thời gian:</strong> Hôm nay · Hôm qua · 7 ngày · 30 ngày · 90 ngày · Tuỳ chọn ngày bắt đầu - kết thúc',
+          '<strong class="text-gray-200">Loại liên hệ:</strong> Tất cả · Cá nhân · Nhóm - lọc riêng để phân tích từng nhóm đối tượng',
         ]} />
       </Card>
 
       <Card>
         <SectionTitle>📊 Tab Tổng quan</SectionTitle>
         <Paragraph>
-          Bảng KPI tổng hợp — nhìn nhanh mọi chỉ số quan trọng trong một màn hình.
+          Bảng KPI tổng hợp - nhìn nhanh mọi chỉ số quan trọng trong một màn hình.
         </Paragraph>
         <div className="grid grid-cols-2 gap-2 mt-1">
           {[
@@ -1327,9 +1327,9 @@ function AnalyticsPanel() {
       <Card>
         <SectionTitle>💬 Tab Tin nhắn</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">Biểu đồ lượng tin nhắn:</strong> Area chart gửi/nhận theo ngày — nhận diện xu hướng tăng/giảm',
-          '<strong class="text-gray-200">Heatmap giờ cao điểm:</strong> Ma trận Thứ × Giờ — tìm khung giờ khách hàng tương tác nhiều nhất',
-          '<strong class="text-gray-200">Thời gian phản hồi:</strong> Trung bình, trung vị, min/max — đánh giá tốc độ chăm sóc khách hàng',
+          '<strong class="text-gray-200">Biểu đồ lượng tin nhắn:</strong> Area chart gửi/nhận theo ngày - nhận diện xu hướng tăng/giảm',
+          '<strong class="text-gray-200">Heatmap giờ cao điểm:</strong> Ma trận Thứ × Giờ - tìm khung giờ khách hàng tương tác nhiều nhất',
+          '<strong class="text-gray-200">Thời gian phản hồi:</strong> Trung bình, trung vị, min/max - đánh giá tốc độ chăm sóc khách hàng',
           '<strong class="text-gray-200">Phân bố thời gian phản hồi:</strong> Biểu đồ cột theo khoảng (< 1 phút, 1–5 phút, 5–15 phút...)',
         ]} />
       </Card>
@@ -1348,7 +1348,7 @@ function AnalyticsPanel() {
       <Card>
         <SectionTitle>🏷️ Tab Nhãn</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">Timeline gán nhãn:</strong> Biểu đồ số lần gán nhãn theo ngày — theo dõi hoạt động phân loại',
+          '<strong class="text-gray-200">Timeline gán nhãn:</strong> Biểu đồ số lần gán nhãn theo ngày - theo dõi hoạt động phân loại',
           '<strong class="text-gray-200">Top nhãn được dùng:</strong> Bảng xếp hạng nhãn theo số lần sử dụng kèm emoji & màu sắc',
           '<strong class="text-gray-200">Gán nhãn gần đây:</strong> Danh sách nhãn vừa gán kèm hội thoại và thời gian',
         ]} />
@@ -1358,7 +1358,7 @@ function AnalyticsPanel() {
         <SectionTitle>📢 Tab Chiến dịch</SectionTitle>
         <BulletList items={[
           '<strong class="text-gray-200">Danh sách chiến dịch:</strong> Tên, loại, trạng thái (Chạy / Dừng / Xong / Nháp), tiến độ',
-          '<strong class="text-gray-200">Chỉ số hiệu quả:</strong> Tổng gửi · Thành công · Thất bại · Đã phản hồi — tỷ lệ delivery & reply',
+          '<strong class="text-gray-200">Chỉ số hiệu quả:</strong> Tổng gửi · Thành công · Thất bại · Đã phản hồi - tỷ lệ delivery & reply',
           '<strong class="text-gray-200">So sánh chiến dịch:</strong> Biểu đồ cột so sánh hiệu quả giữa các chiến dịch',
         ]} />
       </Card>
@@ -1366,27 +1366,27 @@ function AnalyticsPanel() {
       <Card>
         <SectionTitle>⚡ Tab Workflow</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">Tổng số lần chạy:</strong> Thành công / Lỗi / Tỷ lệ thành công — đánh giá độ ổn định',
+          '<strong class="text-gray-200">Tổng số lần chạy:</strong> Thành công / Lỗi / Tỷ lệ thành công - đánh giá độ ổn định',
           '<strong class="text-gray-200">Thời gian trung bình:</strong> Thời gian thực thi trung bình mỗi lần chạy',
           '<strong class="text-gray-200">Top Workflow:</strong> Bảng xếp hạng workflow chạy nhiều nhất kèm tỷ lệ thành công',
-          '<strong class="text-gray-200">Timeline:</strong> Biểu đồ thành công/lỗi theo ngày — phát hiện sự cố nhanh',
+          '<strong class="text-gray-200">Timeline:</strong> Biểu đồ thành công/lỗi theo ngày - phát hiện sự cố nhanh',
         ]} />
       </Card>
 
       <Card>
         <SectionTitle>🤖 Tab AI</SectionTitle>
         <BulletList items={[
-          '<strong class="text-gray-200">Tổng request & token:</strong> Prompt tokens, completion tokens — ước tính chi phí sử dụng',
-          '<strong class="text-gray-200">Phân bổ theo model:</strong> Pie chart — GPT, Gemini, Claude, Deepseek... đang dùng bao nhiêu',
+          '<strong class="text-gray-200">Tổng request & token:</strong> Prompt tokens, completion tokens - ước tính chi phí sử dụng',
+          '<strong class="text-gray-200">Phân bổ theo model:</strong> Pie chart - GPT, Gemini, Claude, Deepseek... đang dùng bao nhiêu',
           '<strong class="text-gray-200">Phân bổ theo trợ lý:</strong> Xem trợ lý nào tiêu thụ nhiều token nhất',
-          '<strong class="text-gray-200">Timeline:</strong> Biểu đồ request & token theo ngày — theo dõi xu hướng sử dụng AI',
+          '<strong class="text-gray-200">Timeline:</strong> Biểu đồ request & token theo ngày - theo dõi xu hướng sử dụng AI',
         ]} />
       </Card>
 
       <Card>
         <SectionTitle>🧑‍💼 Tab Nhân viên</SectionTitle>
         <Paragraph>
-          Tab dành riêng cho Boss — theo dõi hiệu suất và hoạt động của từng nhân viên theo khoảng thời gian tùy chọn.
+          Tab dành riêng cho Boss - theo dõi hiệu suất và hoạt động của từng nhân viên theo khoảng thời gian tùy chọn.
           Yêu cầu đã có ít nhất 1 nhân viên đã kết nối Relay Server.
         </Paragraph>
         <div className="grid grid-cols-2 gap-2 mt-1">
@@ -1403,17 +1403,17 @@ function AnalyticsPanel() {
           ))}
         </div>
         <BulletList items={[
-          '<strong class="text-gray-200">Bộ lọc đa nhân viên:</strong> Chọn 1 hoặc nhiều nhân viên để so sánh song song — hiển thị ảnh đại diện + tên + vai trò trong dropdown.',
+          '<strong class="text-gray-200">Bộ lọc đa nhân viên:</strong> Chọn 1 hoặc nhiều nhân viên để so sánh song song - hiển thị ảnh đại diện + tên + vai trò trong dropdown.',
           '<strong class="text-gray-200">Timeline tin nhắn:</strong> Biểu đồ area theo ngày, mỗi nhân viên một màu riêng để dễ phân biệt.',
-          '<strong class="text-gray-200">Timeline giờ online:</strong> Biểu đồ thời gian kết nối relay theo ngày — phát hiện ai đăng nhập không đủ giờ.',
-          '<strong class="text-gray-200">Phân bổ giờ hoạt động:</strong> Biểu đồ cột theo khung giờ trong ngày — nhân viên tập trung làm việc giờ nào.',
+          '<strong class="text-gray-200">Timeline giờ online:</strong> Biểu đồ thời gian kết nối relay theo ngày - phát hiện ai đăng nhập không đủ giờ.',
+          '<strong class="text-gray-200">Phân bổ giờ hoạt động:</strong> Biểu đồ cột theo khung giờ trong ngày - nhân viên tập trung làm việc giờ nào.',
           '<strong class="text-gray-200">Phân bổ thời gian phản hồi:</strong> Histogram theo nhóm (&lt; 1 phút, 1–5 phút, 5–15 phút...) cho từng nhân viên.',
           '<strong class="text-gray-200">Biểu đồ radar:</strong> So sánh đa chiều (tin nhắn, giờ online, hội thoại, tốc độ phản hồi) giữa các nhân viên trong cùng kỳ.',
-          '<strong class="text-gray-200">Bảng xếp hạng:</strong> Danh sách nhân viên sắp xếp theo tin nhắn hoặc giờ online — kèm badge màu sắc và avatar.',
+          '<strong class="text-gray-200">Bảng xếp hạng:</strong> Danh sách nhân viên sắp xếp theo tin nhắn hoặc giờ online - kèm badge màu sắc và avatar.',
         ]} />
         <div className="mt-2 bg-blue-900/20 border border-blue-700/30 rounded-lg px-3 py-2">
           <p className="text-blue-300 text-[11px]">
-            💡 Dữ liệu được tính theo phiên kết nối relay thực tế — kể cả phiên kéo dài qua nhiều ngày đều được tính chính xác.
+            💡 Dữ liệu được tính theo phiên kết nối relay thực tế - kể cả phiên kéo dài qua nhiều ngày đều được tính chính xác.
           </p>
         </div>
       </Card>
@@ -1425,7 +1425,7 @@ function DashboardPanel() {
   return (
     <div className="space-y-4">
       <Card>
-        <SectionTitle>📊 Dashboard — Quản lý tài khoản</SectionTitle>
+        <SectionTitle>📊 Dashboard - Quản lý tài khoản</SectionTitle>
         <Paragraph>
           Dashboard là trang chủ khi mở app, hiển thị trạng thái tất cả tài khoản Zalo
           và các thao tác quản lý nhanh: kết nối, ngắt kết nối, gộp trang và quản trị tài khoản.
@@ -1461,7 +1461,7 @@ function SecurityPanel() {
           Deplao được xây dựng theo kiến trúc toàn bộ dữ liệu được xử lý và lưu trữ ngay trên máy tính của bạn.
         </Paragraph>
         <BulletList items={[
-          '<strong class="text-gray-200">Dữ liệu lưu cục bộ 100%:</strong> Tin nhắn, danh bạ, CRM, cài đặt — tất cả được lưu trong cơ sở dữ liệu ngay trên máy bạn',
+          '<strong class="text-gray-200">Dữ liệu lưu cục bộ 100%:</strong> Tin nhắn, danh bạ, CRM, cài đặt - tất cả được lưu trong cơ sở dữ liệu ngay trên máy bạn',
           '<strong class="text-gray-200">Không có server trung gian:</strong> App kết nối trực tiếp Zalo ↔ máy bạn, không đi qua proxy của chúng tôi',
           '<strong class="text-gray-200">Phiên đăng nhập Zalo được mã hóa:</strong> Cookie phiên được lưu bảo mật trong vùng dữ liệu riêng của ứng dụng',
           '<strong class="text-gray-200">Không lưu mật khẩu:</strong> App đăng nhập qua QR Code, không bao giờ yêu cầu hoặc lưu mật khẩu Zalo',
@@ -1473,7 +1473,7 @@ function SecurityPanel() {
         <div className="flex items-start gap-3 bg-yellow-900/20 border border-yellow-700/40 rounded-lg px-3 py-3 mb-2">
           <span className="text-yellow-400 text-lg flex-shrink-0">⚠️</span>
           <div className="space-y-1.5">
-            <p className="text-yellow-300 text-xs font-semibold">Mặc định dữ liệu lưu tại ổ C — có thể đầy nhanh!</p>
+            <p className="text-yellow-300 text-xs font-semibold">Mặc định dữ liệu lưu tại ổ C - có thể đầy nhanh!</p>
             <p className="text-gray-400 text-xs leading-relaxed">
               Theo mặc định, toàn bộ tin nhắn, ảnh, video, file đính kèm được lưu tại
               <code style={{color:'#86efac',background:'#1f2937',padding:'0.0625rem 0.375rem',borderRadius:'0.25rem',margin:'0 0.1875rem'}}>C:\Users\...\AppData\Roaming\Deplao</code>.
@@ -1485,7 +1485,7 @@ function SecurityPanel() {
         <BulletList items={[
           '<strong class="text-gray-200">Khuyến nghị mạnh:</strong> Chuyển thư mục lưu trữ sang ổ D, E hoặc ổ đĩa ngoài có nhiều dung lượng trống (tối thiểu 20–50 GB để thoải mái)',
           '<strong class="text-gray-200">Cách thay đổi:</strong> Vào <em>Cài đặt → Lưu trữ → Thay đổi thư mục</em> → chọn thư mục mới. App sẽ tự động sao chép dữ liệu hiện có sang thư mục mới.',
-          '<strong class="text-gray-200">Dữ liệu được sao chép tự động:</strong> Không cần làm thủ công — app xử lý toàn bộ quá trình migrate khi bạn đổi thư mục.',
+          '<strong class="text-gray-200">Dữ liệu được sao chép tự động:</strong> Không cần làm thủ công - app xử lý toàn bộ quá trình migrate khi bạn đổi thư mục.',
           '<strong class="text-gray-200">Sao lưu định kỳ:</strong> Sau khi chuyển sang ổ D/E, đặt lịch backup thư mục này hàng tuần để phòng mất dữ liệu khi hỏng ổ cứng.',
           '<strong class="text-gray-200">Kiểm tra dung lượng:</strong> Xem đường dẫn thực tế và dung lượng đang dùng trong <em>Cài đặt → Lưu trữ</em>.',
         ]} />
@@ -1496,7 +1496,7 @@ function SecurityPanel() {
         <BulletList items={[
           'Đặt thư mục lưu trữ dữ liệu ở ổ đĩa riêng (D, E...) và sao lưu định kỳ',
           'Không chia sẻ file dữ liệu app (.db) cho người khác',
-          'Folder media là thư mục lưu trữ tất cả ảnh, file, video bạn gửi/nhận qua Zalo — hãy quản lý và sao lưu nếu cần',
+          'Folder media là thư mục lưu trữ tất cả ảnh, file, video bạn gửi/nhận qua Zalo - hãy quản lý và sao lưu nếu cần',
           'Cài đặt antivirus và tường lửa (Windows Defender là đủ)',
           'Khi không dùng nữa, dùng nút "Xóa tài khoản" trong Dashboard hoặc Cài đặt để xoá hoàn toàn dữ liệu.',
         ]} />
@@ -1533,7 +1533,7 @@ function EmployeesPanel() {
         <span className="text-4xl leading-none">🧑‍💼</span>
         <div>
           <h3 className="text-white font-bold text-base">Cài đặt nhân viên & Workspace</h3>
-          <p className="text-gray-400 text-xs mt-0.5">Cho phép nhiều nhân viên truy cập và xử lý tin nhắn từ máy riêng — có phân quyền chi tiết</p>
+          <p className="text-gray-400 text-xs mt-0.5">Cho phép nhiều nhân viên truy cập và xử lý tin nhắn từ máy riêng - có phân quyền chi tiết</p>
           <div className="flex gap-1.5 mt-2 flex-wrap">
             <Badge text="Boss Mode" color="bg-purple-600/30 text-purple-300" />
             <Badge text="Employee Mode" color="bg-green-600/30 text-green-300" />
@@ -1545,7 +1545,7 @@ function EmployeesPanel() {
       <Card>
         <SectionTitle>🏢 Mô hình hoạt động</SectionTitle>
         <Paragraph>
-          Deplao hỗ trợ mô hình <strong>1 Boss — nhiều nhân viên</strong>: Boss chạy app trên máy chủ, bật Relay Server,
+          Deplao hỗ trợ mô hình <strong>1 Boss - nhiều nhân viên</strong>: Boss chạy app trên máy chủ, bật Relay Server,
           nhân viên kết nối từ máy riêng qua <strong>mạng nội bộ (LAN)</strong> hoặc <strong>từ xa qua WAN / Cloudflare Tunnel</strong>.
           Dữ liệu workspace (DB, media) vẫn lưu trữ trên máy nhân viên. Do Zalo chỉ cho phép 1 kết nối cùng lúc, toàn bộ request Zalo sẽ được chuyển tiếp về máy Boss để xử lý.
         </Paragraph>
@@ -1563,7 +1563,7 @@ function EmployeesPanel() {
       </Card>
 
       <Card>
-        <SectionTitle>🖧 Relay Server — Cầu nối Boss ↔ Nhân viên</SectionTitle>
+        <SectionTitle>🖧 Relay Server - Cầu nối Boss ↔ Nhân viên</SectionTitle>
         <Paragraph>
           Boss bật <strong>Relay Server</strong> trong <em>Cài đặt → Nhân viên → Relay Server</em>.
           Server lắng nghe trên một cổng (mặc định 9900). Nhân viên có thể kết nối qua <strong>LAN</strong> (cùng mạng nội bộ)
@@ -1582,25 +1582,25 @@ function EmployeesPanel() {
         </div>
         <StepList steps={[
           { title: 'Boss bật Relay Server', desc: 'Cài đặt → Nhân viên → Relay Server → nhập cổng → "Bật server". Bật "Tự động bật khi khởi động" để không phải làm thủ công mỗi lần.' },
-          { title: '(Tuỳ chọn) Bật Tunnel WAN', desc: 'Nhấn "Bật Tunnel WAN" — app tự cài cloudflared và tạo URL công khai dạng https://xxx.trycloudflare.com. Copy URL này gửi cho nhân viên remote.' },
+          { title: '(Tuỳ chọn) Bật Tunnel WAN', desc: 'Nhấn "Bật Tunnel WAN" - app tự cài cloudflared và tạo URL công khai dạng https://xxx.trycloudflare.com. Copy URL này gửi cho nhân viên remote.' },
           { title: 'Nhân viên cài app', desc: 'Nhân viên cài Deplao trên máy của họ, nhập địa chỉ LAN (IP:cổng) hoặc URL WAN từ boss.' },
           { title: 'Nhân viên đăng nhập', desc: 'Nhập tài khoản/mật khẩu được boss tạo sẵn. App kết nối relay và nhận dữ liệu từ boss.' },
-          { title: 'Làm việc bình thường', desc: 'Nhân viên xem hội thoại, gửi tin nhắn được phân công — mọi thao tác đều đi qua relay về máy boss.' },
+          { title: 'Làm việc bình thường', desc: 'Nhân viên xem hội thoại, gửi tin nhắn được phân công - mọi thao tác đều đi qua relay về máy boss.' },
         ]} />
         <div className="mt-3 bg-blue-900/20 border border-blue-700/40 rounded-lg px-3 py-2.5 space-y-1.5">
-          <p className="text-blue-300 text-[11px] font-semibold">🌐 Cloudflare Tunnel — không cần cấu hình router hay VPS</p>
+          <p className="text-blue-300 text-[11px] font-semibold">🌐 Cloudflare Tunnel - không cần cấu hình router hay VPS</p>
           <BulletList items={[
-            'Tunnel dùng Cloudflare Quick Tunnel miễn phí — không cần tài khoản, không giới hạn băng thông.',
-            'URL tunnel thay đổi mỗi lần bật — hãy copy URL mới và gửi lại cho nhân viên sau mỗi lần restart.',
-            'Không cần mở port router, không cần IP tĩnh, không cần VPS — phù hợp cho team làm việc từ xa.',
+            'Tunnel dùng Cloudflare Quick Tunnel miễn phí - không cần tài khoản, không giới hạn băng thông.',
+            'URL tunnel thay đổi mỗi lần bật - hãy copy URL mới và gửi lại cho nhân viên sau mỗi lần restart.',
+            'Không cần mở port router, không cần IP tĩnh, không cần VPS - phù hợp cho team làm việc từ xa.',
           ]} />
         </div>
         <div className="mt-2 bg-yellow-900/20 border border-yellow-700/40 rounded-lg px-3 py-2.5 space-y-1.5">
           <p className="text-yellow-300 text-[11px] font-semibold">⚠️ Lưu ý khi restart app boss</p>
           <BulletList items={[
-            '<strong class="text-gray-300">Server tự dừng</strong> khi đóng app — nhân viên bị ngắt kết nối, cần đăng nhập lại.',
-            '<strong class="text-gray-300">IP LAN có thể thay đổi</strong> nếu DHCP cấp IP mới — khuyến nghị đặt IP tĩnh cho máy boss.',
-            '<strong class="text-gray-300">URL WAN thay đổi</strong> mỗi lần tắt/bật tunnel — copy URL mới và gửi lại cho nhân viên remote.',
+            '<strong class="text-gray-300">Server tự dừng</strong> khi đóng app - nhân viên bị ngắt kết nối, cần đăng nhập lại.',
+            '<strong class="text-gray-300">IP LAN có thể thay đổi</strong> nếu DHCP cấp IP mới - khuyến nghị đặt IP tĩnh cho máy boss.',
+            '<strong class="text-gray-300">URL WAN thay đổi</strong> mỗi lần tắt/bật tunnel - copy URL mới và gửi lại cho nhân viên remote.',
           ]} />
         </div>
       </Card>
@@ -1609,7 +1609,7 @@ function EmployeesPanel() {
         <SectionTitle>👤 Tạo & Quản lý tài khoản nhân viên</SectionTitle>
         <BulletList items={[
           '<strong class="text-gray-200">Tạo nhân viên:</strong> Cài đặt → Nhân viên → Danh sách → "Thêm nhân viên" → nhập tên đăng nhập, mật khẩu, tên hiển thị.',
-          '<strong class="text-gray-200">Phân tài khoản Zalo:</strong> Mỗi nhân viên chỉ thấy các tài khoản Zalo được boss gán — bảo mật và rõ ràng trách nhiệm.',
+          '<strong class="text-gray-200">Phân tài khoản Zalo:</strong> Mỗi nhân viên chỉ thấy các tài khoản Zalo được boss gán - bảo mật và rõ ràng trách nhiệm.',
           '<strong class="text-gray-200">Nhóm nhân viên:</strong> Tạo nhóm (VD: Nhóm Hà Nội, Nhóm CSKH) để phân loại và quản lý dễ hơn.',
           '<strong class="text-gray-200">Vô hiệu hóa / Xóa:</strong> Boss có thể tạm khóa hoặc xóa tài khoản nhân viên bất kỳ lúc nào.',
         ]} />
@@ -1640,7 +1640,7 @@ function EmployeesPanel() {
         </div>
         <div className="mt-2 bg-blue-900/20 border border-blue-700/30 rounded-lg px-3 py-2">
           <p className="text-blue-300 text-[11px]">
-            💡 Khi nhân viên không có quyền vào một trang, app tự động chuyển về <strong>Dashboard</strong> — không xảy ra lỗi hay lộ dữ liệu.
+            💡 Khi nhân viên không có quyền vào một trang, app tự động chuyển về <strong>Dashboard</strong> - không xảy ra lỗi hay lộ dữ liệu.
           </p>
         </div>
       </Card>
@@ -1651,11 +1651,11 @@ function EmployeesPanel() {
           Module <strong>Báo cáo → Nhân viên</strong> cho phép boss theo dõi hiệu suất từng nhân viên theo khoảng thời gian tùy chọn.
         </Paragraph>
         <BulletList items={[
-          '<strong class="text-gray-200">Tổng tin nhắn gửi</strong> — số tin nhắn thực tế nhân viên đã gửi (không đếm trùng với log phản hồi).',
-          '<strong class="text-gray-200">Giờ online</strong> — tổng thời gian nhân viên đã kết nối relay trong kỳ báo cáo, tính chính xác kể cả phiên kéo dài qua nhiều ngày.',
-          '<strong class="text-gray-200">Thời gian phản hồi trung bình</strong> — tính từ lúc nhận tin khách đến khi nhân viên trả lời.',
-          '<strong class="text-gray-200">Bộ lọc đa nhân viên</strong> — chọn 1 hoặc nhiều nhân viên để so sánh song song trên cùng biểu đồ, hiển thị ảnh + tên.',
-          '<strong class="text-gray-200">Biểu đồ timeline, radar, phân bổ giờ</strong> — trực quan hóa hoạt động theo ngày và theo khung giờ trong ngày.',
+          '<strong class="text-gray-200">Tổng tin nhắn gửi</strong> - số tin nhắn thực tế nhân viên đã gửi (không đếm trùng với log phản hồi).',
+          '<strong class="text-gray-200">Giờ online</strong> - tổng thời gian nhân viên đã kết nối relay trong kỳ báo cáo, tính chính xác kể cả phiên kéo dài qua nhiều ngày.',
+          '<strong class="text-gray-200">Thời gian phản hồi trung bình</strong> - tính từ lúc nhận tin khách đến khi nhân viên trả lời.',
+          '<strong class="text-gray-200">Bộ lọc đa nhân viên</strong> - chọn 1 hoặc nhiều nhân viên để so sánh song song trên cùng biểu đồ, hiển thị ảnh + tên.',
+          '<strong class="text-gray-200">Biểu đồ timeline, radar, phân bổ giờ</strong> - trực quan hóa hoạt động theo ngày và theo khung giờ trong ngày.',
         ]} />
       </Card>
 
@@ -1675,7 +1675,7 @@ function PolicyPanel() {
     <div className="space-y-4">
       <div className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-4">
         <p className="text-blue-300 text-xs font-semibold mb-1">📜 Chính sách sử dụng & Tuyên bố miễn trách nhiệm pháp lý</p>
-        <p className="text-gray-400 text-[11px]">Phiên bản 1.0 — có hiệu lực từ ngày 01/01/2025</p>
+        <p className="text-gray-400 text-[11px]">Phiên bản 1.0 - có hiệu lực từ ngày 01/01/2025</p>
       </div>
 
       <Card>
@@ -1772,7 +1772,7 @@ function BugReportPanel() {
       </div>
 
       <Card>
-        <SectionTitle>📝 Quy trình báo lỗi — 5 bước</SectionTitle>
+        <SectionTitle>📝 Quy trình báo lỗi - 5 bước</SectionTitle>
         <StepList steps={[
           {
             title: '1. Tái hiện lỗi',
@@ -1784,7 +1784,7 @@ function BugReportPanel() {
           },
           {
             title: '3. Thu thập thông tin kỹ thuật',
-            desc: 'Phiên bản Deplao (thanh trên cùng bên trái). Hệ điều hành (Windows 10/11, macOS Intel/Apple Silicon). Tài khoản nào gặp lỗi (Zalo cá nhân, Business, Facebook). Tính năng liên quan. Nếu có lỗi Console (Ctrl+Shift+I → Console) — copy-paste nội dung.',
+            desc: 'Phiên bản Deplao (thanh trên cùng bên trái). Hệ điều hành (Windows 10/11, macOS Intel/Apple Silicon). Tài khoản nào gặp lỗi (Zalo cá nhân, Business, Facebook). Tính năng liên quan. Nếu có lỗi Console (Ctrl+Shift+I → Console) - copy-paste nội dung.',
           },
           {
             title: '4. Viết mô tả Issue trên GitHub',
@@ -1855,10 +1855,10 @@ function BugReportPanel() {
         <SectionTitle>🚫 Những điều KHÔNG nên làm</SectionTitle>
         <BulletList items={[
           'Gửi issue chỉ ghi "app bị lỗi" mà không có mô tả chi tiết',
-          'Gửi nhiều issue trùng lặp — hãy kiểm tra issue đã tồn tại trước',
+          'Gửi nhiều issue trùng lặp - hãy kiểm tra issue đã tồn tại trước',
           'Đính kèm ảnh chụp thông tin nhạy cảm (mã OTP, mật khẩu, SĐT KH...)',
-          'Dùng issue để hỏi cách sử dụng — đọc trang Hướng dẫn trước',
-          'Gửi yêu cầu tính năng qua mục báo lỗi — tạo issue riêng nhãn "enhancement"',
+          'Dùng issue để hỏi cách sử dụng - đọc trang Hướng dẫn trước',
+          'Gửi yêu cầu tính năng qua mục báo lỗi - tạo issue riêng nhãn "enhancement"',
         ]} />
       </Card>
     </div>
@@ -1882,7 +1882,7 @@ function DonateCoffeePanel() {
 
       {/* QR Code placeholder */}
       <Card>
-        <SectionTitle>📱 Quét mã QR — Ủng hộ qua chuyển khoản</SectionTitle>
+        <SectionTitle>📱 Quét mã QR - Ủng hộ qua chuyển khoản</SectionTitle>
         <Paragraph>
           Quét mã QR bên dưới bằng app ngân hàng để ủng hộ đội ngũ phát triển.
           Mọi đóng góp đều được ghi nhận và biết ơn!
@@ -1907,7 +1907,7 @@ function DonateCoffeePanel() {
 
       {/* Nhận Job */}
       <Card>
-        <SectionTitle>💼 Nhận dự án — Team nhận làm phần mềm theo yêu cầu</SectionTitle>
+        <SectionTitle>💼 Nhận dự án - Team nhận làm phần mềm theo yêu cầu</SectionTitle>
         <Paragraph>
           Ngoài Deplao, team còn nhận phát triển phần mềm theo yêu cầu riêng (custom software development).
           Nếu bạn cần một công cụ quản lý, tự động hoá hoặc bất cứ giải pháp công nghệ nào, đừng ngần ngại liên hệ!

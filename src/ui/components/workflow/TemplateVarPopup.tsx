@@ -15,11 +15,11 @@ interface Props {
   nodeType?: string;
   /** Danh sách tất cả node trong workflow (cho $node.*) */
   allNodes?: { id: string; label: string; type: string }[];
-  /** Node ID hiện tại — để loại trừ khi chọn output */
+  /** Node ID hiện tại - để loại trừ khi chọn output */
   currentId?: string;
   /** Callback khi người dùng chọn 1 variable */
   onSelect: (varKey: string) => void;
-  /** Field key đang được focus — để gợi ý variable liên quan */
+  /** Field key đang được focus - để gợi ý variable liên quan */
   currentField?: string;
 }
 
@@ -85,7 +85,7 @@ export default function TemplateVarPopup({
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative rounded-2xl shadow-2xl w-[600px] max-w-[95vw] max-h-[85vh] flex flex-col overflow-hidden border ${
+      <div className={`relative rounded-2xl shadow-2xl w-[720px] max-w-[95vw] max-h-[85vh] flex flex-col overflow-hidden border ${
         isLight ? 'bg-white border-gray-200' : 'bg-gray-900 border-gray-700'
       }`}>
         {/* Header */}
@@ -107,58 +107,41 @@ export default function TemplateVarPopup({
           </button>
         </div>
 
-        {/* Search */}
-        <div className={`px-4 py-3 border-b ${isLight ? 'border-gray-200' : 'border-gray-700/50'}`}>
-          <div className="relative">
-            <svg className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isLight ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            <input
-              type="text" placeholder="Tìm theo tên, cú pháp, mô tả..."
-              value={search} onChange={e => setSearch(e.target.value)}
-              autoFocus
-              className={`w-full pl-10 pr-4 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 ${
-                isLight
-                  ? 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-blue-500/30'
-                  : 'bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:ring-blue-500/30'
-              }`}
-            />
-          </div>
-        </div>
-
-        {/* Group tabs */}
-        <div style={{ minHeight: '50px' }} className={`flex gap-1 px-4 py-2 border-b overflow-x-auto ${
-          isLight ? 'border-gray-200 bg-gray-50' : 'border-gray-700/50 bg-gray-800/30'
-        }`}>
+      {/* Body: sidebar + content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left sidebar - group list */}
+        <div className={`w-40 flex-shrink-0 overflow-y-auto border-r p-2 space-y-0.5 ${isLight ? 'border-gray-200 bg-gray-50' : 'border-gray-700/50 bg-gray-800/30'}`}>
           {groups.map(g => (
             <button
               key={g}
               onClick={() => setSelectedGroup(g)}
-              className={`flex-shrink-0 px-2.5 py-1 text-[10px] font-medium rounded-lg transition-colors whitespace-nowrap ${
-                selectedGroup === g
-                  ? isLight
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-blue-500/20 text-blue-400'
-                  : isLight
-                    ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
-            >
-              {groupLabels[g] || g}
-              <span className={`ml-1 text-[9px] ${
-                selectedGroup === g
-                  ? isLight ? 'text-blue-500' : 'text-blue-500'
-                  : isLight ? 'text-gray-400' : 'text-gray-500'
-              }`}>
+              className={`w-full text-left px-3 py-2 rounded-lg transition-colors text-sm ${selectedGroup === g ? isLight ? 'bg-blue-100 text-blue-700 font-medium' : 'bg-blue-500/20 text-blue-400 font-medium' : isLight ? 'text-gray-600 hover:bg-gray-200' : 'text-gray-400 hover:bg-gray-700'}`}>
+              <span className="text-xs">{groupLabels[g] || g}</span>
+              <span className={`ml-1.5 text-[10px] ${selectedGroup === g ? isLight ? 'text-blue-500' : 'text-blue-500' : isLight ? 'text-gray-400' : 'text-gray-600'}`}>
                 {groupCounts[g] || 0}
               </span>
             </button>
           ))}
         </div>
 
-        {/* Variable list */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {filtered.length === 0 ? (
+        {/* Right content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className={`px-4 py-3 border-b flex-shrink-0 ${isLight ? 'border-gray-200' : 'border-gray-700/50'}`}>
+            <div className="relative">
+              <svg className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isLight ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input
+                type="text" placeholder="Tìm theo tên, cú pháp, mô tả..."
+                value={search} onChange={e => setSearch(e.target.value)}
+                autoFocus
+                className={`w-full pl-10 pr-4 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 ${isLight ? 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-blue-500/30' : 'bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:ring-blue-500/30'}`}
+              />
+            </div>
+          </div>
+
+          {/* Variable list */}
+          <div className="flex-1 overflow-y-auto p-2 space-y-0.5">          {filtered.length === 0 ? (
             <div className={`text-center py-8 ${isLight ? 'text-gray-500' : 'text-gray-500'}`}>
               <span className="text-3xl block mb-2">🔍</span>
               <p className="text-sm">Không tìm thấy variable</p>
@@ -218,6 +201,9 @@ export default function TemplateVarPopup({
               </button>
             ))
           )}
+        </div>
+
+          </div>
         </div>
 
         {/* Footer */}

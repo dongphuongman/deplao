@@ -5,7 +5,7 @@ import { IntegrationAdapter, IntegrationConfig, TestResult } from '../Integratio
 /**
  * Sapo POS adapter.
  * Credentials required: accessToken, storeDomain (e.g. "myshop" for myshop.mysapo.net)
- * Auth: OAuth2 — access_token lấy từ SAPO Admin, gửi qua header X-Sapo-Access-Token
+ * Auth: OAuth2 - access_token lấy từ SAPO Admin, gửi qua header X-Sapo-Access-Token
  * Docs: https://support.sapo.vn/gioi-thieu-api
  */
 export class SapoAdapter extends IntegrationAdapter {
@@ -91,12 +91,12 @@ export class SapoAdapter extends IntegrationAdapter {
     try {
       // Validate credentials trước khi gọi API
       const { storeDomain, accessToken } = this.config.credentials;
-      if (!storeDomain) return { success: false, message: 'Thiếu tên store (subdomain) — VD: ten-cua-hang' };
-      if (!accessToken) return { success: false, message: 'Thiếu Access Token — lấy từ SAPO Admin → Cài đặt → Phát triển → API' };
+      if (!storeDomain) return { success: false, message: 'Thiếu tên store (subdomain) - VD: ten-cua-hang' };
+      if (!accessToken) return { success: false, message: 'Thiếu Access Token - lấy từ SAPO Admin → Cài đặt → Phát triển → API' };
 
       const data = await this.apiGet('/admin/store.json');
       const name = data?.store?.name || data?.store?.domain || 'Sapo Store';
-      return { success: true, message: `Kết nối Sapo thành công — store: ${name}` };
+      return { success: true, message: `Kết nối Sapo thành công - store: ${name}` };
     } catch (e: any) {
       // Phân loại lỗi
       const isTlsError = e.code === 'EPROTO' || e.message?.includes('handshake') || e.message?.includes('SSL');
@@ -108,16 +108,16 @@ export class SapoAdapter extends IntegrationAdapter {
         const hint = e.message?.includes('BoringSSL') || e.message?.includes('third_party')
           ? 'Phần mềm đang chạy trên Electron (BoringSSL). Thử tắt tường lửa / VPN, hoặc kiểm tra proxy.'
           : '';
-        return { success: false, message: `Lỗi SSL/TLS — Kiểm tra storeDomain "${this.config.credentials.storeDomain}" có đúng không. Chi tiết: ${e.message}. ${hint}`.trim() };
+        return { success: false, message: `Lỗi SSL/TLS - Kiểm tra storeDomain "${this.config.credentials.storeDomain}" có đúng không. Chi tiết: ${e.message}. ${hint}`.trim() };
       }
       if (isDnsError) {
-        return { success: false, message: `Không tìm thấy domain "${this.config.credentials.storeDomain}.mysapo.net" — kiểm tra lại tên store` };
+        return { success: false, message: `Không tìm thấy domain "${this.config.credentials.storeDomain}.mysapo.net" - kiểm tra lại tên store` };
       }
       if (isTimeout) {
-        return { success: false, message: `Kết nối tới Sapo bị timeout — kiểm tra mạng hoặc tường lửa` };
+        return { success: false, message: `Kết nối tới Sapo bị timeout - kiểm tra mạng hoặc tường lửa` };
       }
       if (isAuthError) {
-        return { success: false, message: `Sai Access Token hoặc token hết hạn — kiểm tra lại token trong SAPO Admin` };
+        return { success: false, message: `Sai Access Token hoặc token hết hạn - kiểm tra lại token trong SAPO Admin` };
       }
 
       return { success: false, message: `Lỗi kết nối Sapo: ${e.response?.data?.errors || e.message}` };
@@ -126,7 +126,7 @@ export class SapoAdapter extends IntegrationAdapter {
 
   /**
    * Tìm khách hàng theo SĐT hoặc email.
-   * SAPO Customer API KHÔNG hỗ trợ search param — phải fetch rồi filter client-side.
+   * SAPO Customer API KHÔNG hỗ trợ search param - phải fetch rồi filter client-side.
    */
   private async findCustomers(keyword: string, limit: number): Promise<any[]> {
     const data = await this.apiGet('/admin/customers.json', {
@@ -153,7 +153,7 @@ export class SapoAdapter extends IntegrationAdapter {
 
   /**
    * Filter sản phẩm theo keyword (title).
-   * SAPO Product API KHÔNG hỗ trợ param title — phải fetch rồi filter client-side.
+   * SAPO Product API KHÔNG hỗ trợ param title - phải fetch rồi filter client-side.
    */
   private async filterProducts(keyword: string, limit: number): Promise<any[]> {
     const data = await this.apiGet('/admin/products.json', {

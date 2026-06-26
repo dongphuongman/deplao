@@ -19,7 +19,7 @@ type InputMode = 'list' | 'phones';
 type TagTab = 'none' | 'local' | 'zalo';
 
 interface AddToContactsModalProps {
-  /** Danh sách liên hệ cần thêm (từ group members, v.v.) — nếu null thì dùng mode nhập SĐT */
+  /** Danh sách liên hệ cần thêm (từ group members, v.v.) - nếu null thì dùng mode nhập SĐT */
   contacts?: ContactToAdd[];
   /** Override account (nếu không truyền dùng activeAccountId) */
   zaloId?: string;
@@ -216,7 +216,7 @@ export default function AddToContactsModal({ contacts, zaloId: overrideZaloId, o
             }
           }
         } catch (err: any) {
-          showNotification('Cảnh báo: Gán nhãn Zalo thất bại — ' + (err?.message || ''), 'error');
+          showNotification('Cảnh báo: Gán nhãn Zalo thất bại - ' + (err?.message || ''), 'error');
         }
       }
 

@@ -348,6 +348,21 @@ export default function WorkflowEditor({ workflowId, onBack }: Props) {
     try {
       const res = await ipc.workflow?.save(buildWorkflow());
       if (res?.success) showNotification('Đã lưu workflow', 'success');
+          // Apply generated webhook token to local node state
+          if (res.webhookToken) {
+            setNodes(prev => prev.map(n => {
+              if ((n.data?.type || '').startsWith('trigger.webhook')) {
+                return {
+                  ...n,
+                  data: {
+                    ...n.data,
+                    config: { ...(n.data?.config || {}), webhookToken: res.webhookToken }
+                  }
+                };
+              }
+              return n;
+            }));
+          }
       else showNotification(res?.error || 'Lỗi lưu workflow', 'error');
     } finally {
       setSaving(false);
@@ -360,7 +375,7 @@ export default function WorkflowEditor({ workflowId, onBack }: Props) {
       // Save first, then run
       await ipc.workflow?.save(buildWorkflow());
       const res = await ipc.workflow?.runManual(workflowId, triggerData);
-      if (res?.success) showNotification(`Chạy thành công — ${res.log?.status}`, 'success');
+      if (res?.success) showNotification(`Chạy thành công - ${res.log?.status}`, 'success');
       else showNotification(res?.error || 'Lỗi chạy workflow', 'error');
     } finally {
       setRunning(false);
@@ -481,7 +496,7 @@ export default function WorkflowEditor({ workflowId, onBack }: Props) {
           description: data.description || m.description,
         }));
         setSelectedNode(null);
-        showNotification(`Đã nhập workflow "${data.name || 'Imported'}" — nhớ Lưu để áp dụng!`, 'success');
+        showNotification(`Đã nhập workflow "${data.name || 'Imported'}" - nhớ Lưu để áp dụng!`, 'success');
       } catch (err: any) {
         showNotification('Lỗi đọc file JSON: ' + (err.message || 'Invalid JSON'), 'error');
       }
@@ -493,7 +508,7 @@ export default function WorkflowEditor({ workflowId, onBack }: Props) {
 
   const channelLabel = workflowMeta.channel === 'zalo' ? 'Zalo' : 'Facebook';
 
-  // Filter accounts by workflow channel — only show matching accounts
+  // Filter accounts by workflow channel - only show matching accounts
   const filteredAccounts = accounts.filter(a => {
     const accChannel = a.channel || 'zalo';
     return accChannel === workflowMeta.channel;
@@ -581,7 +596,7 @@ export default function WorkflowEditor({ workflowId, onBack }: Props) {
               <div className="border-t border-gray-800 mt-1 pt-1 px-3">
                 <p className="text-[11px] text-gray-600 leading-relaxed">
                   {workflowMeta.pageIds.length === 0
-                    ? `⚠ Chưa chọn tài khoản — workflow sẽ chạy cho TẤT CẢ tài khoản ${channelLabel} (${filteredAccounts.length})`
+                    ? `⚠ Chưa chọn tài khoản - workflow sẽ chạy cho TẤT CẢ tài khoản ${channelLabel} (${filteredAccounts.length})`
                     : `✓ Sẽ chạy cho ${workflowMeta.pageIds.length} tài khoản ${channelLabel} đã chọn`}
                 </p>
               </div>
@@ -618,7 +633,7 @@ export default function WorkflowEditor({ workflowId, onBack }: Props) {
           <button
             onClick={() => setWorkflowMeta(m => ({ ...m, enabled: !m.enabled }))}
             className="flex items-center gap-2 cursor-pointer"
-            title={workflowMeta.enabled ? 'Đang bật — nhấn để tắt' : 'Đang tắt — nhấn để bật'}
+            title={workflowMeta.enabled ? 'Đang bật - nhấn để tắt' : 'Đang tắt - nhấn để bật'}
           >
             <div className={`w-8 h-[18px] rounded-full transition-colors relative ${workflowMeta.enabled ? 'bg-blue-600' : 'bg-gray-700'}`}>
               <span className={`absolute top-[2px] w-[14px] h-[14px] bg-white rounded-full shadow transition-all ${workflowMeta.enabled ? 'left-[18px]' : 'left-[2px]'}`} />
@@ -687,6 +702,7 @@ export default function WorkflowEditor({ workflowId, onBack }: Props) {
             node={selectedNode}
             nodes={nodes}
             edges={edges}
+            workflowId={workflowId}
             onConfigChange={cfg => updateNodeConfig(selectedNode.id, cfg)}
             onLabelChange={label => updateNodeLabel(selectedNode.id, label)}
             onClose={() => setSelectedNode(null)}

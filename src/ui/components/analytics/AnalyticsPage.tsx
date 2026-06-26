@@ -173,7 +173,7 @@ function HeatmapGrid({ data }: { data: HeatmapPoint[] }) {
               return (
                 <div key={h}
                   className={`flex-1 aspect-square rounded-sm ${getColor(count)} transition-colors`}
-                  title={`${day} ${h}:00 — ${count} tin nhắn`}
+                  title={`${day} ${h}:00 - ${count} tin nhắn`}
                 />
               );
             })}
@@ -234,19 +234,19 @@ function dateStrToTs(s: string): number {
 // ── Guide Modal ────────────────────────────────────────────────────────────────
 const GUIDE_CONTENT: Record<TabId, { title: string; sections: Array<{ heading: string; content: string }> }> = {
   overview: {
-    title: '📊 Hướng dẫn — Tổng quan',
+    title: '📊 Hướng dẫn - Tổng quan',
     sections: [
       { heading: 'Tin nhắn hôm nay', content: 'Tổng số tin nhắn gửi + nhận trong ngày hôm nay. So sánh % thay đổi với hôm qua.' },
       { heading: 'Tổng tin nhắn', content: 'Tổng số tin nhắn tích lũy toàn bộ thời gian, bao gồm cả gửi và nhận.' },
       { heading: 'Liên hệ & Nhóm', content: 'Tổng số liên hệ cá nhân (bạn bè + người lạ) và nhóm chat đã lưu trong hệ thống.' },
-      { heading: '⏱️ Thời gian phản hồi', content: 'TB phản hồi, trung vị, nhanh nhất, chậm nhất — đo thời gian từ khi nhận tin đến khi trả lời (chỉ tính hội thoại 1-1).' },
+      { heading: '⏱️ Thời gian phản hồi', content: 'TB phản hồi, trung vị, nhanh nhất, chậm nhất - đo thời gian từ khi nhận tin đến khi trả lời (chỉ tính hội thoại 1-1).' },
       { heading: 'Biểu đồ lượng tin nhắn', content: 'Hiển thị xu hướng tin nhắn gửi/nhận theo giờ (≤7 ngày) hoặc theo ngày (>7 ngày) trong khoảng thời gian đã chọn.' },
       { heading: '📈 Tăng trưởng liên hệ', content: 'Biểu đồ số liên hệ mới xuất hiện theo ngày (dựa trên lần nhắn tin đầu tiên).' },
       { heading: '📊 Chi tiết theo nhãn', content: 'Biểu đồ ngang hiển thị top nhãn local được sử dụng nhiều nhất trong khoảng thời gian.' },
     ],
   },
   messages: {
-    title: '💬 Hướng dẫn — Tin nhắn',
+    title: '💬 Hướng dẫn - Tin nhắn',
     sections: [
       { heading: 'KPI tổng quan', content: 'Hôm nay: tin nhắn trong ngày. Tổng: tất cả tin nhắn. TB/ngày: trung bình tin nhắn theo ngày trong khoảng thời gian. Tỷ lệ gửi: % tin bạn gửi / tổng.' },
       { heading: '⏱️ Thời gian phản hồi', content: 'Đo thời gian từ khi nhận tin nhắn đến khi bạn trả lời (chỉ tính hội thoại 1-1). Khi chọn "Nhóm" sẽ không hiển thị phần này.\n\n• TB phản hồi: thời gian trả lời trung bình\n• Trung vị: 50% tin nhắn được trả lời nhanh hơn con số này\n• Nhanh nhất / Chậm nhất: khoảng cực trị\n• Chỉ tính các phản hồi trong 7 ngày (bỏ qua hội thoại bị bỏ quên)' },
@@ -257,7 +257,7 @@ const GUIDE_CONTENT: Record<TabId, { title: string; sections: Array<{ heading: s
     ],
   },
   contacts: {
-    title: '👥 Hướng dẫn — Liên hệ',
+    title: '👥 Hướng dẫn - Liên hệ',
     sections: [
       { heading: 'KPI', content: 'Tổng liên hệ, bạn bè, nhóm, và số liên hệ đã gắn tag.' },
       { heading: '📈 Tăng trưởng liên hệ', content: 'Biểu đồ số liên hệ mới xuất hiện theo ngày (dựa trên lần nhắn tin đầu tiên). Hiển thị ngay sau KPI để dễ theo dõi xu hướng.' },
@@ -266,15 +266,15 @@ const GUIDE_CONTENT: Record<TabId, { title: string; sections: Array<{ heading: s
     ],
   },
   labels: {
-    title: '🏷️ Hướng dẫn — Nhãn (Local)',
+    title: '🏷️ Hướng dẫn - Nhãn (Local)',
     sections: [
-      { heading: '⚠️ Phạm vi dữ liệu', content: 'Tab này CHỈ thống kê nhãn local (local labels) — nhãn do bạn tạo và gắn cho hội thoại trong ứng dụng. Không bao gồm nhãn từ Zalo.' },
-      { heading: '📐 Logic truy vấn', content: '• Nguồn dữ liệu: bảng local_label_threads JOIN local_labels\n• Thời gian: lọc theo trường created_at (thời điểm gắn nhãn) trong khoảng thời gian đã chọn\n• Timeline: GROUP BY ngày bằng công thức CAST((created_at - sinceTs) / 86400000 AS INTEGER) — đếm số lượt gắn nhãn mỗi ngày\n• Theo nhãn: GROUP BY label_id, lấy tên/emoji/màu từ bảng local_labels, sắp xếp giảm dần theo số lượt' },
+      { heading: '⚠️ Phạm vi dữ liệu', content: 'Tab này CHỈ thống kê nhãn local (local labels) - nhãn do bạn tạo và gắn cho hội thoại trong ứng dụng. Không bao gồm nhãn từ Zalo.' },
+      { heading: '📐 Logic truy vấn', content: '• Nguồn dữ liệu: bảng local_label_threads JOIN local_labels\n• Thời gian: lọc theo trường created_at (thời điểm gắn nhãn) trong khoảng thời gian đã chọn\n• Timeline: GROUP BY ngày bằng công thức CAST((created_at - sinceTs) / 86400000 AS INTEGER) - đếm số lượt gắn nhãn mỗi ngày\n• Theo nhãn: GROUP BY label_id, lấy tên/emoji/màu từ bảng local_labels, sắp xếp giảm dần theo số lượt' },
       { heading: '📊 Chỉ số hiển thị', content: '• Tổng lượt gắn nhãn: COUNT tổng trong khoảng thời gian\n• Số nhãn sử dụng: COUNT DISTINCT label_id\n• TB/ngày: tổng lượt ÷ số ngày trong khoảng thời gian\n• Biểu đồ cột theo ngày: lượt gắn nhãn mỗi ngày\n• Biểu đồ ngang theo nhãn: top 12 nhãn, mỗi thanh hiển thị màu riêng của nhãn' },
     ],
   },
   campaigns: {
-    title: '📢 Hướng dẫn — Chiến dịch',
+    title: '📢 Hướng dẫn - Chiến dịch',
     sections: [
       { heading: 'KPI', content: 'Tổng chiến dịch, đã gửi, lỗi, trả lời, % gửi thành công. Tính trên toàn bộ chiến dịch.' },
       { heading: '📊 Top chiến dịch', content: 'Biểu đồ ngang so sánh top 10 chiến dịch theo số tin đã gửi, trả lời, lỗi.' },
@@ -282,7 +282,7 @@ const GUIDE_CONTENT: Record<TabId, { title: string; sections: Array<{ heading: s
     ],
   },
   workflow: {
-    title: '⚡ Hướng dẫn — Workflow',
+    title: '⚡ Hướng dẫn - Workflow',
     sections: [
       { heading: 'KPI', content: 'Tổng lượt chạy, thành công, lỗi, tỷ lệ thành công, thời gian chạy trung bình.' },
       { heading: '📈 Timeline', content: 'Biểu đồ lượt chạy thành công vs lỗi theo ngày trong khoảng thời gian.' },
@@ -291,7 +291,7 @@ const GUIDE_CONTENT: Record<TabId, { title: string; sections: Array<{ heading: s
     ],
   },
   ai: {
-    title: '🤖 Hướng dẫn — AI',
+    title: '🤖 Hướng dẫn - AI',
     sections: [
       { heading: 'KPI', content: 'Tổng requests, tổng tokens (prompt + completion). Token là đơn vị đo lường dữ liệu AI xử lý.' },
       { heading: '📈 Usage theo ngày', content: 'Biểu đồ kết hợp: cột = số requests, đường = tokens tiêu thụ theo ngày.' },
@@ -300,15 +300,15 @@ const GUIDE_CONTENT: Record<TabId, { title: string; sections: Array<{ heading: s
     ],
   },
   employees: {
-    title: '👤 Hướng dẫn — Báo cáo Nhân viên',
+    title: '👤 Hướng dẫn - Báo cáo Nhân viên',
     sections: [
-      { heading: 'KPI tổng hợp', content: 'Số nhân viên, tổng tin gửi, hội thoại xử lý, TB phản hồi, tổng giờ online — tổng quan team trong khoảng thời gian.' },
+      { heading: 'KPI tổng hợp', content: 'Số nhân viên, tổng tin gửi, hội thoại xử lý, TB phản hồi, tổng giờ online - tổng quan team trong khoảng thời gian.' },
       { heading: '📊 So sánh tin nhắn & hội thoại', content: 'Biểu đồ cột ngang so sánh hiệu suất từng nhân viên: số tin đã gửi và số hội thoại xử lý.' },
       { heading: '🥧 Phân bổ', content: 'Biểu đồ tròn thể hiện tỷ lệ đóng góp tin nhắn và giờ online của mỗi nhân viên.' },
       { heading: '📈 Timeline', content: 'Biểu đồ đường so sánh tin nhắn theo ngày giữa các nhân viên. Biểu đồ cột chồng so sánh giờ online theo ngày.' },
       { heading: '⏱️ Tốc độ phản hồi', content: 'Xếp hạng nhân viên theo thời gian phản hồi trung bình (xanh = nhanh, đỏ = chậm). Phân bổ thời gian phản hồi theo nhóm.' },
-      { heading: '🕸️ Radar', content: 'So sánh đa chiều: tin gửi, hội thoại, online, tốc độ phản hồi — trực quan hóa điểm mạnh/yếu của từng nhân viên.' },
-      { heading: '🕐 Hoạt động theo giờ', content: 'Biểu đồ tin nhắn theo từng giờ trong ngày — xác định khung giờ nhân viên hoạt động nhiều nhất.' },
+      { heading: '🕸️ Radar', content: 'So sánh đa chiều: tin gửi, hội thoại, online, tốc độ phản hồi - trực quan hóa điểm mạnh/yếu của từng nhân viên.' },
+      { heading: '🕐 Hoạt động theo giờ', content: 'Biểu đồ tin nhắn theo từng giờ trong ngày - xác định khung giờ nhân viên hoạt động nhiều nhất.' },
       { heading: '📋 Bảng chi tiết', content: 'Bảng đầy đủ với thanh hiệu suất, hỗ trợ xuất CSV để báo cáo.' },
       { heading: '🔍 Bộ lọc', content: 'Chọn từng nhân viên để xem chi tiết riêng hoặc "Tất cả" để so sánh toàn team. Kết hợp với bộ lọc thời gian ở header.' },
     ],
@@ -673,9 +673,9 @@ function OverviewTab({ loading, overview, todayTrend, friendReqs, workflowData, 
         <KPICard icon="🤝" label="Lời mời KB" value={friendReqs.totalReceived + friendReqs.totalSent}
           sub={`${friendReqs.totalSent} gửi · ${friendReqs.totalReceived} nhận`} color="yellow" />
         <KPICard icon="⚡" label="Workflow chạy" value={workflowData?.totalRuns ?? 0}
-          sub={workflowData ? `${workflowData.successRate}% thành công` : '—'} color="orange" />
+          sub={workflowData ? `${workflowData.successRate}% thành công` : '-'} color="orange" />
         <KPICard icon="🤖" label="AI requests" value={aiData?.totalRequests ?? 0}
-          sub={aiData ? `${aiData.totalTokens.toLocaleString('vi-VN')} tokens` : '—'} color="purple" />
+          sub={aiData ? `${aiData.totalTokens.toLocaleString('vi-VN')} tokens` : '-'} color="purple" />
       </div>
 
 
@@ -1052,7 +1052,7 @@ function ContactsTab({ loading, overview, segmentation, pieData, tagPieData, con
         </div>
       )}
 
-      {/* Contact growth chart — right after KPI */}
+      {/* Contact growth chart - right after KPI */}
       {contactGrowth.length > 0 && (
         <Section title="📈 Tăng trưởng liên hệ">
           <div className="h-52">
@@ -1144,7 +1144,7 @@ function LabelsTab({ loading, labelUsage, periodDays }: {
       <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 rounded-xl px-4 py-2.5">
         <span className="text-base">🏷️</span>
         <p className="text-xs text-purple-300">
-          <strong>Chỉ thống kê nhãn local</strong> — Nhãn do bạn tự tạo và gắn cho hội thoại trong ứng dụng. Không bao gồm nhãn từ Zalo.
+          <strong>Chỉ thống kê nhãn local</strong> - Nhãn do bạn tự tạo và gắn cho hội thoại trong ứng dụng. Không bao gồm nhãn từ Zalo.
         </p>
       </div>
 
@@ -1553,7 +1553,7 @@ function AITab({ loading, aiData, aiModelPie }: {
                     <td className="py-2 px-2 text-right text-gray-300">{m.requests.toLocaleString('vi-VN')}</td>
                     <td className="py-2 px-2 text-right text-blue-400">{m.tokens.toLocaleString('vi-VN')}</td>
                     <td className="py-2 px-2 text-right text-gray-400">
-                      {m.requests > 0 ? Math.round(m.tokens / m.requests).toLocaleString('vi-VN') : '—'}
+                      {m.requests > 0 ? Math.round(m.tokens / m.requests).toLocaleString('vi-VN') : '-'}
                     </td>
                   </tr>
                 ))}

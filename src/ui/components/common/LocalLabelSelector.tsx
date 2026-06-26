@@ -56,7 +56,7 @@ export default function LocalLabelSelector({
 
   return (
     <div ref={ref} className="relative">
-      {/* Trigger box — shows selected badges */}
+      {/* Trigger box - shows selected badges */}
       <div
         onClick={() => setOpen(v => !v)}
         className="min-h-[32px] flex flex-wrap gap-1 items-center bg-gray-700 border border-gray-600 rounded-lg px-2 py-1 cursor-pointer hover:border-blue-500 transition-colors"

@@ -101,9 +101,9 @@ function buildEmployeeMetaMap(employees: any[], profiles: any[], departments: an
       name: employee?.display_name || (employeeId === 'boss' ? 'Boss' : employeeId),
       username: employee?.username || '',
       departmentId,
-      departmentName: departmentId ? (departments.find((item: any) => item.id === departmentId)?.name || '—') : 'Chưa gán phòng ban',
+      departmentName: departmentId ? (departments.find((item: any) => item.id === departmentId)?.name || '-') : 'Chưa gán phòng ban',
       positionId,
-      positionName: positionId ? (positions.find((item: any) => item.id === positionId)?.name || '—') : 'Chưa gán chức vụ',
+      positionName: positionId ? (positions.find((item: any) => item.id === positionId)?.name || '-') : 'Chưa gán chức vụ',
       role: getResolvedProfileRole(employee, profile),
     });
   }
@@ -129,7 +129,7 @@ function matchEmployeeMeta(
 }
 
 function formatDateCell(ts?: number | null) {
-  if (!ts) return '—';
+  if (!ts) return '-';
   return new Date(ts).toLocaleDateString('vi-VN');
 }
 
@@ -150,7 +150,7 @@ function getResolvedProfileRole(employee: any, profile: any) {
 }
 
 /**
- * HRM page — tabs: Departments · Employees · Attendance · Leave
+ * HRM page - tabs: Departments · Employees · Attendance · Leave
  */
 export default function HrmPage() {
   const [tab, setTab] = useState<'departments' | 'positions' | 'employees' | 'attendance' | 'leave'>('employees');
@@ -207,10 +207,10 @@ function EmployeesTab() {
   const getEmpName = (id: string) =>
     id === 'boss'
       ? 'Boss'
-      : employees.find((e: any) => e.employee_id === id)?.display_name || id || '—';
+      : employees.find((e: any) => e.employee_id === id)?.display_name || id || '-';
 
   const getDeptName = (id: number | null | undefined) =>
-    id ? (departments.find(d => d.id === id)?.name || '—') : '—';
+    id ? (departments.find(d => d.id === id)?.name || '-') : '-';
 
   const rows = useMemo(() => {
     const byId = new Map<string, any>();
@@ -243,7 +243,7 @@ function EmployeesTab() {
           return {
             id: employee?.employee_id || profile?.employee_id,
             departmentId: profile?.department_id ?? 'unassigned',
-            departmentName: deptName === '—' ? 'Chưa gán phòng ban' : deptName,
+            departmentName: deptName === '-' ? 'Chưa gán phòng ban' : deptName,
             name: employee?.display_name || getEmpName(profile?.employee_id),
             username: employee?.username || '',
             positionName: positions.find(x => x.id === profile?.position_id)?.name || 'Chưa gán chức vụ',
@@ -370,8 +370,8 @@ function EmployeesTab() {
                   </div>
                 </td>
                 <td className="px-3 py-2">{getDeptName(profile?.department_id)}</td>
-                <td className="px-3 py-2">{positions.find(x => x.id === profile?.position_id)?.name || '—'}</td>
-                <td className="px-3 py-2">{profile?.phone || '—'}</td>
+                <td className="px-3 py-2">{positions.find(x => x.id === profile?.position_id)?.name || '-'}</td>
+                <td className="px-3 py-2">{profile?.phone || '-'}</td>
                 <td className="px-3 py-2">
                   {(() => {
                     const resolvedRole = getResolvedProfileRole(employee, profile);
@@ -567,13 +567,13 @@ function EmployeeEditorModal({ employee, profile, departments, positions, canMan
             <div className="text-[11px] uppercase tracking-wider text-gray-500">Hồ sơ ERP</div>
             <Field label="Phòng ban">
               <select value={profileForm.department_id ?? ''} onChange={e => setProfileForm({ ...profileForm, department_id: e.target.value ? Number(e.target.value) : null })} className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-white">
-                <option value="">— không —</option>
+                <option value="">- không -</option>
                 {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
             </Field>
             <Field label="Chức vụ">
               <select value={profileForm.position_id ?? ''} onChange={e => setProfileForm({ ...profileForm, position_id: e.target.value ? Number(e.target.value) : null })} className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1.5 text-white">
-                <option value="">— không —</option>
+                <option value="">- không -</option>
                 {positions.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </Field>
@@ -1072,7 +1072,7 @@ function AttendanceTab() {
           </thead>
           <tbody className="divide-y divide-gray-700/50">
             {filteredAttendanceList.map(a => {
-              const hrs = a.check_in_at && a.check_out_at ? ((a.check_out_at - a.check_in_at) / 3600000).toFixed(1) : '—';
+              const hrs = a.check_in_at && a.check_out_at ? ((a.check_out_at - a.check_in_at) / 3600000).toFixed(1) : '-';
               const meta = employeeMeta.get(a.employee_id);
               return (
                 <tr key={a.id} className="text-gray-200">
@@ -1083,8 +1083,8 @@ function AttendanceTab() {
                     </td>
                   )}
                   <td className="px-3 py-2">{a.date}</td>
-                  <td className="px-3 py-2">{a.check_in_at ? new Date(a.check_in_at).toLocaleTimeString() : '—'}</td>
-                  <td className="px-3 py-2">{a.check_out_at ? new Date(a.check_out_at).toLocaleTimeString() : '—'}</td>
+                  <td className="px-3 py-2">{a.check_in_at ? new Date(a.check_in_at).toLocaleTimeString() : '-'}</td>
+                  <td className="px-3 py-2">{a.check_out_at ? new Date(a.check_out_at).toLocaleTimeString() : '-'}</td>
                   <td className="px-3 py-2">{hrs}</td>
                 </tr>
               );

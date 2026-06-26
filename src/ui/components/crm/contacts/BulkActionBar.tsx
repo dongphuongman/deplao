@@ -98,7 +98,7 @@ export default function BulkActionBar({
               </button>
             )}
 
-            {/* Rời nhóm — chỉ hiện khi có nhóm được chọn */}
+            {/* Rời nhóm - chỉ hiện khi có nhóm được chọn */}
             {hasGroupSelected && onBulkLeaveGroup && (
               <>
                 <div className="my-1 h-px bg-gray-700 mx-3" />

@@ -106,7 +106,7 @@ export const IntegrationRegistry = {
   initialize(): void {
     this.loadAdapters();
     this.startWebhookServer();
-    Logger.log(`[IntegrationRegistry] Initialized — ${adapterInstances.size} adapters loaded`);
+    Logger.log(`[IntegrationRegistry] Initialized - ${adapterInstances.size} adapters loaded`);
   },
 
   loadAdapters(): void {
@@ -283,7 +283,7 @@ export const IntegrationRegistry = {
           const signature = req.headers['x-signature'] as string || req.headers['x-webhook-signature'] as string || '';
           const payload = body ? JSON.parse(body) : {};
 
-          Logger.log(`[WebhookServer] POST ${url} — signature: ${signature ? 'yes' : 'no'}`);
+          Logger.log(`[WebhookServer] POST ${url} - signature: ${signature ? 'yes' : 'no'}`);
 
           // Route by path: /webhook/{integrationId} or /webhook/{type}
           const parts = url.split('/').filter(Boolean);
@@ -336,7 +336,7 @@ export const IntegrationRegistry = {
 
     webhookServer.on('error', (err: any) => {
       if (err.code === 'EADDRINUSE') {
-        Logger.warn(`[WebhookServer] Port ${webhookPort} in use — trying ${webhookPort + 1}`);
+        Logger.warn(`[WebhookServer] Port ${webhookPort} in use - trying ${webhookPort + 1}`);
         webhookPort += 1;
         webhookServer?.close();
         webhookServer = null;

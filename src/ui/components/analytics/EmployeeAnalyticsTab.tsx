@@ -70,7 +70,7 @@ function Section({ title, children, className = '' }: { title: string; children:
 }
 
 function formatResponseTime(ms: number): string {
-  if (!ms || ms <= 0) return '—';
+  if (!ms || ms <= 0) return '-';
   if (ms < 60_000) return `${Math.round(ms / 1000)}s`;
   if (ms < 3600_000) return `${(ms / 60_000).toFixed(1)}m`;
   return `${(ms / 3600_000).toFixed(1)}h`;
@@ -315,7 +315,7 @@ export default function EmployeeAnalyticsTab({ sinceTs, untilTs, periodDays }: P
       s.display_name, s.role, s.messages_sent,
       formatResponseTime(s.avg_response_time_ms), s.conversations_handled, s.total_online_hours,
     ]);
-    rows.push(['TỔNG', '', totals.messages_sent, '—', totals.conversations, totals.online_hours]);
+    rows.push(['TỔNG', '', totals.messages_sent, '-', totals.conversations, totals.online_hours]);
     const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -699,7 +699,7 @@ export default function EmployeeAnalyticsTab({ sinceTs, untilTs, periodDays }: P
 
       {/* ── Row 4: Response distribution + Hourly activity ────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <Section title={`📊 Phân bổ thời gian phản hồi${!isAll ? ` — ${filterLabel}` : ''}`}>
+        <Section title={`📊 Phân bổ thời gian phản hồi${!isAll ? ` - ${filterLabel}` : ''}`}>
           {responseDistChart.every(r => r.count === 0) ? (
             <p className="text-xs text-gray-500 text-center py-8">Chưa có dữ liệu</p>
           ) : (
@@ -730,7 +730,7 @@ export default function EmployeeAnalyticsTab({ sinceTs, untilTs, periodDays }: P
           )}
         </Section>
 
-        <Section title={`🕐 Hoạt động theo giờ${!isAll ? ` — ${filterLabel}` : ''}`}>
+        <Section title={`🕐 Hoạt động theo giờ${!isAll ? ` - ${filterLabel}` : ''}`}>
           {hourlyChart.every(r => r.count === 0) ? (
             <p className="text-xs text-gray-500 text-center py-8">Chưa có dữ liệu</p>
           ) : (

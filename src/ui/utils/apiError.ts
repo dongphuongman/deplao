@@ -1,5 +1,5 @@
 /**
- * apiError.ts — Shared API error handling utility
+ * apiError.ts - Shared API error handling utility
  *
  * Dùng chung cho toàn bộ hệ thống để:
  * 1. Extract thông báo lỗi từ IPC response (success: false, error, errorCode, message...)

@@ -3,7 +3,7 @@ import ipc from '@/lib/ipc';
 import { useAppStore } from '@/store/appStore';
 import { useWorkspaceStore } from '@/store/workspaceStore';
 
-/** Build normalized Boss URL — handles both IP:Port and full tunnel URL */
+/** Build normalized Boss URL - handles both IP:Port and full tunnel URL */
 function buildBossUrl(address: string, port: string): string {
     if (!address) return '';
     if (address.startsWith('http://') || address.startsWith('https://')) {

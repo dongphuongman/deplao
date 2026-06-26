@@ -34,7 +34,7 @@ export default function MediaViewer({ src, images, initialIndex = 0, alt = 'ản
   }, [images, src, alt]);
 
   // Primary state: track the currently shown image by its display URL.
-  // This survives imageList reshuffling (async full gallery load) with zero visual artifacts —
+  // This survives imageList reshuffling (async full gallery load) with zero visual artifacts -
   // when the list grows, currentSrc stays the same and currentIndex just recomputes.
   const [currentSrc, setCurrentSrc] = useState<string>(() => {
     const idx = Math.min(Math.max(0, initialIndex), Math.max(0, imageList.length - 1));
@@ -62,10 +62,10 @@ export default function MediaViewer({ src, images, initialIndex = 0, alt = 'ản
   const hasDragged = useRef(false);
   // Guard auto-repair: only attempt once per image to avoid infinite loops
   const repairAttemptedRef = useRef(false);
-  // Skip resetTransform on the very first render — centerOnInit handles it.
+  // Skip resetTransform on the very first render - centerOnInit handles it.
   // Calling resetTransform(0) on mount fights against centerOnInit and causes a visible jump.
   const isMountedRef = useRef(false);
-  // Guard thumbnail scroll — only scroll when a genuinely different image becomes active,
+  // Guard thumbnail scroll - only scroll when a genuinely different image becomes active,
   // not when the same image just shifts to a new index because the full list loaded.
   const lastScrolledSrcRef = useRef('');
 
@@ -93,7 +93,7 @@ export default function MediaViewer({ src, images, initialIndex = 0, alt = 'ản
       setMainImageError(true);
       return;
     }
-    setIsImageLoading(false); // Reset — don't show spinner immediately
+    setIsImageLoading(false); // Reset - don't show spinner immediately
     setMainImageError(false);
     repairAttemptedRef.current = false; // Allow repair attempt for new image
 
@@ -104,7 +104,7 @@ export default function MediaViewer({ src, images, initialIndex = 0, alt = 'ản
       if (cancelled) return;
       const img = imgRef.current;
       if (img && img.complete && img.naturalWidth > 0) {
-        // Already loaded — nothing to do
+        // Already loaded - nothing to do
         return;
       }
       // Image is not yet loaded → show spinner after a 80 ms grace period
@@ -116,7 +116,7 @@ export default function MediaViewer({ src, images, initialIndex = 0, alt = 'ản
         setIsImageLoading(true);
       }, 80);
 
-      // Absolute safety timeout — never spin longer than 15 seconds.
+      // Absolute safety timeout - never spin longer than 15 seconds.
       const safetyTimer = setTimeout(() => {
         if (cancelled) return;
         setIsImageLoading(prev => {
@@ -156,7 +156,7 @@ export default function MediaViewer({ src, images, initialIndex = 0, alt = 'ản
 
   // Reset zoom+pan when switching to a DIFFERENT image.
   // Use displaySrc (not currentIndex) as dep: when the full DB list loads, the index shifts
-  // for the same image — displaySrc stays the same → no reset → no flash.
+  // for the same image - displaySrc stays the same → no reset → no flash.
   // Only actually reset when the user navigates to a genuinely different image.
   useEffect(() => {
     if (!isMountedRef.current) {
@@ -173,7 +173,7 @@ export default function MediaViewer({ src, images, initialIndex = 0, alt = 'ản
   // Scroll thumbnail into view only when a genuinely different image becomes active.
   // Do NOT scroll when the same image just shifts to a new index (full list loaded from DB).
   useEffect(() => {
-    if (lastScrolledSrcRef.current === displaySrc) return; // Same image — suppress scroll
+    if (lastScrolledSrcRef.current === displaySrc) return; // Same image - suppress scroll
     lastScrolledSrcRef.current = displaySrc;
     if (!thumbsRef.current) return;
     const thumb = thumbsRef.current.children[currentIndex] as HTMLElement;

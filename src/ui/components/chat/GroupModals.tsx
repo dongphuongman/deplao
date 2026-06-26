@@ -99,7 +99,7 @@ function useFriends() {
   return { friends, loading, refreshing, refresh };
 }
 
-// ─── LabelTabsFilter — 2 tabs Local/Zalo, chọn nhiều ────────────────────────
+// ─── LabelTabsFilter - 2 tabs Local/Zalo, chọn nhiều ────────────────────────
 function LabelTabsFilter({
   zaloLabels,
   localLabels,
@@ -233,7 +233,7 @@ export function CreateGroupModal({ onClose, onCreated, preSelected }: {
 
   const [groupName, setGroupName] = useState('');
   const [search, setSearch] = useState('');
-  // selectedLabelKeys: Set of "z:ID" or "l:ID" — cho chọn nhiều
+  // selectedLabelKeys: Set of "z:ID" or "l:ID" - cho chọn nhiều
   const [selectedLabelKeys, setSelectedLabelKeys] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<Set<string>>(new Set(preSelected || []));
   const [creating, setCreating] = useState(false);
@@ -391,7 +391,7 @@ export function CreateGroupModal({ onClose, onCreated, preSelected }: {
           </div>
         </div>
 
-        {/* Label filter — 2 tabs: Local (default) / Zalo, chọn nhiều */}
+        {/* Label filter - 2 tabs: Local (default) / Zalo, chọn nhiều */}
         {hasAnyLabels && (
           <div className="border-b border-gray-700 flex-shrink-0">
             <LabelTabsFilter
@@ -705,7 +705,7 @@ export function SendCardModal({ threadId, threadType, onClose }: {
           </div>
         </div>
 
-        {/* Label filter — Local/Zalo like CreateGroupModal */}
+        {/* Label filter - Local/Zalo like CreateGroupModal */}
         {hasAnyLabels && (
           <div className="border-b border-gray-700 flex-shrink-0">
             <LabelTabsFilter
@@ -961,7 +961,7 @@ function PersonRow({ id, name, avatar, selected, onToggle, isGroup, subtitle }: 
 }
 
 
-// ─── LabelSelectFilter — dropdown filter by label ────────────────────────────
+// ─── LabelSelectFilter - dropdown filter by label ────────────────────────────
 function LabelSelectFilter({ zaloLabels, localLabels, value, onChange }: {
   zaloLabels: LabelData[];
   localLabels: { id: number; name: string; color: string; emoji: string }[];

@@ -29,7 +29,7 @@ interface LocalLabel {
   shortcut?: string;
 }
 
-/** Contact card suggestion state — dùng khi detect SĐT 0xx trong input */
+/** Contact card suggestion state - dùng khi detect SĐT 0xx trong input */
 interface ContactCardSuggestion {
   userId: string;
   displayName: string;
@@ -125,7 +125,7 @@ export default function MessageInput() {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showCreateNote, setShowCreateNote] = useState(false);
   const [showFormatBar, setShowFormatBar] = useState(false);
-  // Format ranges: mỗi entry = { start, len, st } — theo chuẩn zca-js Style[]
+  // Format ranges: mỗi entry = { start, len, st } - theo chuẩn zca-js Style[]
   const [fmtRanges, setFmtRanges] = useState<Array<{ start: number; len: number; st: string }>>([]);
   // Active fmts tại cursor (để highlight toolbar buttons)
   const [activeFmts, setActiveFmts] = useState<Set<string>>(new Set());
@@ -293,7 +293,7 @@ export default function MessageInput() {
       if (!assistantId) { setAiSuggestionsLoading(false); return; }
       // Get context message count from assistant
       const contextCount = accRes?.assistant?.contextMessageCount || 30;
-      // Get recent messages — include image context
+      // Get recent messages - include image context
       const key = `${activeAccountId}_${activeThreadId}`;
       const msgs = useChatStore.getState().messages[key] || [];
       const recent = msgs.slice(-contextCount).map((m: any) => {
@@ -667,7 +667,7 @@ export default function MessageInput() {
 
   // Debounced lookup when text contains phone number
   useEffect(() => {
-    // Skip for Facebook channel — only Zalo supports business cards
+    // Skip for Facebook channel - only Zalo supports business cards
     if (activeContact?.channel === 'facebook') return;
 
     if (contactCardTimerRef.current) clearTimeout(contactCardTimerRef.current);
@@ -685,7 +685,7 @@ export default function MessageInput() {
       return;
     }
 
-    // New phone detected — debounce 800ms before lookup
+    // New phone detected - debounce 800ms before lookup
     lastDetectedPhoneRef.current = phone;
     setContactCardLoading(true);
 
@@ -736,7 +736,7 @@ export default function MessageInput() {
             phone,
           });
         } else {
-          // Not found — clear suggestion
+          // Not found - clear suggestion
           setContactCardSuggestion(null);
         }
       } catch {
@@ -754,7 +754,7 @@ export default function MessageInput() {
   const getAuth = () => {
     const account = getActiveAccount();
     if (!account) return null;
-    // FB accounts may not have Zalo credentials — return a placeholder so send flow continues
+    // FB accounts may not have Zalo credentials - return a placeholder so send flow continues
     if ((account.channel || 'zalo') !== 'zalo') {
       return { cookies: '', imei: '', userAgent: '' };
     }
@@ -1060,7 +1060,7 @@ export default function MessageInput() {
         }
       }
 
-      // GIỮ content dạng object nếu đã parse được — zca-js cần object để:
+      // GIỮ content dạng object nếu đã parse được - zca-js cần object để:
       //   • prepareQMSGAttach() build qmsgAttach đúng cho group (file/link/ảnh)
       //   • qmsg: typeof content == "string" ? content : prepareQMSG(content)
       // KHÔNG normalize chat.recommended → share.link: getClientMessageType() không có case
@@ -1232,7 +1232,7 @@ export default function MessageInput() {
 
   /**
    * Áp dụng định dạng lên vùng text đang chọn.
-   * Nếu không có selection, toggle active state (áp dụng khi gõ tiếp — chưa hỗ trợ).
+   * Nếu không có selection, toggle active state (áp dụng khi gõ tiếp - chưa hỗ trợ).
    * Nếu có selection: toggle range trong fmtRanges.
    */
   const applyFormat = (style: string) => {
@@ -1586,7 +1586,7 @@ export default function MessageInput() {
     if (!auth) return;
     const quotePayload = buildQuotePayload(replyTo);
 
-    // Clear editor — delay 1 tick to let IME compositionend finalize on macOS
+    // Clear editor - delay 1 tick to let IME compositionend finalize on macOS
     const doClear = () => {
       if (el) { el.innerHTML = ''; }
       setText('');
@@ -1833,7 +1833,7 @@ export default function MessageInput() {
           filePaths: result.filePaths,
           typeChat: activeThreadType === 0 ? 'user' : null,
         });
-        // Remove batch temp — MQTT echo will add the real message
+        // Remove batch temp - MQTT echo will add the real message
         removeMessage(activeAccountId!, activeThreadId, batchTempId);
         if (!batchRes?.success) {
           showNotification(batchRes?.error || 'Gửi ảnh Facebook thất bại', 'error');
@@ -2003,7 +2003,7 @@ export default function MessageInput() {
   }, []);
 
   const cancelRecording = useCallback(() => {
-    // ⚡ Set flag TRƯỚC khi stop — onstop sẽ check flag này để bỏ qua gửi
+    // ⚡ Set flag TRƯỚC khi stop - onstop sẽ check flag này để bỏ qua gửi
     recordingCancelledRef.current = true;
     recordingChunksRef.current = [];
     // Dừng mic tracks ngay để ondataavailable không thêm data mới
@@ -2712,7 +2712,7 @@ export default function MessageInput() {
         </div>
       )}
 
-      {/* Local label row — Pancake-style horizontal pills */}
+      {/* Local label row - Pancake-style horizontal pills */}
       {showLocalLabels && localLabels.length > 0 && (
         <div className="flex items-start gap-1.5 px-3 py-2 border-b border-gray-700/50 transition-all">
           <div ref={labelRowRef} className="flex flex-wrap gap-1.5 flex-1 min-w-0 transition-all" style={{ maxHeight: localLabelExpanded ? 'none' : 56, overflow: localLabelExpanded ? 'visible' : 'hidden',}}>
@@ -2737,7 +2737,7 @@ export default function MessageInput() {
                   borderColor: `${label.color || '#3b82f6'}80`,
                   opacity: 0.75,
                 }}
-                title={active ? `✓ ${label.name} — nhấn để gỡ` : `Gắn nhãn "${label.name}"`}
+                title={active ? `✓ ${label.name} - nhấn để gỡ` : `Gắn nhãn "${label.name}"`}
               >
                 {label.emoji ? (
                   <span className="text-xs leading-none">{label.emoji}</span>
@@ -2778,7 +2778,7 @@ export default function MessageInput() {
       )}
 
 
-      {/* ── Inline sticker suggestions (Zalo-style) — above toolbar ── */}
+      {/* ── Inline sticker suggestions (Zalo-style) - above toolbar ── */}
       {inlineStickerSuggestions.length > 0 && (
         <div
           className="inline-sticker-bar flex items-center gap-1.5 px-2 py-1.5 border-b border-gray-700/50 overflow-x-auto"
@@ -2797,7 +2797,7 @@ export default function MessageInput() {
               key={s.id}
               onClick={() => handleInlineStickerSend(s)}
               className="flex-shrink-0 w-12 h-12 rounded-xl hover:bg-gray-700/80 flex items-center justify-center overflow-hidden transition-all hover:scale-110 p-0.5"
-              title={s.text || `Sticker ${s.id} — bấm để gửi`}
+              title={s.text || `Sticker ${s.id} - bấm để gửi`}
             >
               {s.stickerUrl ? (
                 <img
@@ -3128,7 +3128,7 @@ export default function MessageInput() {
           )}
         </div>
 
-        {/* Thêm tính năng — nhóm: poll/note/nhắc hẹn; user: chỉ nhắc hẹn */}
+        {/* Thêm tính năng - nhóm: poll/note/nhắc hẹn; user: chỉ nhắc hẹn */}
         <div className="relative">
           <ToolbarBtn
             ref={moreMenuBtnRef}
@@ -3167,7 +3167,7 @@ export default function MessageInput() {
 
         </div>
 
-        {/* Phím tắt — icon bàn phím, bấm để xem danh sách shortcuts */}
+        {/* Phím tắt - icon bàn phím, bấm để xem danh sách shortcuts */}
         <div className="relative ml-auto">
           <ToolbarBtn
             ref={shortcutsBtnRef}
@@ -3299,7 +3299,7 @@ export default function MessageInput() {
         />
       )}
 
-      {/* Create Poll Dialog — group only */}
+      {/* Create Poll Dialog - group only */}
       {showCreatePoll && activeThreadId && activeAccountId && (
         <CreatePollDialog
           groupId={activeThreadId}
@@ -3308,7 +3308,7 @@ export default function MessageInput() {
         />
       )}
 
-      {/* Create Note Modal — group only */}
+      {/* Create Note Modal - group only */}
       {showCreateNote && activeThreadId && (
         <NoteViewModal
           groupId={activeThreadId}
@@ -3321,7 +3321,7 @@ export default function MessageInput() {
 
       {/* ── Input row ── */}
       <div className="relative flex items-end gap-2 px-3 py-2">
-        {/* Quick message dropdown — show whenever / is typed at start */}
+        {/* Quick message dropdown - show whenever / is typed at start */}
         {showQuickDropdown && (
           <div className="absolute bottom-full left-3 right-3 mb-1 z-30">
             <QuickMessageDropdown
@@ -3334,7 +3334,7 @@ export default function MessageInput() {
           </div>
         )}
 
-        {/* @ Mention dropdown — chỉ hiện cho nhóm */}
+        {/* @ Mention dropdown - chỉ hiện cho nhóm */}
         {showMentionDropdown && filteredMentions.length > 0 && isGroupThread && (
           <div
             ref={mentionListRef}
@@ -3342,7 +3342,7 @@ export default function MessageInput() {
             style={{ maxHeight: '15rem', overflowY: 'auto' }}
           >
             <p className="text-xs text-gray-500 px-3 py-1.5 border-b border-gray-700 sticky top-0 bg-gray-800 z-10">
-              Nhắc đến thành viên{mentionSearch ? ` — "${mentionSearch}"` : ''}
+              Nhắc đến thành viên{mentionSearch ? ` - "${mentionSearch}"` : ''}
             </p>
             {filteredMentions.map((member, idx) => (
               <button
@@ -3399,7 +3399,7 @@ export default function MessageInput() {
           />
         </div>
 
-        {/* Emoji button — cạnh nút like/gửi */}
+        {/* Emoji button - cạnh nút like/gửi */}
         <div ref={emojiPickerRef} className="relative flex-shrink-0">
           <button
             onMouseDown={(e) => { e.preventDefault(); setShowEmojiPicker(v => !v); setShowStickerPicker(false); }}
@@ -3654,6 +3654,7 @@ function parseReplyContent(content: string, msgType?: string): string {
   if (msgType === 'chat.webcontent') {
     try { if (JSON.parse(content)?.action === 'zinstant.bankcard') return '🏦 [Tài khoản ngân hàng]'; } catch {}
   }
+  if (msgType === 'chat.location.new') return '📍 [Vị trí]';
 
   // Với share.file/share.link: parse content để lấy title
   if (msgType === 'share.file' || msgType === 'share.link' || msgType === 'file') {
@@ -3820,7 +3821,7 @@ function StickerPicker({
         // Step 1: Check keyword_stickers cache
         const cacheRes = await ipc.db?.getKeywordStickers?.({ keyword: kw });
         if (cacheRes?.success && cacheRes.stickerIds?.length) {
-          // Cache hit — load sticker details from stickers DB table
+          // Cache hit - load sticker details from stickers DB table
           const detailRes = await ipc.db?.getStickersByIds?.({ stickerIds: cacheRes.stickerIds.slice(0, 30) });
           if (detailRes?.success && detailRes.stickers?.length) {
             setSearchResults(detailRes.stickers);
@@ -4181,7 +4182,7 @@ function StickerPicker({
             </div>
           ) : (
             <>
-              {/* Pack list — horizontal scroll */}
+              {/* Pack list - horizontal scroll */}
               <div className="flex gap-1 px-2 py-2 overflow-x-auto flex-shrink-0 border-b border-gray-700/50"
                    onWheel={e => {
                      // Convert vertical wheel to horizontal scroll so mouse wheel works naturally

@@ -750,7 +750,7 @@ function LabelHelpModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60]" onClick={onClose}>
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 max-w-lg w-full mx-4 shadow-2xl relative" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">✕</button>
-        <h3 className="text-lg font-bold text-white mb-4">🏷️ Hướng dẫn — Quản lý nhãn</h3>
+        <h3 className="text-lg font-bold text-white mb-4">🏷️ Hướng dẫn - Quản lý nhãn</h3>
 
         {/* Comparison table */}
         <div className="grid grid-cols-2 gap-3 mb-5 text-xs">
@@ -998,7 +998,7 @@ export default function LabelSettings({ accounts, filterAccounts, searchText }: 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      {/* Sub-tabs + Actions — pill style giống trang bạn bè */}
+      {/* Sub-tabs + Actions - pill style giống trang bạn bè */}
       <div className="bg-gray-800/30 px-4 py-2 border-b border-gray-800 flex items-center gap-2">
         <div className="flex bg-gray-800 rounded-lg p-0.5 gap-0.5">
           {([
@@ -1011,7 +1011,7 @@ export default function LabelSettings({ accounts, filterAccounts, searchText }: 
             >{src.label}</button>
           ))}
         </div>
-        {/* Help button — right next to tabs */}
+        {/* Help button - right next to tabs */}
         <button onClick={() => setShowHelp(true)} title="Hướng dẫn sử dụng"
           className="p-1.5 hover:bg-gray-700 rounded-full text-gray-500 hover:text-blue-400 transition-colors">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

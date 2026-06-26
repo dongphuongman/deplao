@@ -281,7 +281,7 @@ export function chatJidFromUserId(userId: string | number): string {
 /**
  * Parse cookie string → trích cookies cần cho E2EE bridge.
  * Chỉ thực sự require: c_user + xs. Các cookie còn lại (datr, fr, sb) là optional.
- * wd, presence là ephemeral/JS-set — không bao giờ có trong saved cookie.
+ * wd, presence là ephemeral/JS-set - không bao giờ có trong saved cookie.
  */
 export function parseE2EECookies(cookieString: string): Record<string, string> {
   const all = parseCookieString(cookieString);
@@ -305,7 +305,7 @@ export function parseE2EECookies(cookieString: string): Record<string, string> {
   // Log optional missing cookies (không throw)
   const optionalMissing = E2EE_OPTIONAL_COOKIES.filter(k => !result[k]);
   if (optionalMissing.length > 0) {
-    Logger.warn(`[parseE2EECookies] Thiếu cookies optional: ${optionalMissing.join(', ')} — bridge có thể limited`);
+    Logger.warn(`[parseE2EECookies] Thiếu cookies optional: ${optionalMissing.join(', ')} - bridge có thể limited`);
   }
 
   return result;

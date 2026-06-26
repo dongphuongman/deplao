@@ -1,4 +1,4 @@
-/** Tài khoản unified — Zalo + Facebook */
+/** Tài khoản unified - Zalo + Facebook */
 export interface Account {
     id?: number;
     zalo_id: string;

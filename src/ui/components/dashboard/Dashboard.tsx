@@ -202,7 +202,7 @@ export default function Dashboard() {
         })()}
 
         <div className="ml-auto flex items-center gap-2 flex-wrap">
-          {/* Sync from boss — remote workspace only */}
+          {/* Sync from boss - remote workspace only */}
           {isRemoteWs && (
             <button
               onClick={handleSyncFromBoss}
@@ -223,7 +223,7 @@ export default function Dashboard() {
             </button>
           )}
 
-          {/* Gộp tài khoản button — available for both boss and employee (uses visible/assigned accounts) */}
+          {/* Gộp tài khoản button - available for both boss and employee (uses visible/assigned accounts) */}
           {accounts.length > 1 && (
             mergedInboxMode ? (
               <div className="relative group">
@@ -264,7 +264,7 @@ export default function Dashboard() {
                 <div className="absolute top-full right-0 mt-2 w-72 bg-gray-800 border border-gray-600/60 rounded-xl shadow-2xl p-3 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none">
                   <p className="text-xs font-semibold text-gray-200 flex items-center gap-1.5">👥 Gộp hội thoại đa tài khoản</p>
                   <p className="text-[11px] text-gray-400 mt-1.5 leading-relaxed">
-                    Xem và trả lời tin nhắn từ <span className="text-amber-400 font-medium">tất cả tài khoản</span> trong cùng một danh sách hội thoại — không cần chuyển qua lại.
+                    Xem và trả lời tin nhắn từ <span className="text-amber-400 font-medium">tất cả tài khoản</span> trong cùng một danh sách hội thoại - không cần chuyển qua lại.
                   </p>
                   <div className="border-t border-gray-700 pt-2 mt-2 space-y-1">
                     <div className="flex items-center gap-2 text-[10px] text-gray-500">
@@ -286,7 +286,7 @@ export default function Dashboard() {
             )
           )}
 
-          {/* Thêm workspace — always visible */}
+          {/* Thêm workspace - always visible */}
           <div className="relative group">
             <button
               onClick={() => {
@@ -317,11 +317,11 @@ export default function Dashboard() {
               <div className="border-t border-gray-700 pt-2 mt-2 space-y-1.5">
                 <div className="flex items-center gap-2 text-[10px] text-gray-500">
                   <span className="w-4 h-4 rounded bg-purple-900/40 flex items-center justify-center text-purple-400">🏠</span>
-                  <span><span className="text-gray-300">Boss (Local)</span> — Quản lý trực tiếp, lưu DB trên máy</span>
+                  <span><span className="text-gray-300">Boss (Local)</span> - Quản lý trực tiếp, lưu DB trên máy</span>
                 </div>
                 <div className="flex items-center gap-2 text-[10px] text-gray-500">
                   <span className="w-4 h-4 rounded bg-blue-900/40 flex items-center justify-center text-blue-400">👤</span>
-                  <span><span className="text-gray-300">Nhân viên (Remote)</span> — Kết nối tới máy Boss từ xa</span>
+                  <span><span className="text-gray-300">Nhân viên (Remote)</span> - Kết nối tới máy Boss từ xa</span>
                 </div>
               </div>
               {/* Arrow */}
@@ -329,7 +329,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Nút hỗ trợ — always visible */}
+          {/* Nút hỗ trợ - always visible */}
           <div className="relative group">
             <button
                 onClick={() => ipc.shell?.openExternal(SUPPORT_GITHUB_URL)}
@@ -343,7 +343,7 @@ export default function Dashboard() {
             <div className="absolute top-full right-0 mt-2 w-[300px] bg-gray-800 border border-gray-600/60 rounded-xl shadow-2xl p-3.5 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none">
               <p className="text-xs font-semibold text-gray-200 flex items-center gap-1.5">🐛 Báo lỗi & Đóng góp</p>
               <p className="text-[11px] text-gray-400 mt-1.5 leading-relaxed">
-                Gặp lỗi hoặc có góp ý? Hãy gửi trên GitHub — chúng tôi sẽ xử lý nhanh nhất có thể.
+                Gặp lỗi hoặc có góp ý? Hãy gửi trên GitHub - chúng tôi sẽ xử lý nhanh nhất có thể.
               </p>
               <div className="border-t border-gray-700 pt-2 mt-2.5 space-y-1.5">
                 <p className="text-[10px] text-amber-400 font-medium mb-1">💡 Mẹo để được hỗ trợ nhanh:</p>

@@ -1,5 +1,5 @@
 /**
- * ERP RBAC — shared between main process (IPC middleware + services)
+ * ERP RBAC - shared between main process (IPC middleware + services)
  * and renderer (UI hooks). Source of truth for permission matrix.
  *
  * NOTE: `src/models/erp/Permission.ts` re-exports from here to avoid

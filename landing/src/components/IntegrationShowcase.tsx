@@ -118,7 +118,7 @@ const integrationTabs: IntegrationTab[] = [
       {
         icon: '📬', name: 'GHTK',
         color: 'bg-teal-50 border-teal-200 text-teal-700', dot: 'bg-teal-500',
-        desc: 'Giao hàng tiết kiệm — mạng lưới toàn quốc',
+        desc: 'Giao hàng tiết kiệm - mạng lưới toàn quốc',
         features: ['Tạo vận đơn tự động', 'Tra cứu trạng thái', 'Webhook trạng thái đơn', 'Tính phí vận chuyển'],
       },
     ],
@@ -134,14 +134,14 @@ const integrationTabs: IntegrationTab[] = [
       {
         icon: '💰', name: 'Casso',
         color: 'bg-blue-50 border-blue-200 text-blue-700', dot: 'bg-blue-500',
-        desc: 'Đối chiếu ngân hàng tự động — kết nối đa ngân hàng',
+        desc: 'Đối chiếu ngân hàng tự động - kết nối đa ngân hàng',
         features: ['Webhook khi nhận tiền', 'Xác minh thanh toán realtime', 'Lịch sử giao dịch', 'Filter theo mô tả/số tiền'],
         featuredInAll: true,
       },
       {
         icon: '💳', name: 'SePay (VietQR)',
         color: 'bg-purple-50 border-purple-200 text-purple-700', dot: 'bg-purple-500',
-        desc: 'Thanh toán QR Code — chuẩn VietQR quốc gia',
+        desc: 'Thanh toán QR Code - chuẩn VietQR quốc gia',
         features: ['Tạo QR thanh toán động', 'Webhook xác nhận tức thì', 'Xác minh giao dịch', 'Tích hợp đa ngân hàng'],
       },
     ],
@@ -204,14 +204,14 @@ const integrationTemplates = [
     steps: ['Upload file kiến thức', 'AI xử lý & học', 'Khách hỏi', 'AI trả lời chính xác'],
   },
   {
-    icon: '🔄', title: 'Đa trợ lý — mỗi tài khoản AI khác nhau',
+    icon: '🔄', title: 'Đa trợ lý - mỗi tài khoản AI khác nhau',
     desc: 'Tạo nhiều  AI Assistant với prompt/model khác nhau. Gán riêng cho từng tài khoản Zalo: shop A dùng OpenAI, shop B dùng Gemini.',
     category: 'ai', difficulty: 'medium' as const, featured: false,
     platforms: ['Đa nền tảng AI'],
     steps: ['Tạo trợ lý A, B', 'Gán cho tài khoản', 'Khách nhắn', 'Đúng AI xử lý'],
   },
   {
-    icon: '❓', title: 'AI FAQ Bot — Trả lời câu hỏi thường gặp',
+    icon: '❓', title: 'AI FAQ Bot - Trả lời câu hỏi thường gặp',
     desc: 'Cung cấp bộ FAQ trong prompt hoặc nạp file kiến thức, AI tự trả lời chính xác dựa trên thông tin bạn cung cấp.',
     category: 'ai', difficulty: 'easy' as const, featured: false,
     platforms: ['OpenAI / Gemini / DeepSeek / Grok'],
@@ -219,7 +219,7 @@ const integrationTemplates = [
   },
   {
     icon: '📑', title: 'AI tóm tắt cuộc hội thoại',
-    desc: 'Lấy 20 tin nhắn gần nhất, dùng AI tóm tắt nội dung chính, yêu cầu và action items — tiết kiệm thời gian đọc lại.',
+    desc: 'Lấy 20 tin nhắn gần nhất, dùng AI tóm tắt nội dung chính, yêu cầu và action items - tiết kiệm thời gian đọc lại.',
     category: 'ai', difficulty: 'medium' as const, featured: false,
     platforms: ['OpenAI / Gemini'],
     steps: ['Chạy thủ công', 'Lấy 20 tin nhắn', 'AI tóm tắt', 'Ghi log kết quả'],
@@ -476,7 +476,7 @@ export default function IntegrationShowcase() {
                 <div className="space-y-2">
                   {[
                     { icon: '🔍', label: 'Tra cứu nhanh ngay trong hội thoại' },
-                    { icon: '✏️', label: 'Tạo đơn 3 bước — không cần mở app' },
+                    { icon: '✏️', label: 'Tạo đơn 3 bước - không cần mở app' },
                     { icon: '📌', label: 'Ghim tính năng hay dùng ra toolbar' },
                     { icon: '🖼️', label: 'Kết quả có ảnh sản phẩm, tồn kho' },
                   ].map(item => (
@@ -512,7 +512,7 @@ export default function IntegrationShowcase() {
                 <h4 className="text-slate-950 font-bold text-sm mb-2">Kết nối Webhook</h4>
                 <div className="space-y-2">
                   {[
-                    { icon: '🖥️', label: 'HTTP server nhúng sẵn — port 9888' },
+                    { icon: '🖥️', label: 'HTTP server nhúng sẵn - port 9888' },
                     { icon: '🌐', label: 'Built-in localtunnel, không cần cài thêm' },
                     { icon: '⚡', label: 'Trigger workflow tức thì khi nhận tiền' },
                   ].map(item => (
@@ -552,7 +552,7 @@ export default function IntegrationShowcase() {
               <span className="gradient-text">có sẵn</span>
             </h3>
             <p className="text-slate-600 text-sm max-w-xl mx-auto">
-              Các kịch bản kết nối đã được dựng sẵn — chọn, tuỳ chỉnh và cài đặt chỉ 1 click.
+              Các kịch bản kết nối đã được dựng sẵn - chọn, tuỳ chỉnh và cài đặt chỉ 1 click.
             </p>
           </div>
 

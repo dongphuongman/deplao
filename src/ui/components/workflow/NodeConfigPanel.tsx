@@ -2,13 +2,109 @@ import React, { useEffect, useRef, useState } from 'react';
 import ipc from '@/lib/ipc';
 import { useAccountStore } from '@/store/accountStore';
 import { useAppStore } from '@/store/appStore';
+
+// ─── Webhook URL field component ─────────────────────────────────────
+function WebhookUrlField({ field, config, workflowId, update }: {
+  field: any; config: any; workflowId?: string; update: (key: string, val: any) => void;
+}) {
+  const [webhookUrl, setWebhookUrl] = React.useState<string | null>(null);
+  const [webhookToken, setWebhookToken] = React.useState<string>(config.webhookToken || '');
+  const [tunnelLoading, setTunnelLoading] = React.useState(false);
+  React.useEffect(() => {
+    const token = config.webhookToken || '';
+    setWebhookToken(token);
+    if (!token || !ipc.workflow || !workflowId) { setWebhookUrl(null); return; }
+    ipc.workflow?.getWebhookUrl?.(workflowId).then(res => {
+      if (res?.success) {
+        setWebhookUrl(res.webhookUrl || null);
+      }
+    }).catch(() => {});
+  }, [config.webhookToken, workflowId]);
+  return (
+    <div className="space-y-2">
+      {webhookToken ? (
+        <div className="bg-gray-800/60 border border-gray-700/50 rounded-xl p-3">
+          <div className="text-xs text-gray-400 mb-1">{field.label}</div>
+          {webhookUrl ? (
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs bg-gray-900/80 px-2 py-1.5 rounded-lg break-all select-all">
+                {webhookUrl}
+              </code>
+              <button onClick={() => { navigator.clipboard.writeText(webhookUrl); }}
+                className="px-2 py-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 rounded-lg text-xs transition-colors" title="Copy URL">
+                📋
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="text-yellow-400 text-xs">
+                ⚠️ Tunnel Workflow chưa được bật. URL webhook sẽ không hoạt động.
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={async () => {
+                  setTunnelLoading(true);
+                  try {
+                    const res = await ipc.workflow?.startTunnel();
+                    if (res?.success && res.tunnelUrl) {
+                      setWebhookUrl(res.tunnelUrl + '/api/workflow/webhook/' + webhookToken);
+                    }
+                  } finally {
+                    setTunnelLoading(false);
+                  }
+                }} disabled={tunnelLoading}
+                  className="px-2.5 py-1.5 text-xs bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/50 disabled:cursor-wait text-white rounded-lg transition-colors flex items-center gap-1.5">
+                  {tunnelLoading ? (
+                    <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> Đang bật...</>
+                  ) : '🔌 Bật Tunnel'}
+                </button>
+                <button onClick={() => {
+                  useAppStore.getState().setView('settings');
+                  setTimeout(() => window.dispatchEvent(new CustomEvent('nav:settings', { detail: { tab: 'webhooks' } })), 100);
+                }} className="px-2.5 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors">
+                  📖 Hướng dẫn
+                </button>
+              </div>
+            </div>
+          )}
+          <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+            <span>Token: <code className="text-gray-400">{webhookToken.substring(0, 8)}...</code></span>
+            <button onClick={async () => {
+              const confirmed = await showConfirm({
+                title: 'Tạo token mới?',
+                message: 'Token mới sẽ làm URL webhook cũ không còn hoạt động. Các bên thứ 3 đang dùng URL cũ sẽ cần được cập nhật.',
+                confirmText: 'Tạo mới',
+                variant: 'warning',
+              });
+              if (!confirmed) return;
+              const res = await ipc.workflow?.regenerateWebhookToken?.(workflowId);
+              if (res?.success) {
+                setWebhookUrl(res.webhookUrl || null);
+                setWebhookToken(res.token || '');
+                update('webhookToken', res.token || '');
+              }
+            }} className="text-blue-400 hover:text-blue-300 underline" title="Tạo token mới nếu URL bị lộ">
+              🔄 Regenerate
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gray-800/60 border border-gray-700/50 rounded-xl p-3 text-yellow-400 text-xs">
+          💡 Lưu workflow để tạo URL webhook tự động.
+        </div>
+      )}
+      <p className="text-xs text-gray-500 mt-1">{field.desc}</p>
+    </div>
+  );
+}
+import { showConfirm } from '@/components/common/ConfirmDialog';
+
 import { getNodeLabel } from './workflowConfig';
 import GroupAvatar from '@/components/common/GroupAvatar';
 import TemplateVarPopup from './TemplateVarPopup';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type FieldType = 'text' | 'textarea' | 'select' | 'number' | 'boolean' | 'json' | 'multiline' | 'cron' | 'html' | 'label-picker' | 'assistant-picker' | 'contact-picker' | 'file-picker';
+type FieldType = 'text' | 'textarea' | 'select' | 'number' | 'boolean' | 'json' | 'multiline' | 'cron' | 'html' | 'info' | 'label-picker' | 'assistant-picker' | 'contact-picker' | 'file-picker';
 
 interface SelectOption { value: string; label: string }
 
@@ -18,8 +114,9 @@ interface Field {
   type: FieldType;
   options?: SelectOption[];
   placeholder?: string;
+  isWebhookUrl?: boolean;
   hint?: string;
-  /** Mô tả rõ ràng cho newbie — hiển thị bên dưới ô nhập */
+  /** Mô tả rõ ràng cho newbie - hiển thị bên dưới ô nhập */
   desc?: string;
   /** Ẩn trong mục "Nâng cao" (collapsed mặc định) */
   advanced?: boolean;
@@ -131,7 +228,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
         { value: 'contains_all', label: 'Phải chứa đủ tất cả từ khóa' },
         { value: 'equals',       label: 'Khớp chính xác nguyên câu' },
         { value: 'starts_with',  label: 'Bắt đầu bằng từ khóa' },
-        { value: 'regex',        label: '🔬 Regex — biểu thức chính quy (nâng cao)' },
+        { value: 'regex',        label: '🔬 Regex - biểu thức chính quy (nâng cao)' },
       ],
     },
     {
@@ -140,7 +237,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     },
     {
       key: 'onlyOwn', label: 'Chỉ xử lý tin mình tự gửi', type: 'boolean',
-      desc: 'Ngược lại — chỉ chạy với tin nhắn từ chính tài khoản này.',
+      desc: 'Ngược lại - chỉ chạy với tin nhắn từ chính tài khoản này.',
     },
     {
       key: 'fromId', label: 'Chỉ nhận từ người dùng cụ thể', type: 'contact-picker', contactType: 'user',
@@ -225,7 +322,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     },
     {
       key: 'labelIds', label: 'Nhãn cần lọc', type: 'label-picker', labelMode: 'multi',
-      desc: 'Để trống = kích hoạt với mọi nhãn. Có thể chọn nhiều nhãn — workflow chạy khi bất kỳ nhãn nào được gán/gỡ.',
+      desc: 'Để trống = kích hoạt với mọi nhãn. Có thể chọn nhiều nhãn - workflow chạy khi bất kỳ nhãn nào được gán/gỡ.',
     },
   ],
   'trigger.schedule': [
@@ -257,14 +354,14 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       key: 'threadIds', label: 'Gửi đến hội thoại', type: 'contact-picker', contactType: 'all',
       contactMode: 'multi',
       placeholder: '{{ $trigger.threadId }}',
-      desc: 'Chọn một hoặc nhiều hội thoại để gửi. Nếu không chọn, sẽ dùng hội thoại từ trigger.',
-      templateVars: ['$trigger.threadId'],
+      desc: 'Chọn một hoặc nhiều hội thoại để gửi. Nếu không chọn, sẽ dùng hội thoại từ trigger. Với webhook (?) dùng $trigger.body.threadId. Bình thường dùng $trigger.threadId.',
+      templateVars: ['$trigger.threadId', '$trigger.body.threadId'],
     },
     {
       key: 'threadType', label: 'Loại hội thoại', type: 'select',
       desc: 'Loại hội thoại đang gửi. Giữ "Tự động" để hệ thống tự nhận biết.',
       options: [
-        { value: '{{ $trigger.threadType }}', label: '🔄 Tự động (theo trigger — khuyến nghị)' },
+        { value: '{{ $trigger.threadType }}', label: '🔄 Tự động (theo trigger - khuyến nghị)' },
         { value: '0', label: '👤 Cá nhân' },
         { value: '1', label: '👥 Nhóm' },
       ],
@@ -287,7 +384,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       key: 'threadType', label: 'Loại hội thoại', type: 'select',
       desc: 'Cá nhân (DM) hoặc nhóm. Chọn "Tự động" để lấy từ trigger.',
       options: [
-        { value: '{{ $trigger.threadType }}', label: '🔄 Tự động (theo trigger — khuyến nghị)' },
+        { value: '{{ $trigger.threadType }}', label: '🔄 Tự động (theo trigger - khuyến nghị)' },
         { value: '0', label: '👤 Cá nhân (DM)' },
         { value: '1', label: '👥 Nhóm' },
       ],
@@ -473,7 +570,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     {
       key: 'msgId', label: 'ID tin nhắn gốc (tham khảo)', type: 'text',
       placeholder: '{{ $trigger.msgId }}',
-      desc: 'ID tin nhắn gốc — chỉ để tham chiếu, không dùng cho forward API.',
+      desc: 'ID tin nhắn gốc - chỉ để tham chiếu, không dùng cho forward API.',
       templateVars: ['$trigger.msgId'],
       advanced: true,
     },
@@ -719,7 +816,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     {
       key: 'options', label: 'Danh sách nội dung', type: 'multiline',
       placeholder: 'Xin chào bạn!\nChào mừng đến với shop!\nHi! Mình có thể giúp gì?',
-      desc: 'Mỗi dòng là một lựa chọn. Hệ thống chọn ngẫu nhiên 1 nội dung mỗi lần chạy — giúp câu trả lời không bị lặp.',
+      desc: 'Mỗi dòng là một lựa chọn. Hệ thống chọn ngẫu nhiên 1 nội dung mỗi lần chạy - giúp câu trả lời không bị lặp.',
     },
   ],
   'data.dateFormat': [
@@ -758,11 +855,11 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       key: 'method', label: 'Phương thức gửi', type: 'select',
       desc: 'Cách gửi dữ liệu. POST = gửi dữ liệu lên, GET = lấy dữ liệu về.',
       options: [
-        { value: 'POST',   label: 'POST — Gửi dữ liệu (phổ biến nhất cho webhook)' },
-        { value: 'GET',    label: 'GET — Lấy dữ liệu từ server' },
-        { value: 'PUT',    label: 'PUT — Cập nhật toàn bộ dữ liệu' },
-        { value: 'PATCH',  label: 'PATCH — Cập nhật một phần' },
-        { value: 'DELETE', label: 'DELETE — Xóa dữ liệu' },
+        { value: 'POST',   label: 'POST - Gửi dữ liệu (phổ biến nhất cho webhook)' },
+        { value: 'GET',    label: 'GET - Lấy dữ liệu từ server' },
+        { value: 'PUT',    label: 'PUT - Cập nhật toàn bộ dữ liệu' },
+        { value: 'PATCH',  label: 'PATCH - Cập nhật một phần' },
+        { value: 'DELETE', label: 'DELETE - Xóa dữ liệu' },
       ],
     },
     {
@@ -799,9 +896,9 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       key: 'level', label: 'Mức độ log', type: 'select',
       desc: 'Phân loại mức độ thông điệp.',
       options: [
-        { value: 'info',  label: 'ℹ️ Info — Thông tin bình thường' },
-        { value: 'warn',  label: '⚠️ Warn — Cảnh báo cần chú ý' },
-        { value: 'error', label: '❌ Error — Lỗi nghiêm trọng' },
+        { value: 'info',  label: 'ℹ️ Info - Thông tin bình thường' },
+        { value: 'warn',  label: '⚠️ Warn - Cảnh báo cần chú ý' },
+        { value: 'error', label: '❌ Error - Lỗi nghiêm trọng' },
       ],
     },
   ],
@@ -911,51 +1008,51 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       desc: 'Chọn model phù hợp với nền tảng đã chọn ở trên.',
       options: [
         // OpenAI
-        { value: 'gpt-5.4',          label: '🤖 GPT-5.4 — Flagship mới nhất (OpenAI)' },
-        { value: 'gpt-5.4-pro',      label: '🤖 GPT-5.4 Pro — Thông minh nhất (OpenAI)' },
-        { value: 'gpt-5.4-mini',     label: '🤖 GPT-5.4 Mini — Code, subagent (OpenAI — khuyến nghị)' },
-        { value: 'gpt-5.4-nano',     label: '🤖 GPT-5.4 Nano — Siêu rẻ (OpenAI)' },
-        { value: 'gpt-5-mini',       label: '🤖 GPT-5 Mini — Cân bằng, giá tốt (OpenAI)' },
-        { value: 'gpt-5-nano',       label: '🤖 GPT-5 Nano — Nhanh, rẻ nhất (OpenAI)' },
-        { value: 'gpt-5',            label: '🤖 GPT-5 — Lý luận mạnh (OpenAI)' },
-        { value: 'o4-mini',          label: '🤖 o4-mini — Lý luận nhanh (OpenAI)' },
-        { value: 'o3',               label: '🤖 o3 — Lý luận mạnh (OpenAI)' },
-        { value: 'gpt-4.1',          label: '🤖 GPT-4.1 — Legacy non-reasoning (OpenAI)' },
+        { value: 'gpt-5.4',          label: '🤖 GPT-5.4 - Flagship mới nhất (OpenAI)' },
+        { value: 'gpt-5.4-pro',      label: '🤖 GPT-5.4 Pro - Thông minh nhất (OpenAI)' },
+        { value: 'gpt-5.4-mini',     label: '🤖 GPT-5.4 Mini - Code, subagent (OpenAI - khuyến nghị)' },
+        { value: 'gpt-5.4-nano',     label: '🤖 GPT-5.4 Nano - Siêu rẻ (OpenAI)' },
+        { value: 'gpt-5-mini',       label: '🤖 GPT-5 Mini - Cân bằng, giá tốt (OpenAI)' },
+        { value: 'gpt-5-nano',       label: '🤖 GPT-5 Nano - Nhanh, rẻ nhất (OpenAI)' },
+        { value: 'gpt-5',            label: '🤖 GPT-5 - Lý luận mạnh (OpenAI)' },
+        { value: 'o4-mini',          label: '🤖 o4-mini - Lý luận nhanh (OpenAI)' },
+        { value: 'o3',               label: '🤖 o3 - Lý luận mạnh (OpenAI)' },
+        { value: 'gpt-4.1',          label: '🤖 GPT-4.1 - Legacy non-reasoning (OpenAI)' },
         // Gemini
-        { value: 'gemini-3.5-flash',        label: '💎 Gemini 3.5 Flash — Mới nhất (Google — khuyến nghị)' },
-        { value: 'gemini-3.1-pro-preview',  label: '💎 Gemini 3.1 Pro Preview — Mạnh nhất (Google)' },
-        { value: 'gemini-3-flash-preview',  label: '💎 Gemini 3 Flash Preview — Nhanh (Google)' },
-        { value: 'gemini-2.5-pro',          label: '💎 Gemini 2.5 Pro — Legacy ổn định (Google)' },
+        { value: 'gemini-3.5-flash',        label: '💎 Gemini 3.5 Flash - Mới nhất (Google - khuyến nghị)' },
+        { value: 'gemini-3.1-pro-preview',  label: '💎 Gemini 3.1 Pro Preview - Mạnh nhất (Google)' },
+        { value: 'gemini-3-flash-preview',  label: '💎 Gemini 3 Flash Preview - Nhanh (Google)' },
+        { value: 'gemini-2.5-pro',          label: '💎 Gemini 2.5 Pro - Legacy ổn định (Google)' },
         // Claude (Anthropic)
-        { value: 'claude-4.6-sonnet-20260301',  label: '🟠 Claude 4.6 Sonnet — Mới nhất (Anthropic — khuyến nghị)' },
-        { value: 'claude-4.5-sonnet-20260115',  label: '🟠 Claude 4.5 Sonnet — Cân bằng (Anthropic)' },
-        { value: 'claude-4.0-haiku-20260101',   label: '🟠 Claude 4.0 Haiku — Nhanh, rẻ (Anthropic)' },
-        { value: 'claude-4.0-opus-20260101',    label: '🟠 Claude 4.0 Opus — Mạnh nhất gen 4 (Anthropic)' },
-        { value: 'claude-sonnet-4-20250514',    label: '🟠 Claude Sonnet 4 — Legacy (Anthropic)' },
+        { value: 'claude-4.6-sonnet-20260301',  label: '🟠 Claude 4.6 Sonnet - Mới nhất (Anthropic - khuyến nghị)' },
+        { value: 'claude-4.5-sonnet-20260115',  label: '🟠 Claude 4.5 Sonnet - Cân bằng (Anthropic)' },
+        { value: 'claude-4.0-haiku-20260101',   label: '🟠 Claude 4.0 Haiku - Nhanh, rẻ (Anthropic)' },
+        { value: 'claude-4.0-opus-20260101',    label: '🟠 Claude 4.0 Opus - Mạnh nhất gen 4 (Anthropic)' },
+        { value: 'claude-sonnet-4-20250514',    label: '🟠 Claude Sonnet 4 - Legacy (Anthropic)' },
         // Deepseek
-        { value: 'deepseek-v4-flash',  label: '🔮 Deepseek V4 Flash — Mới nhất (Deepseek — khuyến nghị)' },
-        { value: 'deepseek-v4-pro',    label: '🔮 Deepseek V4 Pro — Thinking, mạnh nhất (Deepseek)' },
-        { value: 'deepseek-reasoner',  label: '🔮 Deepseek R1 — Lý luận ổn định (Deepseek)' },
+        { value: 'deepseek-v4-flash',  label: '🔮 Deepseek V4 Flash - Mới nhất (Deepseek - khuyến nghị)' },
+        { value: 'deepseek-v4-pro',    label: '🔮 Deepseek V4 Pro - Thinking, mạnh nhất (Deepseek)' },
+        { value: 'deepseek-reasoner',  label: '🔮 Deepseek R1 - Lý luận ổn định (Deepseek)' },
         // Grok
-        { value: 'grok-4-fast',      label: '⚡ Grok 4 Fast — Nhanh (xAI — khuyến nghị)' },
-        { value: 'grok-4',           label: '⚡ Grok 4 — Flagship (xAI)' },
-        { value: 'grok-4-mini',      label: '⚡ Grok 4 Mini — Lý luận, rẻ (xAI)' },
-        { value: 'grok-4-mini-fast', label: '⚡ Grok 4 Mini Fast — Siêu nhanh (xAI)' },
-        { value: 'grok-3',           label: '⚡ Grok 3 — Legacy ổn định (xAI)' },
+        { value: 'grok-4-fast',      label: '⚡ Grok 4 Fast - Nhanh (xAI - khuyến nghị)' },
+        { value: 'grok-4',           label: '⚡ Grok 4 - Flagship (xAI)' },
+        { value: 'grok-4-mini',      label: '⚡ Grok 4 Mini - Lý luận, rẻ (xAI)' },
+        { value: 'grok-4-mini-fast', label: '⚡ Grok 4 Mini Fast - Siêu nhanh (xAI)' },
+        { value: 'grok-3',           label: '⚡ Grok 3 - Legacy ổn định (xAI)' },
         // Mistral
-        { value: 'mistral-large-2-latest',  label: '🌀 Mistral Large 2 — Mạnh nhất (Mistral — khuyến nghị)' },
-        { value: 'codestral-2-latest',      label: '🌀 Codestral 2 — Code chuyên dụng (Mistral)' },
-        { value: 'mistral-small-3-latest',  label: '🌀 Mistral Small 3 — Nhanh, rẻ (Mistral)' },
-        { value: 'mistral-medium-latest',   label: '🌀 Mistral Medium — Cân bằng (Mistral)' },
-        { value: 'open-mistral-nemo-2',     label: '🌀 Mistral Nemo 2 — Nhẹ (Mistral)' },
+        { value: 'mistral-large-2-latest',  label: '🌀 Mistral Large 2 - Mạnh nhất (Mistral - khuyến nghị)' },
+        { value: 'codestral-2-latest',      label: '🌀 Codestral 2 - Code chuyên dụng (Mistral)' },
+        { value: 'mistral-small-3-latest',  label: '🌀 Mistral Small 3 - Nhanh, rẻ (Mistral)' },
+        { value: 'mistral-medium-latest',   label: '🌀 Mistral Medium - Cân bằng (Mistral)' },
+        { value: 'open-mistral-nemo-2',     label: '🌀 Mistral Nemo 2 - Nhẹ (Mistral)' },
         // OpenRouter
-        { value: 'openrouter/auto',             label: '🔀 Auto Router — Tự chọn model tốt nhất (OpenRouter — khuyến nghị)' },
-        { value: 'openai/gpt-5.4-mini',         label: '🔀 GPT-5.4 Mini — OpenAI qua OpenRouter' },
-        { value: 'anthropic/claude-4.6-sonnet', label: '🔀 Claude 4.6 Sonnet — Anthropic qua OpenRouter' },
-        { value: 'google/gemini-3.5-flash',     label: '🔀 Gemini 3.5 Flash — Google qua OpenRouter' },
-        { value: 'deepseek/deepseek-v4-flash',  label: '🔀 DeepSeek V4 Flash — Rẻ, nhanh (OpenRouter)' },
-        { value: 'meta-llama/llama-4-maverick', label: '🔀 Llama 4 Maverick — Meta, open-source (OpenRouter)' },
-        { value: 'qwen/qwen3-max',              label: '🔀 Qwen3 Max — Alibaba (OpenRouter)' },
+        { value: 'openrouter/auto',             label: '🔀 Auto Router - Tự chọn model tốt nhất (OpenRouter - khuyến nghị)' },
+        { value: 'openai/gpt-5.4-mini',         label: '🔀 GPT-5.4 Mini - OpenAI qua OpenRouter' },
+        { value: 'anthropic/claude-4.6-sonnet', label: '🔀 Claude 4.6 Sonnet - Anthropic qua OpenRouter' },
+        { value: 'google/gemini-3.5-flash',     label: '🔀 Gemini 3.5 Flash - Google qua OpenRouter' },
+        { value: 'deepseek/deepseek-v4-flash',  label: '🔀 DeepSeek V4 Flash - Rẻ, nhanh (OpenRouter)' },
+        { value: 'meta-llama/llama-4-maverick', label: '🔀 Llama 4 Maverick - Meta, open-source (OpenRouter)' },
+        { value: 'qwen/qwen3-max',              label: '🔀 Qwen3 Max - Alibaba (OpenRouter)' },
         { value: 'mistralai/mistral-large-2',   label: '🔀 Mistral Large 2 (OpenRouter)' },
       ],
       optionsFilter: { key: 'platform', map: {
@@ -1062,22 +1159,22 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       key: 'model', label: 'Model AI', type: 'select',
       desc: 'Chọn model phù hợp với nền tảng đã chọn ở trên.',
       options: [
-        { value: 'gpt-5.4-mini',     label: '🤖 GPT-5.4 Mini — Code, subagent (OpenAI — khuyến nghị)' },
-        { value: 'gpt-5-mini',       label: '🤖 GPT-5 Mini — Cân bằng, giá tốt (OpenAI)' },
-        { value: 'gpt-5.4',          label: '🤖 GPT-5.4 — Flagship (OpenAI)' },
-        { value: 'gemini-3.5-flash',        label: '💎 Gemini 3.5 Flash (Google — khuyến nghị)' },
+        { value: 'gpt-5.4-mini',     label: '🤖 GPT-5.4 Mini - Code, subagent (OpenAI - khuyến nghị)' },
+        { value: 'gpt-5-mini',       label: '🤖 GPT-5 Mini - Cân bằng, giá tốt (OpenAI)' },
+        { value: 'gpt-5.4',          label: '🤖 GPT-5.4 - Flagship (OpenAI)' },
+        { value: 'gemini-3.5-flash',        label: '💎 Gemini 3.5 Flash (Google - khuyến nghị)' },
         { value: 'gemini-3.1-pro-preview',  label: '💎 Gemini 3.1 Pro Preview (Google)' },
         { value: 'gemini-3-flash-preview',  label: '💎 Gemini 3 Flash Preview (Google)' },
-        { value: 'claude-4.6-sonnet-20260301',  label: '🟠 Claude 4.6 Sonnet (Anthropic — khuyến nghị)' },
-        { value: 'claude-4.0-haiku-20260101',   label: '🟠 Claude 4.0 Haiku — Nhanh (Anthropic)' },
-        { value: 'deepseek-v4-flash',  label: '🔮 Deepseek V4 Flash (Deepseek — khuyến nghị)' },
-        { value: 'deepseek-v4-pro',    label: '🔮 Deepseek V4 Pro — Thinking (Deepseek)' },
-        { value: 'grok-4-fast',      label: '⚡ Grok 4 Fast (xAI — khuyến nghị)' },
-        { value: 'grok-4-mini-fast', label: '⚡ Grok 4 Mini Fast — Siêu nhanh (xAI)' },
-        { value: 'mistral-large-2-latest', label: '🌀 Mistral Large 2 (Mistral — khuyến nghị)' },
-        { value: 'mistral-small-3-latest', label: '🌀 Mistral Small 3 — Nhanh, rẻ (Mistral)' },
-        { value: 'openrouter/auto',            label: '🔀 Auto Router (OpenRouter — khuyến nghị)' },
-        { value: 'deepseek/deepseek-v4-flash', label: '🔀 DeepSeek V4 Flash — Rẻ, nhanh (OpenRouter)' },
+        { value: 'claude-4.6-sonnet-20260301',  label: '🟠 Claude 4.6 Sonnet (Anthropic - khuyến nghị)' },
+        { value: 'claude-4.0-haiku-20260101',   label: '🟠 Claude 4.0 Haiku - Nhanh (Anthropic)' },
+        { value: 'deepseek-v4-flash',  label: '🔮 Deepseek V4 Flash (Deepseek - khuyến nghị)' },
+        { value: 'deepseek-v4-pro',    label: '🔮 Deepseek V4 Pro - Thinking (Deepseek)' },
+        { value: 'grok-4-fast',      label: '⚡ Grok 4 Fast (xAI - khuyến nghị)' },
+        { value: 'grok-4-mini-fast', label: '⚡ Grok 4 Mini Fast - Siêu nhanh (xAI)' },
+        { value: 'mistral-large-2-latest', label: '🌀 Mistral Large 2 (Mistral - khuyến nghị)' },
+        { value: 'mistral-small-3-latest', label: '🌀 Mistral Small 3 - Nhanh, rẻ (Mistral)' },
+        { value: 'openrouter/auto',            label: '🔀 Auto Router (OpenRouter - khuyến nghị)' },
+        { value: 'deepseek/deepseek-v4-flash', label: '🔀 DeepSeek V4 Flash - Rẻ, nhanh (OpenRouter)' },
       ],
       optionsFilter: { key: 'platform', map: {
         openai:   ['gpt-5.4-mini', 'gpt-5-mini', 'gpt-5.4'],
@@ -1115,9 +1212,9 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
       key: 'parseMode', label: 'Định dạng văn bản', type: 'select',
       desc: 'Cách hiển thị văn bản trong tin nhắn Telegram.',
       options: [
-        { value: 'HTML',     label: 'HTML — Hỗ trợ <b>bold</b>, <i>italic</i>' },
-        { value: 'Markdown', label: 'Markdown — Hỗ trợ **bold**, _italic_' },
-        { value: '',         label: 'Plain Text — Không định dạng' },
+        { value: 'HTML',     label: 'HTML - Hỗ trợ <b>bold</b>, <i>italic</i>' },
+        { value: 'Markdown', label: 'Markdown - Hỗ trợ **bold**, _italic_' },
+        { value: '',         label: 'Plain Text - Không định dạng' },
       ],
       advanced: true,
     },
@@ -1238,6 +1335,36 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     },
   ],
 
+  // ─── Trigger: Webhook bên ngoài ──────────────────────────────────────────
+  'trigger.webhook': [
+    {
+      key: 'webhookUrlDisplay', label: 'URL Webhook', type: 'info',
+      desc: 'URL này dùng để nhận dữ liệu từ bên thứ 3. Gửi URL này cho đối tác để họ POST dữ liệu vào.',
+      isWebhookUrl: true,
+    },
+    {
+      key: 'secretKey', label: 'Secret Key (tùy chọn)', type: 'text',
+      placeholder: 'Để trống nếu không cần xác thực',
+      desc: 'Nếu có, hệ thống sẽ verify HMAC-SHA256 từ header X-Signature. Dùng để đảm bảo dữ liệu đến từ đúng đối tác.',
+    },
+    {
+      key: 'method', label: 'Phương thức HTTP', type: 'select',
+      options: [
+        { value: 'POST', label: 'POST' },
+        { value: 'GET', label: 'GET' },
+        { value: 'PUT', label: 'PUT' },
+        { value: 'ANY', label: 'Bất kỳ' },
+      ],
+      desc: 'Phương thức HTTP mà bên thứ 3 sẽ dùng để gửi dữ liệu.',
+    },
+    {
+      key: 'allowedIps', label: 'Chỉ cho phép IP (tùy chọn)', type: 'text',
+      placeholder: 'Để trống = cho phép tất cả. VD: 103.21.244.0, 103.21.245.0',
+      desc: 'Giới hạn địa chỉ IP được phép gọi webhook. Cách nhau bằng dấu phẩy.',
+      advanced: true,
+    },
+  ],
+
   // ─── KiotViet ─────────────────────────────────────────────────────────────
   'kiotviet.lookupCustomer': [
     {
@@ -1266,7 +1393,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     {
       key: 'keyword', label: 'Tên hoặc mã SKU sản phẩm', type: 'text',
       placeholder: '{{ $trigger.content }}',
-      desc: 'Từ khóa tìm kiếm — tên sản phẩm hoặc mã SKU trong KiotViet.',
+      desc: 'Từ khóa tìm kiếm - tên sản phẩm hoặc mã SKU trong KiotViet.',
       templateVars: ['$trigger.content'],
     },
     {
@@ -1424,7 +1551,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     {
       key: 'order', label: 'Dữ liệu đơn hàng (JSON)', type: 'json',
       hint: '{"customerName":"Nguyễn Văn A","customerMobile":"0901234567","customerAddress":"123 Đường ABC, Hà Nội","productList":{"123":1},"productDetails":[{"productId":"123","quantity":1,"price":150000}],"paymentMethod":"COD","description":"Đặt hàng qua Zalo"}',
-      desc: 'Payload hiện tại đang theo builder nội bộ `toNhanh()` — dùng `productList` và có thể kèm `productDetails` để giữ thêm thông tin sản phẩm. Cần verify sâu hơn với docs/account Nhanh thực tế trước khi mở rộng.',
+      desc: 'Payload hiện tại đang theo builder nội bộ `toNhanh()` - dùng `productList` và có thể kèm `productDetails` để giữ thêm thông tin sản phẩm. Cần verify sâu hơn với docs/account Nhanh thực tế trước khi mở rộng.',
     },
   ],
 
@@ -1489,8 +1616,8 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     {
       key: 'serviceTypeId', label: 'Loại dịch vụ', type: 'select',
       options: [
-        { value: '2', label: '2 — Hàng nhẹ (thường)' },
-        { value: '5', label: '5 — Hàng nặng (thường)' },
+        { value: '2', label: '2 - Hàng nhẹ (thường)' },
+        { value: '5', label: '5 - Hàng nặng (thường)' },
       ],
       desc: 'Loại dịch vụ GHN.',
       advanced: true,
@@ -1585,7 +1712,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
         { value: 'contains_all', label: 'Phải chứa đủ tất cả từ khóa' },
         { value: 'equals',       label: 'Khớp chính xác nguyên câu' },
         { value: 'starts_with',  label: 'Bắt đầu bằng từ khóa' },
-        { value: 'regex',        label: '🔬 Regex — biểu thức chính quy (nâng cao)' },
+        { value: 'regex',        label: '🔬 Regex - biểu thức chính quy (nâng cao)' },
       ],
     },
     {
@@ -1594,7 +1721,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     },
     {
       key: 'onlyOwn', label: 'Chỉ xử lý tin mình tự gửi', type: 'boolean',
-      desc: 'Ngược lại — chỉ chạy với tin nhắn từ chính tài khoản này.',
+      desc: 'Ngược lại - chỉ chạy với tin nhắn từ chính tài khoản này.',
     },
     {
       key: 'fromId', label: 'Chỉ nhận từ người dùng cụ thể', type: 'contact-picker', contactType: 'user',
@@ -1797,7 +1924,7 @@ const CONFIG_SCHEMA: Record<string, Field[]> = {
     {
       key: 'messageId', label: 'ID tin nhắn gốc (tham khảo)', type: 'text',
       placeholder: '{{ $trigger.messageId }}',
-      desc: 'ID tin nhắn Facebook gốc — chỉ để tham khảo, không dùng cho forward API riêng.',
+      desc: 'ID tin nhắn Facebook gốc - chỉ để tham khảo, không dùng cho forward API riêng.',
       templateVars: ['$trigger.messageId'],
       advanced: true,
     },
@@ -1945,6 +2072,7 @@ interface Props {
   onConfigChange: (config: Record<string, any>) => void;
   onLabelChange: (label: string) => void;
   onClose: () => void;
+  workflowId?: string;
 }
 
 // ─── Shared styles ────────────────────────────────────────────────────────────
@@ -2065,7 +2193,7 @@ function HtmlEditorField({ value, onChange, placeholder, templateVars }: {
             ${tab === 'preview' ? 'text-white bg-gray-700/80' : 'text-gray-500 hover:text-gray-300'}`}>
           👁 Xem trước
         </button>
-        {/* Toolbar — only in edit mode */}
+        {/* Toolbar - only in edit mode */}
         {tab === 'edit' && (
           <div className="flex items-center gap-0.5 px-1.5 flex-1 overflow-x-auto scrollbar-none">
             {TOOLBAR.map(btn => (
@@ -2115,7 +2243,7 @@ function HtmlEditorField({ value, onChange, placeholder, templateVars }: {
             />
           ) : (
             <div className="px-4 py-6 text-center text-gray-400 text-xs italic">
-              Chưa có nội dung — hãy soạn thảo trong tab "Soạn thảo"
+              Chưa có nội dung - hãy soạn thảo trong tab "Soạn thảo"
             </div>
           )}
         </div>
@@ -3694,7 +3822,7 @@ function NodePickerModal({
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function NodeConfigPanel({ node, nodes, edges, onConfigChange, onLabelChange, onClose }: Props) {
+export default function NodeConfigPanel({ node, nodes, edges, onConfigChange, onLabelChange, onClose, workflowId }: Props) {
   const { accounts } = useAccountStore();
   const [config, setConfig]             = useState<Record<string, any>>(node.config || {});
   const [label, setLabel]               = useState(node.label || '');
@@ -4033,6 +4161,8 @@ export default function NodeConfigPanel({ node, nodes, edges, onConfigChange, on
         {field.type === 'cron' && (
           <CronField value={config[field.key] ?? ''} onChange={v => update(field.key, v)} placeholder={field.placeholder} />
         )}
+        {field.type === 'info' && field.isWebhookUrl && <WebhookUrlField field={field} config={config} workflowId={workflowId} update={update} />}
+
         {field.type === 'html' && (
           <HtmlEditorField value={config[field.key] ?? ''} onChange={v => update(field.key, v)} placeholder={field.placeholder} />
         )}
@@ -4280,7 +4410,7 @@ export default function NodeConfigPanel({ node, nodes, edges, onConfigChange, on
           onInsertOutput={(nodeId) => {
             const text = `{{ $node.${nodeId}.output }}`;
             navigator.clipboard.writeText(text).catch(() => {});
-            // Focus current active field — user can paste
+            // Focus current active field - user can paste
           }}
         />
       )}
@@ -4299,7 +4429,7 @@ export default function NodeConfigPanel({ node, nodes, edges, onConfigChange, on
             // Insert into specific field
             appendVar(templatePopupField, tag);
           } else {
-            // No specific field — just copy to clipboard
+            // No specific field - just copy to clipboard
             navigator.clipboard.writeText(tag).catch(() => {});
           }
         }}

@@ -1,5 +1,5 @@
 /**
- * channelConfig.ts — Single Source of Truth cho tính năng từng kênh chat
+ * channelConfig.ts - Single Source of Truth cho tính năng từng kênh chat
  * Dùng bởi UI để quyết định hiển thị/ẩn tính năng, bởi IPC facade để route API calls.
  */
 

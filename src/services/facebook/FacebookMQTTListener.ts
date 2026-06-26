@@ -63,9 +63,9 @@ export interface FBListenerEvents {
   reaction: (data: { messageId: string; reaction: string; actorFbId: string; threadId: string }) => void;
   connectionStatus: (status: FBConnectionStatus) => void;
   error: (err: Error) => void;
-  /** Emitted when MQTT seqId is updated — FacebookService dùng để cache fallback */
+  /** Emitted when MQTT seqId is updated - FacebookService dùng để cache fallback */
   seqId: (seqId: string) => void;
-  /** Emitted on ERROR_QUEUE_OVERFLOW — FacebookService dùng để ngăn tạo listener mới */
+  /** Emitted on ERROR_QUEUE_OVERFLOW - FacebookService dùng để ngăn tạo listener mới */
   overflow: (seqId: string) => void;
 }
 
@@ -90,7 +90,7 @@ export class FacebookMQTTListener extends EventEmitter {
   private httpsAgent: any = undefined;
   /** Timer định kỳ check cookie health khi đang ở phase 2 (retry chậm) */
   private healthCheckTimer: ReturnType<typeof setInterval> | null = null;
-  /** Đếm số lần lỗi queue liên tiếp — dùng trong ERROR_QUEUE_NOT_FOUND */
+  /** Đếm số lần lỗi queue liên tiếp - dùng trong ERROR_QUEUE_NOT_FOUND */
   private queueErrorCount: number = 0;
   /** Guard flag: ngăn scheduleReconnect bị gọi 2 lần từ offline+close cascade (BUG #1 fix) */
   private _reconnectPending: boolean = false;
@@ -100,7 +100,7 @@ export class FacebookMQTTListener extends EventEmitter {
   private pingTimer: ReturnType<typeof setInterval> | null = null;
   /** Phase 3 threshold: sau N lần retry phase 2, chuyển sang retry mỗi 5 phút (BUG #4 fix) */
   private readonly PHASE3_THRESHOLD: number = 30;
-  /** Tổng số lần retry từ khi listener được tạo (không reset khi success — để track aging) */
+  /** Tổng số lần retry từ khi listener được tạo (không reset khi success - để track aging) */
   private totalRetryCount: number = 0;
   /**
    * Callback để FacebookService kiểm tra cookie health trong lúc retry kéo dài.
@@ -146,7 +146,7 @@ export class FacebookMQTTListener extends EventEmitter {
     this.clearConnectTimeout();
     this.connectTimeout = setTimeout(() => {
       if (this.isConnecting) {
-        Logger.warn(`[FBMqtt:${this.accountId}] Connect timed out after 45s — resetting`);
+        Logger.warn(`[FBMqtt:${this.accountId}] Connect timed out after 45s - resetting`);
         this.isConnecting = false;
         if (this.client) {
           try { this.client.removeAllListeners(); this.client.end(true); } catch {}
@@ -159,7 +159,7 @@ export class FacebookMQTTListener extends EventEmitter {
     const sessionId = generateSessionId();
     const clientId = generateClientId();
 
-    // Facebook MQTT username payload — giống paho-mqtt Python
+    // Facebook MQTT username payload - giống paho-mqtt Python
     const userPayload = {
       u: this.dataFB.FacebookID,
       s: sessionId,
@@ -203,7 +203,7 @@ export class FacebookMQTTListener extends EventEmitter {
 
         // ─── Auth ──────────────────────────────────────────────────────
         username: JSON.stringify(userPayload),
-        // Không set password — Facebook không cần
+        // Không set password - Facebook không cần
 
         // ─── Custom WebSocket creation ─────────────────────────────────
         // Facebook's MQTT WS endpoint does NOT return Sec-WebSocket-Protocol.
@@ -239,7 +239,7 @@ export class FacebookMQTTListener extends EventEmitter {
       this.clearConnectTimeout();
       this.retryCount = 0;
       this.reconnectDelay = 3000;
-      // KHÔNG reset overflowRetryCount ở đây — nó chỉ reset khi queue tạo thành công
+      // KHÔNG reset overflowRetryCount ở đây - nó chỉ reset khi queue tạo thành công
       // (trong handleMQTTMessage khi nhận syncToken + firstDeltaSeqId).
       // Reset ở đây khiến overflow loop vô hạn vì counter luôn về 0 trước khi publishQueue.
       this.lastPongTime = Date.now(); // Reset pong timer on connect (BUG #2 fix)
@@ -280,12 +280,12 @@ export class FacebookMQTTListener extends EventEmitter {
         const j = JSON.parse(text);
         this.handleMQTTMessage(j);
       } catch {
-        // Binary/non-JSON payload — ignore
+        // Binary/non-JSON payload - ignore
       }
     });
 
     this.client.on('error', (err: Error) => {
-      // Facebook's MQTT server sends non-standard puback flags — ignore parse errors
+      // Facebook's MQTT server sends non-standard puback flags - ignore parse errors
       if (err.message?.includes('header flag bits')) {
         Logger.log(`[FBMqtt:${this.accountId}] Ignoring non-standard packet header: ${err.message}`);
         return;
@@ -311,7 +311,7 @@ export class FacebookMQTTListener extends EventEmitter {
       this.scheduleReconnect();
     });
 
-    // BUG #1 fix: close event — only reconnect if offline didn't already schedule
+    // BUG #1 fix: close event - only reconnect if offline didn't already schedule
     this.client.on('close', () => {
       Logger.log(`[FBMqtt:${this.accountId}] MQTT closed`);
       this.isConnecting = false;
@@ -323,7 +323,7 @@ export class FacebookMQTTListener extends EventEmitter {
       }
     });
 
-    // BUG #1 fix: offline event — mark reconnect pending, only schedule if not already
+    // BUG #1 fix: offline event - mark reconnect pending, only schedule if not already
     this.client.on('offline', () => {
       Logger.log(`[FBMqtt:${this.accountId}] MQTT offline`);
       this.isConnecting = false;
@@ -368,7 +368,7 @@ export class FacebookMQTTListener extends EventEmitter {
       if (this.overflowRetryCount === 0 && this.lastSeqId !== '0') {
         queue.initial_titan_sequence_id = this.lastSeqId;
       } else {
-        Logger.log(`[FBMqtt:${this.accountId}] Omitting initial_titan_sequence_id (overflowRetryCount=${this.overflowRetryCount}, lastSeqId=${this.lastSeqId}) — letting Facebook choose starting point`);
+        Logger.log(`[FBMqtt:${this.accountId}] Omitting initial_titan_sequence_id (overflowRetryCount=${this.overflowRetryCount}, lastSeqId=${this.lastSeqId}) - letting Facebook choose starting point`);
       }
       queue.device_params = null;
     } else {
@@ -391,7 +391,7 @@ export class FacebookMQTTListener extends EventEmitter {
       this.syncToken = j.syncToken;
       this.lastSeqId = String(j.firstDeltaSeqId);
       this.overflowRetryCount = 0; // Queue created successfully
-      Logger.log(`[FBMqtt:${this.accountId}] Got syncToken, seqId=${this.lastSeqId} — listening for deltas`);
+      Logger.log(`[FBMqtt:${this.accountId}] Got syncToken, seqId=${this.lastSeqId} - listening for deltas`);
       this.emit('seqId', this.lastSeqId); // Cache fallback in FacebookService
       return;
     }
@@ -410,7 +410,7 @@ export class FacebookMQTTListener extends EventEmitter {
       if (code === 'ERROR_QUEUE_OVERFLOW') {
         // Queue overflow = server-side queue is full. Must disconnect, fetch latest seqId
         // via GraphQL, then reconnect with that seqId so Facebook only syncs recent messages.
-        Logger.warn(`[FBMqtt:${this.accountId}] ERROR_QUEUE_OVERFLOW — fetching latest seqId then reconnect`);
+        Logger.warn(`[FBMqtt:${this.accountId}] ERROR_QUEUE_OVERFLOW - fetching latest seqId then reconnect`);
         this.emit('overflow', this.lastSeqId); // Notify FacebookService để ngăn create listener mới
         this.syncToken = null;
         // Force-close current connection but allow reconnect
@@ -422,14 +422,14 @@ export class FacebookMQTTListener extends EventEmitter {
         this.isConnecting = false;
         this.overflowRetryCount = (this.overflowRetryCount || 0) + 1;
         if (this.overflowRetryCount > 3) {
-          Logger.error(`[FBMqtt:${this.accountId}] ERROR_QUEUE_OVERFLOW persists after ${this.overflowRetryCount} full reconnects — giving up permanently. Bridge will handle MQTT traffic.`);
+          Logger.error(`[FBMqtt:${this.accountId}] ERROR_QUEUE_OVERFLOW persists after ${this.overflowRetryCount} full reconnects - giving up permanently. Bridge will handle MQTT traffic.`);
           this.shouldReconnect = false; // Dừng hẳn, không reconnect nữa
           this._reconnectPending = false;
           this.overflowRetryCount = 0;
           this.emit('connectionStatus', 'error' as FBConnectionStatus);
           return;
         }
-        // Fetch latest seqId before reconnecting — this is the key fix!
+        // Fetch latest seqId before reconnecting - this is the key fix!
         // Without correct seqId, Facebook tries to sync all messages → overflow again.
         const delay = Math.min(10000 * Math.pow(3, this.overflowRetryCount - 1), 60000);
         Logger.log(`[FBMqtt:${this.accountId}] Will fetch seqId + reconnect in ${Math.round(delay / 1000)}s (overflow attempt ${this.overflowRetryCount}/3)`);
@@ -450,10 +450,10 @@ export class FacebookMQTTListener extends EventEmitter {
       }
 
       if (code === 100 || code === 'ERROR_QUEUE_NOT_FOUND') {
-        // Queue not found — reset sync token and re-create on same connection
+        // Queue not found - reset sync token and re-create on same connection
         Logger.log(`[FBMqtt:${this.accountId}] Queue error (${code}), resetting syncToken and re-creating queue...`);
         this.syncToken = null;
-        // Don't reset lastSeqId to '0' — keep current value to avoid overflow
+        // Don't reset lastSeqId to '0' - keep current value to avoid overflow
         this.queueErrorCount += 1;
         if (this.queueErrorCount < 5) {
           setTimeout(() => this.publishQueue(), 1000);
@@ -533,7 +533,7 @@ export class FacebookMQTTListener extends EventEmitter {
     const replyToID = threadKey.otherUserFbId || threadKey.threadFbId || '0';
     const threadType = threadKey.otherUserFbId ? 'user' : 'group';
 
-    // 4a. Thread name change — has `name` field but no `body` or `attachments`
+    // 4a. Thread name change - has `name` field but no `body` or `attachments`
     if (delta.name && !delta.body && !delta.attachments?.length) {
       this.emit('threadEvent', {
         type: 'name',
@@ -570,7 +570,7 @@ export class FacebookMQTTListener extends EventEmitter {
       return;
     }
 
-    // 4d. Reaction — delta with `messageReaction` field (non-E2EE group/user reactions)
+    // 4d. Reaction - delta with `messageReaction` field (non-E2EE group/user reactions)
     if (delta.messageReaction) {
       const rxn = delta.messageReaction;
       this.emit('reaction', {
@@ -582,16 +582,16 @@ export class FacebookMQTTListener extends EventEmitter {
       return;
     }
 
-    // 4eii. Admin activity messages (pin, poll, group info changes from adminText) — skip
+    // 4eii. Admin activity messages (pin, poll, group info changes from adminText) - skip
     // Facebook sends admin-generate text like "Tiến đã ghim một tin nhắn." inside
-    // messageMetadata.adminText. These are NOT real user messages — just localized
+    // messageMetadata.adminText. These are NOT real user messages - just localized
     // informational text that the bridge handles internally.
     if (delta.messageMetadata?.adminText) {
-      Logger.log(`[FBMqtt:${this.accountId}] Admin message: "${(delta.messageMetadata.adminText as string).slice(0, 100)}" — skipping (admin activity, not a user message)`);
+      Logger.log(`[FBMqtt:${this.accountId}] Admin message: "${(delta.messageMetadata.adminText as string).slice(0, 100)}" - skipping (admin activity, not a user message)`);
       return;
     }
 
-    // 4f. Unsend/Recall — delta với message_type='unsent', không body, không attachments
+    // 4f. Unsend/Recall - delta với message_type='unsent', không body, không attachments
     const isUnsentDelta = !delta.body && !delta.attachments?.length && (
       delta.message_type === 'unsent' ||
       delta.is_unsent === true ||
@@ -607,7 +607,7 @@ export class FacebookMQTTListener extends EventEmitter {
       return;
     }
 
-    // 4e. Existing: message with body or attachments — parse attachment + emit
+    // 4e. Existing: message with body or attachments - parse attachment + emit
     // Track attachment index for synthetic ID generation when no real fbid/ID exists
     let _attIndex = 0;
     const parseAttachment = (att: any) => {
@@ -624,7 +624,7 @@ export class FacebookMQTTListener extends EventEmitter {
         const mercury = att?.mercury || {};
         // Ưu tiên blob_attachment (ảnh/video/file/audio)
         const blob = mercury.blob_attachment;
-        // Fallback sticker_attachment — sticker không có blob, là mercury.sticker_attachment
+        // Fallback sticker_attachment - sticker không có blob, là mercury.sticker_attachment
         const sticker = !blob ? mercury.sticker_attachment : null;
         const typename: string = blob?.__typename || sticker?.__typename || '';
 
@@ -701,7 +701,7 @@ export class FacebookMQTTListener extends EventEmitter {
   /**
    * Handle Orca presence data from `/orca_presence` topic (I7)
    * Facebook sends presence as a JSON array of { userId, status, timestampMs } objects.
-   * The payload is NOT a standard JSON-RPC wrapper — it's a flat JSON payload.
+   * The payload is NOT a standard JSON-RPC wrapper - it's a flat JSON payload.
    */
   private handlePresence(payload: Buffer): void {
     try {
@@ -742,7 +742,7 @@ export class FacebookMQTTListener extends EventEmitter {
         this.emit('presence', { entries });
       }
     } catch {
-      // Non-JSON payload — ignore
+      // Non-JSON payload - ignore
     }
   }
 
@@ -763,7 +763,7 @@ export class FacebookMQTTListener extends EventEmitter {
         });
       }
     } catch {
-      // Invalid JSON — ignore
+      // Invalid JSON - ignore
     }
   }
 
@@ -772,7 +772,7 @@ export class FacebookMQTTListener extends EventEmitter {
 
     // ── BUG #1 fix: Guard chống double-schedule từ offline+close cascade ──
     if (this._reconnectPending) {
-      Logger.log(`[FBMqtt:${this.accountId}] Reconnect already pending — skipping duplicate`);
+      Logger.log(`[FBMqtt:${this.accountId}] Reconnect already pending - skipping duplicate`);
       return;
     }
     this._reconnectPending = true;
@@ -782,7 +782,7 @@ export class FacebookMQTTListener extends EventEmitter {
     // Thay vào đó chuyển sang phase 3: retry mỗi 5 phút vô thời hạn.
     // Chỉ dừng thực sự khi cookie expired hoặc user chủ động disconnect.
     if (this.retryCount >= this.MAX_RECONNECT_ATTEMPTS && this.retryCount < this.PHASE3_THRESHOLD) {
-      Logger.warn(`[FBMqtt:${this.accountId}] Max reconnect attempts (${this.MAX_RECONNECT_ATTEMPTS}) reached — entering slow retry phase...`);
+      Logger.warn(`[FBMqtt:${this.accountId}] Max reconnect attempts (${this.MAX_RECONNECT_ATTEMPTS}) reached - entering slow retry phase...`);
     }
 
     // ── Test connection health trước mỗi lần retry ────────────────────
@@ -791,7 +791,7 @@ export class FacebookMQTTListener extends EventEmitter {
     if (this._healthCheckFn && this.retryCount > 0) {
       this._healthCheckFn().then(alive => {
         if (!alive) {
-          Logger.warn(`[FBMqtt:${this.accountId}] Pre-retry health check failed — cookie expired`);
+          Logger.warn(`[FBMqtt:${this.accountId}] Pre-retry health check failed - cookie expired`);
           this.clearHealthCheck();
           this.shouldReconnect = false;
           this._reconnectPending = false;
@@ -808,7 +808,7 @@ export class FacebookMQTTListener extends EventEmitter {
 
     // Chuyển từ Phase 1 → Phase 2: bắt đầu health check timer
     if (this.retryCount === this.PHASE2_THRESHOLD && !this.healthCheckTimer && this._healthCheckFn) {
-      Logger.log(`[FBMqtt:${this.accountId}] Entering phase 2 — starting health check every 5min`);
+      Logger.log(`[FBMqtt:${this.accountId}] Entering phase 2 - starting health check every 5min`);
       this.healthCheckTimer = setInterval(async () => {
         if (!this.shouldReconnect) {
           this.clearHealthCheck();
@@ -817,14 +817,14 @@ export class FacebookMQTTListener extends EventEmitter {
         try {
           const alive = await this._healthCheckFn!();
           if (!alive) {
-            Logger.warn(`[FBMqtt:${this.accountId}] Health check failed — cookie expired, stopping retry`);
+            Logger.warn(`[FBMqtt:${this.accountId}] Health check failed - cookie expired, stopping retry`);
             this.clearHealthCheck();
             this.shouldReconnect = false;
             this._reconnectPending = false;
             this.emit('connectionStatus', 'cookie_expired' as FBConnectionStatus);
           }
         } catch {
-          // Health check error — cứ tiếp tục retry
+          // Health check error - cứ tiếp tục retry
         }
       }, 5 * 60 * 1000); // 5 phút / lần
     }
@@ -934,7 +934,7 @@ export class FacebookMQTTListener extends EventEmitter {
 
   /**
    * Bắt đầu gửi ping định kỳ để kiểm tra kết nối MQTT còn sống.
-   * MQTT protocol hỗ trợ PINGREQ/PINGRESP — mqtt.js xử lý internal,
+   * MQTT protocol hỗ trợ PINGREQ/PINGRESP - mqtt.js xử lý internal,
    * nhưng ta track thời điểm pong cuối để detect silent disconnect.
    */
   private startPingPong(): void {
@@ -959,7 +959,7 @@ export class FacebookMQTTListener extends EventEmitter {
       const timeSinceLastPong = Date.now() - this.lastPongTime;
       if (timeSinceLastPong > 120000) {
         // 2 phút không có bất kỳ packet nào → kết nối có thể đã chết
-        Logger.warn(`[FBMqtt:${this.accountId}] No MQTT activity for ${Math.round(timeSinceLastPong / 1000)}s — connection may be dead`);
+        Logger.warn(`[FBMqtt:${this.accountId}] No MQTT activity for ${Math.round(timeSinceLastPong / 1000)}s - connection may be dead`);
         this.handlePingTimeout();
       }
     }, 30000); // Check mỗi 30s
@@ -997,7 +997,7 @@ export class FacebookMQTTListener extends EventEmitter {
 
   /**
    * Kiểm tra kết nối MQTT thực sự còn sống không.
-   * Khác với isConnected() — method này check cả:
+   * Khác với isConnected() - method này check cả:
    * 1. client.connected (MQTT-level)
    * 2. Thời gian từ packet cuối (application-level)
    * Trả về true nếu kết nối thực sự healthy.

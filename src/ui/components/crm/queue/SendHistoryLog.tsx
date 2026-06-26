@@ -48,7 +48,7 @@ function tryFmtJson(raw: string | undefined): string {
 
 // ── Debug modal ──────────────────────────────────────────────────────────────
 function DebugModal({ log, onClose }: { log: SendLogEntry; onClose: () => void }) {
-  const campName = log.campaign_id ? `#${log.campaign_id}` : '—';
+  const campName = log.campaign_id ? `#${log.campaign_id}` : '-';
   const fmt = (ts: number) => ts
     ? new Date(ts).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })
     : '-';
@@ -404,7 +404,7 @@ export default function SendHistoryLog(_props: SendHistoryLogProps) {
           </div>
         ) : (
           <>
-            {/* Column headers — added debug col at end */}
+            {/* Column headers - added debug col at end */}
             <div className="grid grid-cols-[1fr_2fr_1fr_90px_80px_28px] gap-2 px-5 py-2 text-[11px] text-gray-500 border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
               <span>Người nhận</span>
               <span>Nội dung</span>
@@ -416,7 +416,7 @@ export default function SendHistoryLog(_props: SendHistoryLogProps) {
             {paged.map(log => {
               const campInfo = campaignMap[log.campaign_id ?? -1];
               const campaignName = campInfo?.name;
-              // Always use log.send_type directly — mixed campaigns now log each action separately
+              // Always use log.send_type directly - mixed campaigns now log each action separately
               const sendType = log.send_type || 'message';
               const recipientName = log.display_name || log.contact_id;
               const phone = log.phone ? formatPhone(log.phone) : '';
@@ -447,9 +447,9 @@ export default function SendHistoryLog(_props: SendHistoryLogProps) {
                   </div>
                   {/* Campaign */}
                   <span className="text-gray-500 truncate self-center">
-                    {campaignName || (log.campaign_id ? `#${log.campaign_id} - Đã xoá` : '—')}
+                    {campaignName || (log.campaign_id ? `#${log.campaign_id} - Đã xoá` : '-')}
                   </span>
-                  {/* Send type badge — 3 types only */}
+                  {/* Send type badge - 3 types only */}
                   <span className="flex-shrink-0 self-center">
                     {sendType === 'friend_request' ? (
                       <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30">🤝 Kết bạn</span>

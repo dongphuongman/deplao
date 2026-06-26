@@ -83,7 +83,7 @@ export default class ErpNotificationService {
   // ─── Schedulers (Phase 2) ─────────────────────────────────────────────────
 
   /**
-   * Start due-soon (1m) + overdue (hourly) crons. Idempotent — safe to call twice.
+   * Start due-soon (1m) + overdue (hourly) crons. Idempotent - safe to call twice.
    */
   startSchedulers(): void {
     if (this.dueSoonTimer) clearInterval(this.dueSoonTimer);

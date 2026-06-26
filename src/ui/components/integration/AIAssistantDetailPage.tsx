@@ -1,6 +1,6 @@
 /**
  * AIAssistantDetailPage.tsx
- * Trang chi tiết trợ lý AI — tạo mới / chỉnh sửa.
+ * Trang chi tiết trợ lý AI - tạo mới / chỉnh sửa.
  * Layout: cấu hình bên trái, chat preview bên phải.
  */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -27,7 +27,7 @@ const MODELS_BY_PLATFORM: Record<string, { value: string; label: string }[]> = {
   openai: [
     { value: 'gpt-5.4',       label: 'GPT-5.4 (flagship mới nhất)' },
     { value: 'gpt-5.4-pro',   label: 'GPT-5.4 Pro (thông minh, chính xác nhất)' },
-    { value: 'gpt-5.4-mini',  label: 'GPT-5.4 Mini (code, subagent — khuyên dùng)' },
+    { value: 'gpt-5.4-mini',  label: 'GPT-5.4 Mini (code, subagent - khuyên dùng)' },
     { value: 'gpt-5.4-nano',  label: 'GPT-5.4 Nano (siêu rẻ, đơn giản)' },
     { value: 'gpt-5-mini',    label: 'GPT-5 Mini (cân bằng, giá tốt)' },
     { value: 'gpt-5-nano',    label: 'GPT-5 Nano (nhanh, rẻ nhất)' },
@@ -38,14 +38,14 @@ const MODELS_BY_PLATFORM: Record<string, { value: string; label: string }[]> = {
     { value: 'gpt-4.1',       label: 'GPT-4.1 (legacy, non-reasoning thông minh)' },
   ],
   gemini: [
-    { value: 'gemini-3.5-flash',        label: 'Gemini 3.5 Flash (mới nhất — nhanh, cân bằng — khuyên dùng)' },
+    { value: 'gemini-3.5-flash',        label: 'Gemini 3.5 Flash (mới nhất - nhanh, cân bằng - khuyên dùng)' },
     { value: 'gemini-3.1-pro-preview',  label: 'Gemini 3.1 Pro Preview (mạnh nhất)' },
     { value: 'gemini-3-flash-preview',  label: 'Gemini 3 Flash Preview (nhanh, ổn định)' },
     { value: 'gemini-2.5-pro',          label: 'Gemini 2.5 Pro (legacy, ổn định)' },
     { value: 'gemini-2.5-flash',        label: 'Gemini 2.5 Flash (legacy)' },
   ],
   claude: [
-    { value: 'claude-4.6-sonnet-20260301',  label: 'Claude 4.6 Sonnet (mới nhất — khuyên dùng)' },
+    { value: 'claude-4.6-sonnet-20260301',  label: 'Claude 4.6 Sonnet (mới nhất - khuyên dùng)' },
     { value: 'claude-4.5-sonnet-20260115',  label: 'Claude 4.5 Sonnet (cân bằng)' },
     { value: 'claude-4.0-haiku-20260101',   label: 'Claude 4.0 Haiku (nhanh, rẻ)' },
     { value: 'claude-4.0-opus-20260101',    label: 'Claude 4.0 Opus (mạnh nhất gen 4)' },
@@ -53,20 +53,20 @@ const MODELS_BY_PLATFORM: Record<string, { value: string; label: string }[]> = {
     { value: 'claude-3-5-haiku-20241022',   label: 'Claude 3.5 Haiku (legacy)' },
   ],
   deepseek: [
-    { value: 'deepseek-v4-flash',   label: 'DeepSeek V4 Flash (mới nhất — khuyên dùng)' },
+    { value: 'deepseek-v4-flash',   label: 'DeepSeek V4 Flash (mới nhất - khuyên dùng)' },
     { value: 'deepseek-v4-pro',     label: 'DeepSeek V4 Pro (thinking, mạnh nhất)' },
     { value: 'deepseek-chat',       label: 'DeepSeek V3 (deprecated 2026/07/24)' },
     { value: 'deepseek-reasoner',   label: 'DeepSeek R1 (deprecated 2026/07/24)' },
   ],
   grok: [
     { value: 'grok-4',           label: 'Grok 4 (flagship mạnh nhất)' },
-    { value: 'grok-4-fast',      label: 'Grok 4 Fast (nhanh — khuyên dùng)' },
+    { value: 'grok-4-fast',      label: 'Grok 4 Fast (nhanh - khuyên dùng)' },
     { value: 'grok-4-mini',      label: 'Grok 4 Mini (lý luận, rẻ)' },
     { value: 'grok-4-mini-fast', label: 'Grok 4 Mini Fast (siêu nhanh, rẻ)' },
     { value: 'grok-3',           label: 'Grok 3 (legacy, ổn định)' },
   ],
   mistral: [
-    { value: 'mistral-large-2-latest',  label: 'Mistral Large 2 (mạnh nhất — khuyên dùng)' },
+    { value: 'mistral-large-2-latest',  label: 'Mistral Large 2 (mạnh nhất - khuyên dùng)' },
     { value: 'codestral-2-latest',      label: 'Codestral 2 (code chuyên dụng)' },
     { value: 'mistral-small-3-latest',  label: 'Mistral Small 3 (nhanh, rẻ)' },
     { value: 'mistral-medium-latest',   label: 'Mistral Medium (cân bằng)' },
@@ -89,10 +89,10 @@ const MODELS_BY_PLATFORM: Record<string, { value: string; label: string }[]> = {
     { value: 'vertex/claude-sonnet-4-5',        label: 'Vertex: Claude Sonnet 4.5 (free)' },
     { value: 'vertex/gemini-3-flash',           label: 'Vertex: Gemini 3 Flash (free)' },
     { value: 'cc/claude-opus-4-6',         label: 'Claude Code subscription' },
-    { value: '__custom__',                  label: '✏️ Custom model — tự nhập...' },
+    { value: '__custom__',                  label: '✏️ Custom model - tự nhập...' },
   ],
   openrouter: [
-    { value: 'openrouter/auto',             label: 'Auto Router (tự chọn model tốt nhất — khuyên dùng)' },
+    { value: 'openrouter/auto',             label: 'Auto Router (tự chọn model tốt nhất - khuyên dùng)' },
     { value: 'openai/gpt-5.4-mini',         label: 'GPT-5.4 Mini (OpenAI qua OpenRouter)' },
     { value: 'anthropic/claude-4.6-sonnet', label: 'Claude 4.6 Sonnet (Anthropic qua OpenRouter)' },
     { value: 'google/gemini-3.5-flash',     label: 'Gemini 3.5 Flash (Google qua OpenRouter)' },
@@ -100,7 +100,7 @@ const MODELS_BY_PLATFORM: Record<string, { value: string; label: string }[]> = {
     { value: 'meta-llama/llama-4-maverick', label: 'Llama 4 Maverick (Meta, open-source)' },
     { value: 'qwen/qwen3-max',              label: 'Qwen3 Max (Alibaba)' },
     { value: 'mistralai/mistral-large-2',   label: 'Mistral Large 2' },
-    { value: '__custom__',                  label: '✏️ Custom model — tự nhập...' },
+    { value: '__custom__',                  label: '✏️ Custom model - tự nhập...' },
   ],
 };
 
@@ -593,7 +593,7 @@ export default function AIAssistantDetailPage({ assistantId, onBack }: Props) {
           <h1 className="text-base font-semibold text-white truncate">
             {savedId ? name || 'Chỉnh sửa trợ lý' : 'Tạo trợ lý AI mới'}
           </h1>
-          <p className="text-xs text-gray-400">{currentPlatform.label} — {model === '__custom__' ? (customModelInput || 'tự nhập...') : model}</p>
+          <p className="text-xs text-gray-400">{currentPlatform.label} - {model === '__custom__' ? (customModelInput || 'tự nhập...') : model}</p>
         </div>
         <label className="flex items-center gap-2 cursor-pointer flex-shrink-0">
           <span className="text-xs text-gray-400">Kích hoạt</span>
@@ -778,7 +778,7 @@ export default function AIAssistantDetailPage({ assistantId, onBack }: Props) {
                 setPosSearchQuery('');
                 setSelectedPosIds(new Set());
               }} className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                <option value="">— Bạn chưa liên kết POS —</option>
+                <option value="">- Bạn chưa liên kết POS -</option>
                 {posIntegrations.map(p => (
                   <option key={p.id} value={p.id}>{p.name} ({p.type})</option>
                 ))}
@@ -857,7 +857,7 @@ export default function AIAssistantDetailPage({ assistantId, onBack }: Props) {
                               </div>
                               {/* Info */}
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs text-white truncate">{p._name || '—'}</p>
+                                <p className="text-xs text-white truncate">{p._name || '-'}</p>
                                 <p className="text-[10px] text-gray-500 truncate">{p._code}</p>
                               </div>
                               <span className="text-[11px] text-green-400 flex-shrink-0 font-medium">
@@ -917,7 +917,7 @@ export default function AIAssistantDetailPage({ assistantId, onBack }: Props) {
                                 : '📦'}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[11px] text-white truncate">{p.name || '—'}</p>
+                              <p className="text-[11px] text-white truncate">{p.name || '-'}</p>
                               <p className="text-[10px] text-gray-500">{p.code}</p>
                             </div>
                             <span className="text-[10px] text-green-400 flex-shrink-0">{p.price ? Number(p.price).toLocaleString('vi-VN') + 'đ' : ''}</span>
@@ -943,7 +943,7 @@ export default function AIAssistantDetailPage({ assistantId, onBack }: Props) {
             <h2 className="text-sm font-semibold text-gray-300 mb-2">📚 File kiến thức</h2>
             <div className="bg-gray-800 rounded-xl p-4 space-y-2">
               <p className="text-[10px] text-gray-500 leading-relaxed">
-                ℹ️ File được <strong className="text-gray-400">trích xuất nội dung text</strong> và lưu tại máy. Khi AI trả lời, nội dung text sẽ được nạp vào system prompt — <strong className="text-gray-400">không gửi file gốc lên AI</strong>. Hỗ trợ: TXT, MD, CSV, JSON, HTML, XML, YAML, LOG (tối đa ~100KB text/file).
+                ℹ️ File được <strong className="text-gray-400">trích xuất nội dung text</strong> và lưu tại máy. Khi AI trả lời, nội dung text sẽ được nạp vào system prompt - <strong className="text-gray-400">không gửi file gốc lên AI</strong>. Hỗ trợ: TXT, MD, CSV, JSON, HTML, XML, YAML, LOG (tối đa ~100KB text/file).
               </p>
               {files.length > 0 && (
                 <div className="space-y-1.5">

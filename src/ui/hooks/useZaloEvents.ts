@@ -145,7 +145,7 @@ function buildMessagePreview(
     return '📞 Cuộc gọi';
   }
 
-  // ── Link preview (action=recommened.link) — phải check trước heuristic ảnh ──
+  // ── Link preview (action=recommened.link) - phải check trước heuristic ảnh ──
   if (action === 'recommened.link' || action === 'recommended.link') {
     if (typeof contentRaw === 'object' && contentRaw !== null && contentRaw.title && typeof contentRaw.title === 'string') return `🔗 ${contentRaw.title}`;
     return '🔗 Link';
@@ -197,6 +197,12 @@ function buildMessagePreview(
 
   // ── Poll ───────────────────────────────────────────────────────────────
   if (mt === 'group.poll') return '📊 Bình chọn';
+
+  // ── Location ──────────────────────────────────────────────────────────
+  if (mt === 'chat.location.new') {
+    const desc = typeof contentRaw === 'object' && contentRaw !== null ? contentRaw.description : '';
+    return desc ? `📍 ${desc}` : '📍 [Vị trí]';
+  }
 
   // ── Todo ───────────────────────────────────────────────────────────────
   if (mt === 'chat.todo') return '📝 Công việc';
@@ -392,7 +398,7 @@ export async function fetchContactInfo(zaloId: string, contactId: string): Promi
       display_name: realName,
       ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
       ...(phone ? { phone } : {}),
-      // Alias riêng — chỉ set nếu có
+      // Alias riêng - chỉ set nếu có
       ...(resolvedAlias ? { alias: resolvedAlias } : {}),
     });
 
@@ -453,7 +459,7 @@ const fetchingGroups = new Set<string>();
  * Unified: fetch thông tin nhóm (tên, avatar) + danh sách thành viên từ 1 lần API call.
  *
  * Thứ tự ưu tiên:
- *  1. Kiểm tra DB (contact + members) — dùng ipc.db thay vì in-memory store để luôn chính xác
+ *  1. Kiểm tra DB (contact + members) - dùng ipc.db thay vì in-memory store để luôn chính xác
  *  2. Nếu nhóm chưa có trong DB (lần đầu tiên) → gọi getGroupInfo ngay (bypass throttle)
  *  3. Nếu nhóm đã có contact nhưng chưa có members → gọi getGroupInfo
  *  4. Nếu đã có đủ thông tin → bỏ qua
@@ -671,7 +677,7 @@ export function useZaloEvents() {
         }).catch(() => {});
       }
 
-      // 6. Navigate đến đúng thread — dùng setTimeout ngắn để đảm bảo
+      // 6. Navigate đến đúng thread - dùng setTimeout ngắn để đảm bảo
       //    ConversationList effect đã chạy xong (nếu có switch account)
       const applyThread = () => {
         setActiveThread(threadId, threadType);
@@ -765,7 +771,7 @@ export function useZaloEvents() {
       // Khi user tắt notification trên macOS → permission = 'denied' → không phát âm thanh/hiện popup
       const notifAllowed = !('Notification' in window) || Notification.permission === 'granted';
 
-      // Sound — chỉ phát khi cả in-app soundEnabled VÀ macOS cho phép notification
+      // Sound - chỉ phát khi cả in-app soundEnabled VÀ macOS cho phép notification
       if (notifSettings.soundEnabled && notifAllowed) {
         playNotificationSound(notifSettings.volume);
       }
@@ -894,7 +900,7 @@ export function useZaloEvents() {
       const { zaloId, message } = data;
       const isGroup = message.type === 1;
       const isSelf: boolean = message.isSelf === true;
-      const isSilent: boolean = message._silent === true; // Old messages — no sound/notification
+      const isSilent: boolean = message._silent === true; // Old messages - no sound/notification
       const threadId: string = message.threadId || '';
       if (!threadId || threadId === 'undefined' || threadId === 'null') return;
 
@@ -1063,14 +1069,14 @@ export function useZaloEvents() {
         markReplied(zaloId, threadId);
         ipc.db?.markAsRead({ zaloId, contactId: threadId }).catch(() => {});
       } else if (isSilent) {
-        // Tin nhắn cũ (old_messages / getGroupChatHistory) — KHÔNG cộng unread, KHÔNG bắn sound/notification
+        // Tin nhắn cũ (old_messages / getGroupChatHistory) - KHÔNG cộng unread, KHÔNG bắn sound/notification
         // Chỉ lưu message + update contact (đã xử lý ở trên)
       } else if (threadId !== activeThreadId || !windowFocusedRef.current) {
         // Thread khác, HOẶC thread đang active nhưng cửa sổ bị thu nhỏ/ẩn/mất focus
         // → vẫn tính là chưa đọc
         incrementUnread(zaloId, threadId);
 
-        // ─── Badge taskbar — đọc sau khi incrementUnread đã cập nhật store ──
+        // ─── Badge taskbar - đọc sau khi incrementUnread đã cập nhật store ──
         ipc.app?.setBadge(getFilteredUnreadCount());
 
         // ─── Sound + Desktop notification ───────────────────────────────
@@ -1169,7 +1175,7 @@ export function useZaloEvents() {
       const threadId = reaction.threadId || rData.idTo || rData.threadId || '';
       const userId = String(rData.uidFrom || reaction.uidFrom || '');
 
-      // TARGET msgId: trong rMsg[0].gMsgID — đây là ID tin nhắn được react, KHÔNG phải action ID
+      // TARGET msgId: trong rMsg[0].gMsgID - đây là ID tin nhắn được react, KHÔNG phải action ID
       const rMsg = rData.content?.rMsg || reaction.content?.rMsg || [];
       const targetMsgId = rMsg.length > 0
         ? String(rMsg[0].gMsgID || rMsg[0].cMsgID || '')
@@ -1189,7 +1195,7 @@ export function useZaloEvents() {
     });
 
     // ─── Delete message events (chat.delete) ─────────────────────────────
-    // Đánh dấu recalled thay vì xoá — giữ lịch sử, hiển thị "Tin nhắn đã bị thu hồi"
+    // Đánh dấu recalled thay vì xoá - giữ lịch sử, hiển thị "Tin nhắn đã bị thu hồi"
     const unsubDelete = ipc.on('event:delete', (data: any) => {
       const { zaloId, msgIds, threadId } = data;
       if (!Array.isArray(msgIds) || !msgIds.length) return;
@@ -1213,7 +1219,7 @@ export function useZaloEvents() {
     const unsubUndo = ipc.on('event:undo', (data: any) => {
       const { zaloId, msgId, threadId } = data;
       if (!msgId) return;
-      // Đánh dấu tin nhắn là đã thu hồi (không xóa) — hiển thị "Tin nhắn đã thu hồi"
+      // Đánh dấu tin nhắn là đã thu hồi (không xóa) - hiển thị "Tin nhắn đã thu hồi"
       useChatStore.getState().recallMessage(zaloId, msgId, threadId);
 
       // Nếu đây là tin nhắn cuối của conversation → cập nhật preview trong sidebar
@@ -1504,7 +1510,7 @@ export function useZaloEvents() {
             }
           }
 
-          // Patch cache in-place — no full API refetch needed
+          // Patch cache in-place - no full API refetch needed
           appState.setGroupInfo(zaloId, groupId, {
             ...cachedGroup,
             members,
@@ -1562,7 +1568,7 @@ export function useZaloEvents() {
             },
           }));
         } else if (msgId) {
-          // Message not found yet — store as pending and retry
+          // Message not found yet - store as pending and retry
           const pendingKey = `${zaloId}_${threadId}_${msgId}`;
           pendingEmployeeSenders.set(pendingKey, { employee_id, employee_name: employeeName, employee_avatar: employeeAvatar });
           // Retry after delays in case message arrives late
@@ -1625,7 +1631,7 @@ export function useZaloEvents() {
     }));
     unsubs.push(ipc.on('db:contactAliasChanged', (data: any) => {
       window.dispatchEvent(new CustomEvent('ui:contactAliasChanged', { detail: data }));
-      // Cập nhật Zustand store ngay lập tức — quan trọng cho employee nhận từ relay
+      // Cập nhật Zustand store ngay lập tức - quan trọng cho employee nhận từ relay
       if (data?.ownerZaloId && data?.contactId && data?.alias !== undefined) {
         useChatStore.getState().updateContact(data.ownerZaloId, {
           contact_id: data.contactId,

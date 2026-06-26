@@ -1,5 +1,5 @@
 /**
- * UserProfilePopup — Popup thông tin người dùng
+ * UserProfilePopup - Popup thông tin người dùng
  * Reusable: dùng được trong ChatWindow, FriendList, Dashboard, ...
  */
 import React from 'react';
@@ -148,7 +148,7 @@ export function UserProfilePopup({ userId, anchorX, anchorY, contacts, activeAcc
     load();
   }, [userId, activeAccountId]);
 
-  // Load mutual groups — only for Zalo accounts
+  // Load mutual groups - only for Zalo accounts
   React.useEffect(() => {
     setMutualGroupsLoading(true);
     setMutualGroups([]);

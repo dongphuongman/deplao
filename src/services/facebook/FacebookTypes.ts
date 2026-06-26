@@ -187,7 +187,7 @@ export interface FBMessageRequest {
 export interface FBMQTTAttachment {
   id: string | number;
   url: string | null;
-  /** 'image' | 'video' | 'audio' | 'file' — detected from __typename */
+  /** 'image' | 'video' | 'audio' | 'file' - detected from __typename */
   attachmentType?: string;
   /** Original filename for file/doc attachments */
   name?: string;
@@ -215,7 +215,7 @@ export interface FBMQTTMessage {
   type: FBThreadType;
   /** Message mentions */
   mentions?: any[];
-  /** Primary attachment (first one — backward compat) */
+  /** Primary attachment (first one - backward compat) */
   attachments: FBMQTTAttachment;
   /** All attachments when message contains multiple (e.g. batch image send) */
   allAttachments?: FBMQTTAttachment[];
@@ -224,9 +224,9 @@ export interface FBMQTTMessage {
   /** Sender ID of the message being replied to */
   replyToSenderId?: string;
   // ─── E2EE fields (set when message comes from E2EE bridge) ──────────────
-  /** E2EE chat JID (e.g. "100012345678@msgr") — only for 1:1 encrypted messages */
+  /** E2EE chat JID (e.g. "100012345678@msgr") - only for 1:1 encrypted messages */
   chatJid?: string;
-  /** E2EE sender JID — sender's identity in encrypted chat */
+  /** E2EE sender JID - sender's identity in encrypted chat */
   senderJid?: string;
   /** Whether this message was decrypted by the E2EE bridge */
   isE2EE?: boolean;
@@ -284,7 +284,7 @@ export interface FBE2EESendResult {
   timestampMs?: number;
 }
 
-/** E2EE message shape from bridge — normalized before passing to handleIncomingMessage */
+/** E2EE message shape from bridge - normalized before passing to handleIncomingMessage */
 export interface FBE2EEMessageRaw {
   id: string;
   text: string | null;

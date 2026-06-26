@@ -1,7 +1,7 @@
 import { ipcMain, net } from 'electron';
 
 /**
- * Utility IPC handlers — fetch URLs from main process (no CORS restrictions)
+ * Utility IPC handlers - fetch URLs from main process (no CORS restrictions)
  */
 export function registerUtilIpc(): void {
   /**

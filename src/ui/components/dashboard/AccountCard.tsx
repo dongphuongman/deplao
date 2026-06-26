@@ -281,7 +281,7 @@ export default function AccountCard({ account: acc, onReconnect, employeeChatOnl
                   <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
                 <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-900 border border-gray-600 rounded-lg text-[10px] text-red-300 whitespace-nowrap z-50 hidden group-hover:block shadow-lg">
-                  Listener bị ngắt — Thử kết nối lại hoặc quét QR mới
+                  Listener bị ngắt - Thử kết nối lại hoặc quét QR mới
                 </span>
               </span>
             )}
@@ -412,7 +412,7 @@ export default function AccountCard({ account: acc, onReconnect, employeeChatOnl
 
       {/* Actions */}
       <div className="flex flex-col gap-2">
-        {/* Row 1: Chat + Connect/Disconnect — ẩn Chat khi listener chết */}
+        {/* Row 1: Chat + Connect/Disconnect - ẩn Chat khi listener chết */}
         <div className="flex gap-2">
           {!listenerDead && (
             <button
@@ -443,7 +443,7 @@ export default function AccountCard({ account: acc, onReconnect, employeeChatOnl
           ))}
         </div>
 
-        {/* Row 2: chỉ hiện khi listener chết — 2 nút Reconnect + QR/Cookie */}
+        {/* Row 2: chỉ hiện khi listener chết - 2 nút Reconnect + QR/Cookie */}
         {!employeeChatOnly && listenerDead && (
           <div className="flex gap-2">
             <button

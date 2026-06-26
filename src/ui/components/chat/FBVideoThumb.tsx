@@ -58,7 +58,7 @@ export default function FBVideoThumb({ videoPath }: FBVideoThumbProps) {
       if (!mounted) return;
       // First capture current frame (at position 0) as fallback
       const captured = capture();
-      // Then seek to 0.5s for a better frame — if seeked fires, it replaces the thumb
+      // Then seek to 0.5s for a better frame - if seeked fires, it replaces the thumb
       video.currentTime = 0.5;
       video.addEventListener('seeked', onSeeked, { once: true });
       // Safety timeout: if seek takes too long (large file), keep the frame-0 capture
@@ -148,7 +148,7 @@ export default function FBVideoThumb({ videoPath }: FBVideoThumbProps) {
         </div>
       </div>
 
-      {/* Action buttons — top right, on hover */}
+      {/* Action buttons - top right, on hover */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/video:opacity-100 transition-opacity">
         <button onClick={handleOpenFolder} title="Mở thư mục"
           className="w-7 h-7 bg-black/60 hover:bg-black/80 rounded-lg flex items-center justify-center text-white transition-colors">

@@ -154,7 +154,7 @@ export default function RelayStatusPanel() {
                     {/* Pros / Cons */}
                     <div className="space-y-0.5">
                         <p className="text-[10px] text-green-400">✓ Tốc độ cao, ổn định</p>
-                        <p className="text-[10px] text-green-400">✓ Bảo mật — không qua internet</p>
+                        <p className="text-[10px] text-green-400">✓ Bảo mật - không qua internet</p>
                         <p className="text-[10px] text-gray-600">✗ Phải cùng mạng nội bộ (LAN / VPN)</p>
                         <p className="text-[10px] text-gray-600">✗ IP có thể thay đổi nếu dùng DHCP</p>
                     </div>
@@ -270,7 +270,7 @@ export default function RelayStatusPanel() {
                     {/* Hint when idle */}
                     {relayRunning && !tunnelActive && (
                         <p className="text-[10px] text-gray-600 leading-relaxed pt-1 border-t border-gray-700/50">
-                            Dùng <span className="text-gray-400">localtunnel</span> — miễn phí, không cần cài đặt thêm. Phù hợp cho nhân viên làm việc từ xa hoặc work-from-home.
+                            Dùng <span className="text-gray-400">localtunnel</span> - miễn phí, không cần cài đặt thêm. Phù hợp cho nhân viên làm việc từ xa hoặc work-from-home.
                         </p>
                     )}
                 </div>
@@ -313,10 +313,10 @@ export default function RelayStatusPanel() {
             <div className="bg-yellow-500/8 border border-yellow-500/20 rounded-xl p-3 space-y-2">
                 <p className="text-[11px] font-semibold text-yellow-400">⚠️ Lưu ý quan trọng</p>
                 <ul className="text-[11px] text-gray-400 space-y-1.5 leading-relaxed">
-                    <li><span className="text-gray-300 font-medium">Server tắt khi đóng app</span> — nhân viên bị ngắt kết nối, cần bật lại và đăng nhập lại sau mỗi lần restart.</li>
-                    <li><span className="text-gray-300 font-medium">LAN — IP động</span>: Khuyến nghị đặt IP tĩnh để nhân viên không cần đổi địa chỉ sau mỗi lần restart.</li>
-                    <li><span className="text-gray-300 font-medium">WAN — URL tunnel thay đổi</span>: Nhân viên cần cập nhật URL mới mỗi khi Boss bật lại tunnel.</li>
-                    <li><span className="text-gray-300 font-medium">Kết nối SSE</span>: Không cần mở port trên máy nhân viên — hoạt động cả LAN lẫn WAN.</li>
+                    <li><span className="text-gray-300 font-medium">Server tắt khi đóng app</span> - nhân viên bị ngắt kết nối, cần bật lại và đăng nhập lại sau mỗi lần restart.</li>
+                    <li><span className="text-gray-300 font-medium">LAN - IP động</span>: Khuyến nghị đặt IP tĩnh để nhân viên không cần đổi địa chỉ sau mỗi lần restart.</li>
+                    <li><span className="text-gray-300 font-medium">WAN - URL tunnel thay đổi</span>: Nhân viên cần cập nhật URL mới mỗi khi Boss bật lại tunnel.</li>
+                    <li><span className="text-gray-300 font-medium">Kết nối SSE</span>: Không cần mở port trên máy nhân viên - hoạt động cả LAN lẫn WAN.</li>
                 </ul>
             </div>
         </div>

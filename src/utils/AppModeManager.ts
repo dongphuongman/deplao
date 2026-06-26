@@ -4,7 +4,7 @@ import WorkspaceManager from './WorkspaceManager';
 export type AppMode = 'standalone' | 'boss' | 'employee';
 
 /**
- * AppModeManager — Tracks which mode the app is running in.
+ * AppModeManager - Tracks which mode the app is running in.
  * Singleton, runs in main process.
  *
  * - standalone: Default mode, app works as before
@@ -46,10 +46,10 @@ class AppModeManager {
         Logger.log(`[AppModeManager] Mode set to: ${mode} (manual override)`);
     }
 
-    /** Reset manual override — mode will be derived from active workspace */
+    /** Reset manual override - mode will be derived from active workspace */
     public clearOverride(): void {
         this.manualOverride = false;
-        Logger.log(`[AppModeManager] Manual override cleared — mode derived from workspace`);
+        Logger.log(`[AppModeManager] Manual override cleared - mode derived from workspace`);
     }
 
     public isEmployeeMode(): boolean {

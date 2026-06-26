@@ -16,7 +16,7 @@ const showcaseWorkflows = [
   // ── ban-hang (10) ──────────────────────────────────────────────────────────
   {
     icon: '💬', title: 'Tự động trả lời tin nhắn',
-    desc: 'Gửi câu trả lời cố định khi nhận tin nhắn mới — phù hợp làm thông báo "đã nhận tin".',
+    desc: 'Gửi câu trả lời cố định khi nhận tin nhắn mới - phù hợp làm thông báo "đã nhận tin".',
     category: 'ban-hang', difficulty: 'easy' as const, featured: false,
     steps: ['Nhận tin nhắn', 'Hiệu ứng đang gõ', 'Gửi câu trả lời'],
   },
@@ -281,7 +281,7 @@ const WorkflowShowcase: React.FC = () => {
               Tạo automation theo <span className="gradient-text">luồng công việc thật</span>
             </h2>
             <p className="text-slate-600 text-lg max-w-2xl aos-element delay-2 leading-relaxed">
-              Không chỉ là hiệu ứng kéo-thả: builder của Deplao tập trung vào use case vận hành Zalo thực tế — phản hồi lead, theo dõi đơn, chăm sóc sau bán, cảnh báo nội bộ và tích hợp hệ thống ngoài.
+              Không chỉ là hiệu ứng kéo-thả: builder của Deplao tập trung vào use case vận hành Zalo thực tế - phản hồi lead, theo dõi đơn, chăm sóc sau bán, cảnh báo nội bộ và tích hợp hệ thống ngoài.
             </p>
           </div>
 
@@ -381,7 +381,7 @@ const WorkflowShowcase: React.FC = () => {
         <div className="text-center mb-8 aos-element delay-3">
           <h3 className="text-2xl font-bold text-slate-950 mb-2">📦 Kho mẫu Workflow có sẵn</h3>
           <p className="text-slate-600 text-sm mb-6">
-            50+ workflow dựng sẵn — chọn, xem trước, cài đặt trong 1 click
+            50+ workflow dựng sẵn - chọn, xem trước, cài đặt trong 1 click
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             <button

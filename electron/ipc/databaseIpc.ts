@@ -40,7 +40,7 @@ async function copyDirRecursive(
     return _counter.n;
 }
 
-// Đếm tổng số file trong thư mục (recursive) — dùng để hiện tiến trình X / Y.
+// Đếm tổng số file trong thư mục (recursive) - dùng để hiện tiến trình X / Y.
 async function countFiles(dir: string): Promise<number> {
     let count = 0;
     const entries = await fs.promises.readdir(dir, { withFileTypes: true });
@@ -256,7 +256,7 @@ export function registerDatabaseIpc() {
                 FileStorageService.resetBaseDir();
 
                 // Convert ALL absolute local_paths → relative (folder-agnostic).
-                // Works for any old base dir — no need to rewriteLocalPaths first.
+                // Works for any old base dir - no need to rewriteLocalPaths first.
                 try {
                     const migrated = DatabaseService.getInstance().migrateAllAbsolutePathsToRelative();
                     if (migrated > 0) {
@@ -321,7 +321,7 @@ export function registerDatabaseIpc() {
             FileStorageService.resetBaseDir();
 
             // ── Bước 7: Cập nhật local_paths trong DB sang đường dẫn mới ─────────────
-            // Chạy ngay cả khi media copy có lỗi một phần (mediaError set) — DB đã được
+            // Chạy ngay cả khi media copy có lỗi một phần (mediaError set) - DB đã được
             // copy xong nên paths cần được rewrite để trỏ đúng vào vị trí mới.
             let pathsRewritten = 0;
             if (oldMediaDir !== newMediaDir) {

@@ -1,6 +1,6 @@
 /**
  * useChatEvents.ts
- * Unified event hook — lắng nghe cả Zalo và Facebook events,
+ * Unified event hook - lắng nghe cả Zalo và Facebook events,
  * normalize về cùng chatStore (unified store).
  *
  * Phase B4: merge Facebook events vào chatStore.
@@ -45,7 +45,7 @@ function fbAttachmentPreview(attachType: string, attObj: any): string {
 
 /**
  * Normalize một FB MQTT message → MessageItem format của chatStore
- * Giữ nguyên attachment type gốc — MessageBubbles tự quyết định render.
+ * Giữ nguyên attachment type gốc - MessageBubbles tự quyết định render.
  * loadMessageFromDB (saveFBMessage) map sticker→image nhưng live event
  * để nguyên type để StickerBubble/MediaBubble xử lý phù hợp.
  */
@@ -59,7 +59,7 @@ function normalizeFBMessage(fbAccountId: string, msg: any): MessageItem {
   // rawType: giữ nguyên type gốc từ MQTT (sticker, image, video, file...)
   // Cho phép backend override msg_type (vd 'system' cho admin notification)
   const rawType = msg.msg_type || (!hasAttachment ? 'text' : (msg.attachments.attachmentType || 'image'));
-  // KHÔNG map sticker→image ở đây — để MessageBubbles.isStickerType xử lý
+  // KHÔNG map sticker→image ở đây - để MessageBubbles.isStickerType xử lý
   const msgType = rawType;
 
   if (rawType === 'sticker') {
@@ -68,7 +68,7 @@ function normalizeFBMessage(fbAccountId: string, msg: any): MessageItem {
 
   // Generate display content: body text OR attachment preview
   const attachPreview = fbAttachmentPreview(rawType, msg.attachments);
-  // FB sometimes sends body as "[file: name]" or "[image]" system text — prefer attachment preview
+  // FB sometimes sends body as "[file: name]" or "[image]" system text - prefer attachment preview
   const bodyIsSystemText = msg.body && /^\[.+\]$/.test(msg.body.trim());
   const content = (!msg.body || bodyIsSystemText) ? attachPreview : msg.body;
 
@@ -80,7 +80,7 @@ function normalizeFBMessage(fbAccountId: string, msg: any): MessageItem {
     ...(a.fileSize != null ? { fileSize: a.fileSize } : {}),
     ...(a.mimeType ? { mimeType: a.mimeType } : {}),
     ...(a.localPath ? { localPath: a.localPath } : {}),
-    // E2EE media download fields — cần preserve để StickerBubble biết sticker có thể download
+    // E2EE media download fields - cần preserve để StickerBubble biết sticker có thể download
     ...(a.directPath ? { directPath: a.directPath } : {}),
     ...(a.mediaKey ? { mediaKey: a.mediaKey } : {}),
     ...(a.mediaSha256 ? { mediaSha256: a.mediaSha256 } : {}),
@@ -422,7 +422,7 @@ export function useChatEvents(): void {
       emoji: string;
     }) => {
       if (!data?.fbAccountId || !data?.messageId) return;
-      // Need threadId to update reaction — search through cached messages if not provided
+      // Need threadId to update reaction - search through cached messages if not provided
       if (data.threadId) {
         useChatStore.getState().updateMessageReaction(
           data.fbAccountId, data.threadId, data.messageId, data.userId, data.emoji

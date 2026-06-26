@@ -252,7 +252,7 @@ function CloneModal({ workflow, accounts, onClose, onDone }: {
         </div>
         <div className="p-5 space-y-4">
           <p className="text-gray-400 text-xs leading-relaxed">
-            Chọn tài khoản đích để sao chép workflow. Tất cả nodes, edges và cấu hình sẽ được copy — chỉ tài khoản áp dụng thay đổi.
+            Chọn tài khoản đích để sao chép workflow. Tất cả nodes, edges và cấu hình sẽ được copy - chỉ tài khoản áp dụng thay đổi.
           </p>
           {available.length === 0 ? (
             <div className="bg-gray-800/60 border border-gray-700 rounded-xl px-4 py-5 text-center">
@@ -780,7 +780,7 @@ export default function WorkflowList({ onEdit, onOpenStore }: Props) {
     setRunningId(id);
     try {
       const res = await ipc.workflow?.runManual(id, triggerData);
-      if (res?.success) showNotification(`Chạy xong — ${res.log?.status}`, 'success');
+      if (res?.success) showNotification(`Chạy xong - ${res.log?.status}`, 'success');
       else showNotification(res?.error || 'Lỗi chạy workflow', 'error');
     } finally {
       setRunningId(null);
@@ -904,7 +904,7 @@ export default function WorkflowList({ onEdit, onOpenStore }: Props) {
 
   const getTriggerLabel = (wf: any) => {
     const trigger = (wf.nodes || []).find((n: any) => n.type?.startsWith('trigger.'));
-    return trigger ? (triggerTypeLabel[trigger.type] || trigger.type) : '—';
+    return trigger ? (triggerTypeLabel[trigger.type] || trigger.type) : '-';
   };
 
   /** Page badges shown in each workflow card's meta row */
@@ -963,7 +963,7 @@ export default function WorkflowList({ onEdit, onOpenStore }: Props) {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Clone-all — only available when exactly 1 account is filtered */}
+            {/* Clone-all - only available when exactly 1 account is filtered */}
             {filterPages.length === 1 && (
                 <button
                     onClick={() => setCloneAllSource(filterPages[0])}
@@ -1036,7 +1036,7 @@ export default function WorkflowList({ onEdit, onOpenStore }: Props) {
               )}
             </div>
 
-            {/* Multi-select page filter — only when accounts exist */}
+            {/* Multi-select page filter - only when accounts exist */}
             {accounts.length > 0 && (
               <PageFilterButton accounts={accounts} filterPages={filterPages} onChange={setFilterPages} />
             )}
@@ -1140,7 +1140,7 @@ export default function WorkflowList({ onEdit, onOpenStore }: Props) {
                       <button
                         onClick={(e) => { e.stopPropagation(); handleToggle(wf.id, !wf.enabled); }}
                         className="flex-shrink-0"
-                        title={wf.enabled ? 'Đang bật — nhấn để tắt' : 'Đang tắt — nhấn để bật'}
+                        title={wf.enabled ? 'Đang bật - nhấn để tắt' : 'Đang tắt - nhấn để bật'}
                       >
                         <div className={`w-9 h-[20px] rounded-full transition-colors relative ${wf.enabled ? 'bg-blue-600' : 'bg-gray-700'}`}>
                           <span className={`absolute top-[3px] w-[14px] h-[14px] bg-white rounded-full shadow transition-all ${wf.enabled ? 'left-[19px]' : 'left-[3px]'}`} />

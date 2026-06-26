@@ -51,7 +51,7 @@ function getOpenAICompatibleUrl(platform: string): string {
   }
 }
 
-/** Resolve API URL — uses baseUrl override if set, otherwise falls back to default */
+/** Resolve API URL - uses baseUrl override if set, otherwise falls back to default */
 function resolveApiUrl(platform: string, model: string, apiKey: string, baseUrl: string | null): string {
   if (baseUrl) {
     const base = baseUrl.replace(/\/+$/, '');
@@ -81,11 +81,11 @@ function resolveApiUrl(platform: string, model: string, apiKey: string, baseUrl:
 /** Normalize legacy/incorrect model names to current API model IDs */
 function normalizeModelName(model: string): string {
   const aliases: Record<string, string> = {
-    // DeepSeek — fake versioned names that were never real API model IDs
+    // DeepSeek - fake versioned names that were never real API model IDs
     'deepseek-chat-v3.2':    'deepseek-v4-flash',
     'deepseek-chat-v3.1':    'deepseek-v4-flash',
     'deepseek-reasoner-r1.5':'deepseek-v4-pro',
-    // Gemini — wrong model IDs (missing -preview suffix or wrong version)
+    // Gemini - wrong model IDs (missing -preview suffix or wrong version)
     'gemini-3.1-pro':        'gemini-3.1-pro-preview',
     'gemini-3.1-flash':      'gemini-3.5-flash',
     'gemini-3.0-flash':      'gemini-3-flash-preview',
@@ -265,7 +265,7 @@ class AIAssistantService {
       }
     }
 
-    // 3. POS product data — prefer pinned products, fallback to live fetch
+    // 3. POS product data - prefer pinned products, fallback to live fetch
     let pinnedProducts: any[] = [];
     try { pinnedProducts = JSON.parse(assistant.pinnedProductsJson || '[]'); } catch {}
 
@@ -307,11 +307,11 @@ class AIAssistantService {
     if (forWorkflow) {
       parts.push(`
 
-[QUY TẮC TRẢ LỜI — BẮT BUỘC TUÂN THỦ 100%]
+[QUY TẮC TRẢ LỜI - BẮT BUỘC TUÂN THỦ 100%]
 
 1. PHONG CÁCH: Trả lời tự nhiên như người thật đang chat. Ngắn gọn, thân thiện, KHÔNG dùng markdown, KHÔNG dùng bullet/numbering, KHÔNG dùng emoji quá nhiều.
 
-2. CHIA CÂU: Mỗi ý tách riêng thành 1 câu ngắn gọn (mỗi câu là 1 tin nhắn chat riêng). KHÔNG dồn hết mọi thứ vào 1 đoạn dài. Tưởng tượng bạn đang nhắn tin trên điện thoại — mỗi lần gửi 1-2 câu ngắn.
+2. CHIA CÂU: Mỗi ý tách riêng thành 1 câu ngắn gọn (mỗi câu là 1 tin nhắn chat riêng). KHÔNG dồn hết mọi thứ vào 1 đoạn dài. Tưởng tượng bạn đang nhắn tin trên điện thoại - mỗi lần gửi 1-2 câu ngắn.
 
 3. HÌNH ẢNH: Nếu trong dữ liệu kiến thức/sản phẩm có link ảnh (URL bắt đầu bằng http:// hoặc https:// và kết thúc bằng .jpg, .jpeg, .png, .gif, .webp hoặc chứa /image), hãy trả về dạng image. Chỉ gửi ảnh khi thực sự liên quan đến câu hỏi.
 

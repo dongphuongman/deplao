@@ -7,7 +7,7 @@ import * as path from 'path';
 import imageSize from 'image-size';
 
 /**
- * CRMQueueService — chạy trong main process
+ * CRMQueueService - chạy trong main process
  * Token bucket per account: max 60 tin/giờ, refill 1 token mỗi 60s
  * Dispatcher loop: kiểm tra mỗi 5s, nếu đủ delay → gửi 1 tin rồi đợi
  */
@@ -16,7 +16,7 @@ class CRMQueueService {
     private timers: Map<string, ReturnType<typeof setInterval>> = new Map();
     private lastSentAt: Map<string, number> = new Map();
     private isProcessing: Map<string, boolean> = new Map();
-    // Token bucket: max 60/giờ — refill 1 token mỗi 60s
+    // Token bucket: max 60/giờ - refill 1 token mỗi 60s
     private tokens: Map<string, number> = new Map();
     private lastRefillAt: Map<string, number> = new Map();
     // Daily limit tracking: campaignId → paused due to daily limit
@@ -163,11 +163,15 @@ class CRMQueueService {
             this.dailyPausedCampaigns.delete(item.campaign_id);
         }
 
-        // Check delay (campaign.delay_seconds + jitter ±10s)
-        const delayMs = Math.max(this.MIN_DELAY_MS, (item.delay_seconds || 60) * 1000);
-        const jitter = (Math.random() - 0.5) * 20000; // ±10s
+        // Check delay: random between delay_min_seconds and delay_max_seconds (range-based)
+        const itemAny = item as any;
+        const rawMin = itemAny.delay_min_seconds ?? Math.max(30, (item.delay_seconds || 60) - 10);
+        const rawMax = itemAny.delay_max_seconds ?? Math.max(rawMin, (item.delay_seconds || 60) + 10);
+        const delayMinSec = Math.max(this.MIN_DELAY_MS / 1000, rawMin);
+        const delayMaxSec = Math.max(delayMinSec, rawMax);
+        const actualDelayMs = (delayMinSec + Math.random() * (delayMaxSec - delayMinSec)) * 1000;
         const lastSent = this.lastSentAt.get(zaloId) || 0;
-        if (Date.now() - lastSent < delayMs + jitter) return;
+        if (Date.now() - lastSent < actualDelayMs) return;
 
         // Get connection
         const conn = ConnectionManager.getConnection(zaloId);
@@ -292,7 +296,7 @@ class CRMQueueService {
                             attachments.push({ data: buffer, filename: safeFilename, metadata: { totalSize: buffer.length, width, height } });
                         } catch (readErr: any) {
                             Logger.error(`[CRMQueue] Image read failed: ${filePath} → ${readErr.message}`);
-                            throw new Error(`Không đọc được ảnh: ${filePath} — ${readErr.message}`);
+                            throw new Error(`Không đọc được ảnh: ${filePath} - ${readErr.message}`);
                         }
                     }
                     if (attachments.length > 0) {
@@ -336,11 +340,22 @@ class CRMQueueService {
 
             // Helper: send multiple blocks with per-block error catching
             const sendBlocks = async (blocks: ContentBlock[], threadId: string, threadType: number): Promise<{ sent: number; errors: string[]; responses: any[] }> => {
+                // Per-contact delay between blocks: use campaign config or fallback 1s
+                let perContactDelayMs = 1000;
+                if (campaignData) {
+                    const pcMin = campaignData.per_contact_delay_min_seconds || 0;
+                    const pcMax = campaignData.per_contact_delay_max_seconds || 0;
+                    if (pcMin > 0 && pcMax > 0) {
+                        perContactDelayMs = (pcMin + Math.random() * (pcMax - pcMin)) * 1000;
+                    } else if (pcMin > 0) {
+                        perContactDelayMs = pcMin * 1000;
+                    }
+                }
                 let sent = 0;
                 const errors: string[] = [];
                 const responses: any[] = [];
                 for (let bi = 0; bi < blocks.length; bi++) {
-                    if (bi > 0) await new Promise(r => setTimeout(r, 1000));
+                    if (bi > 0) await new Promise(r => setTimeout(r, perContactDelayMs));
                     try {
                         const resps = await sendBlock(blocks[bi], threadId, threadType);
                         responses.push(...resps);
@@ -490,7 +505,7 @@ class CRMQueueService {
         } catch (err: any) {
             const errMsg = err?.message || String(err);
             Logger.error(`[CRMQueue] ❌ Failed to send to ${effectiveContactId}: ${errMsg}`);
-            // Always save log on failure — use describeBlock for human-readable message
+            // Always save log on failure - use describeBlock for human-readable message
             const fallbackLogMsg = blocksToSend.length > 0
                 ? blocksToSend.map(describeBlock).join(' | ')
                 : (item.template_message || '(unknown)');
@@ -503,7 +518,7 @@ class CRMQueueService {
                     errorCode: err?.errorCode ?? err?.code ?? err?.error_code ?? undefined,
                 };
                 db.saveSendLog({ ...logBase,
-                    message: `[Lỗi] ${errMsg} — ${fallbackLogMsg}`,
+                    message: `[Lỗi] ${errMsg} - ${fallbackLogMsg}`,
                     status: 'failed', error: errMsg,
                     send_type: campaignType === 'friend_request' ? 'friend_request' : campaignType === 'mixed' ? 'mixed' : 'message',
                     data_request: JSON.stringify({ type: campaignType, contact_id: effectiveContactId }),

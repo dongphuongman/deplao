@@ -1,5 +1,5 @@
 /**
- * ChannelBadge.tsx — Hiển thị badge kênh (Zalo / Facebook) trên avatar, contact card, etc.
+ * ChannelBadge.tsx - Hiển thị badge kênh (Zalo / Facebook) trên avatar, contact card, etc.
  */
 
 import React from 'react';
@@ -68,7 +68,7 @@ export default function ChannelBadge({ channel, size = 'sm', className = '' }: P
   );
 }
 
-/** Positioned badge for avatars — absolute bottom-right */
+/** Positioned badge for avatars - absolute bottom-right */
 export function ChannelBadgeOverlay({ channel, size = 'xs' }: Props) {
   return (
     <ChannelBadge

@@ -42,7 +42,7 @@ interface CRMContactListProps {
   onImportPhones?: () => void;
 }
 
-/** Dropdown to pick labels for filtering — supports Local + Zalo tabs */
+/** Dropdown to pick labels for filtering - supports Local + Zalo tabs */
 function LabelFilterDropdown({ allLabels, filterLabelIds, filterLocalLabelIds, onChange, localLabels }: {
   allLabels: LabelData[];
   filterLabelIds: number[];
@@ -363,7 +363,7 @@ function SortDropdown({ sortBy, sortDir, onChange }: {
   );
 }
 
-/** Actions dropdown — replaces the old Export CSV button */
+/** Actions dropdown - replaces the old Export CSV button */
 function ActionsDropdown({ total, exportingCSV, onExportCSV, onImportPhones }: {
   total: number;
   exportingCSV: boolean;
@@ -526,7 +526,7 @@ export default function CRMContactList({
     <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-700 flex-shrink-0">
-        {/* Select-all button — chọn TOÀN BỘ tất cả trang */}
+        {/* Select-all button - chọn TOÀN BỘ tất cả trang */}
         <button
           disabled={selectingAllPages}
           onClick={async () => {
@@ -677,7 +677,7 @@ export default function CRMContactList({
                     </svg>
                   )}
                 </div>
-                {/* Avatar — click opens UserProfilePopup */}
+                {/* Avatar - click opens UserProfilePopup */}
                 <div className="w-8 h-8 flex-shrink-0 rounded-full overflow-hidden relative group/av cursor-pointer"
                   onClick={e => {
                     e.stopPropagation();

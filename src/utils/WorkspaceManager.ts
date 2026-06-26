@@ -115,10 +115,10 @@ class WorkspaceManager {
 
     /**
      * First-time migration: create default workspace from existing DB.
-     * Existing deplao-tool.db stays in place — the default workspace simply points to it.
+     * Existing deplao-tool.db stays in place - the default workspace simply points to it.
      */
     private migrateFromLegacy(): void {
-        Logger.log('[WorkspaceManager] No workspaces.json found — creating default workspace from legacy DB');
+        Logger.log('[WorkspaceManager] No workspaces.json found - creating default workspace from legacy DB');
 
         // Check for custom dbFolder config
         let dbFolder = this.userDataPath;
@@ -141,7 +141,7 @@ class WorkspaceManager {
             type: 'local',
             icon: '🏠',
             createdAt: Date.now(),
-            dbPath: DEFAULT_DB_NAME,       // relative — DatabaseService resolves it
+            dbPath: DEFAULT_DB_NAME,       // relative - DatabaseService resolves it
             relayEnabled: false,
             relayPort: 9900,
         };

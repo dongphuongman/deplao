@@ -27,7 +27,7 @@ export class GHTKAdapter extends IntegrationAdapter {
       });
       if (res.data?.success) {
         const balance = res.data?.data?.balance ?? 0;
-        return { success: true, message: `Kết nối GHTK thành công — Số dư: ${balance.toLocaleString('vi-VN')}đ` };
+        return { success: true, message: `Kết nối GHTK thành công - Số dư: ${balance.toLocaleString('vi-VN')}đ` };
       }
       return { success: false, message: res.data?.message || 'Không thể kết nối GHTK' };
     } catch (e: any) {

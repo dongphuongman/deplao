@@ -164,12 +164,12 @@ export async function loginWithCredentials(
     return buildLoginResult(dataJson, 1, [cookies]);
   }
 
-  // Not a 2FA challenge — return error
+  // Not a 2FA challenge - return error
   if (error.error_subcode !== 1348162) {
     return buildLoginResult(dataJson, 0);
   }
 
-  // 2FA required but user didn't provide a secret — return the 2FA error immediately
+  // 2FA required but user didn't provide a secret - return the 2FA error immediately
   // (không thử bước 2 với password rỗng, tránh lỗi 400 ghi đè)
   if (!twoFASecret) {
     return buildLoginResult(dataJson, 0);

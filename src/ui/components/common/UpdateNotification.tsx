@@ -43,7 +43,7 @@ export function UpdateNotification() {
     postpone(ms);
   }, [postpone]);
 
-  // Watch postponedUntil — khi nó được set, đặt timer để re-show sau đúng thời điểm
+  // Watch postponedUntil - khi nó được set, đặt timer để re-show sau đúng thời điểm
   useEffect(() => {
     if (!postponedUntil) return;
     if (postponeTimerRef.current) clearTimeout(postponeTimerRef.current);
@@ -151,7 +151,7 @@ export function UpdateNotification() {
           <p className="font-bold text-sm">🆕 Bản cập nhật mới</p>
           <p className={`text-xs ${isLight ? 'text-gray-500' : 'text-blue-100'}`}>Phiên bản {updateInfo.version}</p>
         </div>
-        {/* Nút hoãn có dropdown — ẩn khi đã tải xong (dùng nút riêng bên dưới) */}
+        {/* Nút hoãn có dropdown - ẩn khi đã tải xong (dùng nút riêng bên dưới) */}
         {status !== 'downloaded' && (
           <div className="relative flex-shrink-0">
             <button
@@ -182,7 +182,7 @@ export function UpdateNotification() {
         )}
       </div>
 
-      {/* Đang tải tự động — có progress */}
+      {/* Đang tải tự động - có progress */}
       {status === 'downloading' && progress && !showStallOrError && (
         <div className="mt-2 space-y-1">
           <div className={`flex justify-between text-xs ${isLight ? 'text-gray-500' : 'text-blue-100'}`}>
@@ -211,7 +211,7 @@ export function UpdateNotification() {
         </div>
       )}
 
-      {/* Lỗi hoặc treo — hiện nút retry + tải thủ công */}
+      {/* Lỗi hoặc treo - hiện nút retry + tải thủ công */}
       {showStallOrError && (
         <div className="mt-2 space-y-2">
           <p className={`text-xs ${isLight ? 'text-red-500' : 'text-red-200'}`}>
@@ -250,7 +250,7 @@ export function UpdateNotification() {
         </div>
       )}
 
-      {/* Đã tải xong — đếm ngược tự restart */}
+      {/* Đã tải xong - đếm ngược tự restart */}
       {status === 'downloaded' && (
         <div className="mt-2 space-y-2">
           <p className={`text-xs ${isLight ? 'text-gray-500' : 'text-blue-100'}`}>

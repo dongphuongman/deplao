@@ -265,7 +265,7 @@ export default function ChatHeader() {
       return;
     }
 
-    // 2. Message not in DOM — load messages around its timestamp
+    // 2. Message not in DOM - load messages around its timestamp
     if (!activeAccountId || !activeThreadId || !msg.timestamp) return;
     try {
       const { setMessages } = useChatStore.getState();
@@ -380,10 +380,10 @@ export default function ChatHeader() {
     }).catch(() => {});
   };
 
-  /** Mở popup sửa tên gợi nhớ */
+  /** Mở popup sửa tên gợi nhớ - pre-fill tên hiện tại giống Zalo PC */
   const handleOpenAliasEdit = (e: React.MouseEvent) => {
     if (!contact) return;
-    setAliasInputValue(contact?.alias || '');
+    setAliasInputValue(displayName);
     setAliasEditPos({ x: e.clientX, y: e.clientY });
     setAliasEditOpen(true);
   };
@@ -419,7 +419,7 @@ export default function ChatHeader() {
     }
   };
 
-  /** Reload alias + user info từ API Zalo — lưu toàn bộ alias + cập nhật thông tin hội thoại hiện tại */
+  /** Reload alias + user info từ API Zalo - lưu toàn bộ alias + cập nhật thông tin hội thoại hiện tại */
   const handleRefreshAlias = async () => {
     if (!activeThreadId || !activeAccountId || activeThreadType === 1) return;
     const acc = getActiveAccount();
@@ -478,7 +478,7 @@ export default function ChatHeader() {
     }
   };
 
-  /** Đổi tên nhóm — Zalo: API changeGroupName, Facebook: note local-only */
+  /** Đổi tên nhóm - Zalo: API changeGroupName, Facebook: note local-only */
   const handleOpenGroupNameEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     setGroupNameInput(displayName);
@@ -516,7 +516,7 @@ export default function ChatHeader() {
     }
   };
 
-  /** Reload thông tin Facebook từ HTML (tên + avatar) — chỉ cho 1-1 */
+  /** Reload thông tin Facebook từ HTML (tên + avatar) - chỉ cho 1-1 */
   const handleRefreshFacebookInfo = async () => {
     if (!activeThreadId || !activeAccountId || isGroup) return;
     const acc = getActiveAccount();
@@ -640,7 +640,7 @@ export default function ChatHeader() {
     <div className="flex flex-col border-b border-gray-700 bg-gray-800 flex-shrink-0">
       {/* Main header row */}
       <div className="flex items-center gap-3 px-4 py-2.5">
-        {/* Mobile back button — return to conversation list */}
+        {/* Mobile back button - return to conversation list */}
         {isMobile && (
           <button
             onClick={() => setMobileShowChat(false)}
@@ -652,7 +652,7 @@ export default function ChatHeader() {
             </svg>
           </button>
         )}
-        {/* Avatar — click to open profile for user chats */}
+        {/* Avatar - click to open profile for user chats */}
         <div
           className="relative flex-shrink-0 cursor-pointer"
           onClick={(e) => {
@@ -667,9 +667,9 @@ export default function ChatHeader() {
         </div>
 
         <div className="flex-1 min-w-0">
-          {/* Name row — name + alias reload on the same line */}
+          {/* Name row - name + alias reload on the same line */}
           <div className="flex items-center gap-1 min-w-0">
-            {/* Name — click to copy */}
+            {/* Name - click to copy */}
             <button
               onClick={handleCopyName}
               title={copied ? 'Đã sao chép!' : 'Nhấn để sao chép tên'}
@@ -683,7 +683,7 @@ export default function ChatHeader() {
                   </svg>
               }
             </button>
-            {/* Group rename button — chỉ cho nhóm Zalo (có API) */}
+            {/* Group rename button - chỉ cho nhóm Zalo (có API) */}
             {isGroup && channelCap.supportsGroupRename && (activeAccount?.channel || 'zalo') === 'zalo' && (
               <button
                 title="Đổi tên nhóm"
@@ -696,7 +696,7 @@ export default function ChatHeader() {
                 </svg>
               </button>
             )}
-            {/* Reload user info + alias button — chỉ hiện cho user DM có hỗ trợ alias */}
+            {/* Reload user info + alias button - chỉ hiện cho user DM có hỗ trợ alias */}
             {!isGroup && channelCap.supportsAlias && (activeAccount?.channel || 'zalo') === 'zalo' && (
               <button
                 title="Cập nhật thông tin + tên gợi nhớ"
@@ -711,7 +711,7 @@ export default function ChatHeader() {
                 </svg>
               </button>
             )}
-            {/* Facebook info reload — chỉ cho FB 1-1 */}
+            {/* Facebook info reload - chỉ cho FB 1-1 */}
             {isFacebookDM && (
                 <button
                     title="Tải lại thông tin từ Facebook"
@@ -726,7 +726,7 @@ export default function ChatHeader() {
                   </svg>
                 </button>
             )}
-            {/* Edit alias button — sửa tên gợi nhớ (mọi kênh) */}
+            {/* Edit alias button - sửa tên gợi nhớ (mọi kênh) */}
             {!isGroup && channelCap.supportsAlias && (
               <button
                 title={(activeAccount?.channel || 'zalo') === 'zalo' ? 'Sửa tên gợi nhớ (đồng bộ Zalo)' : 'Sửa tên gợi nhớ (lưu local trên app)'}
@@ -740,7 +740,7 @@ export default function ChatHeader() {
               </button>
             )}
           </div>
-          {/* Active labels row — clickable to open label picker */}
+          {/* Active labels row - clickable to open label picker */}
           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
             {channelCap.supportsLabel && (
             <ActiveLabels
@@ -751,7 +751,7 @@ export default function ChatHeader() {
               onClickPill={(e) => { e.stopPropagation(); setLabelPickerOpen({ x: e.clientX, y: e.clientY }); }}
             />
             )}
-            {/* Local labels — Pancake-style pills */}
+            {/* Local labels - Pancake-style pills */}
             {(() => {
               const activeLocalLabels = headerLocalLabels.filter(l => headerThreadLabelIds.has(l.id));
               if (activeLocalLabels.length === 0) return null;
@@ -767,7 +767,7 @@ export default function ChatHeader() {
                       key={`local-${label.id}`}
                       className="inline-flex items-center gap-0.5 text-[11px] px-1.5 py-1 rounded-full leading-none hover:opacity-80 transition-opacity cursor-pointer"
                       style={{ backgroundColor: label.color || '#3b82f6', color: label.text_color || '#ffffff' }}
-                      title={`${label.name} — Nhãn Local`}
+                      title={`${label.name} - Nhãn Local`}
                     >
                       {label.emoji && <span>{label.emoji}</span>}
                       <span>{label.name}</span>
@@ -853,7 +853,7 @@ export default function ChatHeader() {
             onClick={toggleConversationInfo}
             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${showConversationInfo ? 'bg-blue-600 text-white' : 'hover:bg-gray-700 text-gray-400 hover:text-white'}`}
           >
-            {/* Panel/sidebar toggle icon — square with right divider, like Zalo */}
+            {/* Panel/sidebar toggle icon - square with right divider, like Zalo */}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="18" height="18" rx="2"/>
               <line x1="15" y1="3" x2="15" y2="21"/>
@@ -863,7 +863,7 @@ export default function ChatHeader() {
       </div>
 
 
-      {/* Search bar — Zalo style with navigation */}
+      {/* Search bar - Zalo style with navigation */}
       {searchOpen && (
         <div className="px-3 pb-2.5 pt-1 flex items-center gap-2 border-t border-gray-700/50">
           {/* Input */}
@@ -981,7 +981,7 @@ export default function ChatHeader() {
         />
       )}
 
-      {/* Group name edit popup — đổi tên nhóm */}
+      {/* Group name edit popup - đổi tên nhóm */}
       {groupNameEditing && groupNameEditPos && isGroup && (
         <AliasEditPopup
           title="Đổi tên nhóm"
@@ -996,7 +996,7 @@ export default function ChatHeader() {
         />
       )}
 
-      {/* Alias edit popup — sửa tên gợi nhớ */}
+      {/* Alias edit popup - sửa tên gợi nhớ */}
       {aliasEditOpen && aliasEditPos && contact && (
         <AliasEditPopup
           value={aliasInputValue}

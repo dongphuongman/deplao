@@ -13,7 +13,7 @@
 
 > Phần mềm desktop quản lý Zalo & Facebook cá nhân Đa tài khoản tích hợp CRM, ERP, POS, Workflow và AI Assistant giúp đội nhóm bán hàng, chăm sóc khách hàng và marketing trên Zalo và Facebook vận hành tập trung trong một ứng dụng duy nhất.
 
-[![Version](https://img.shields.io/badge/version-26.6.6-22c55e)](#)
+[![Version](https://img.shields.io/badge/version-26.6.7-22c55e)](#)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-3b82f6)](#-runtime-requirements)
 [![Electron](https://img.shields.io/badge/Electron-41-47848f?logo=electron&logoColor=white)](#)
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)](#)
@@ -43,41 +43,41 @@
 <tr>
 <td align="center" width="50%">
 
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-Setup-26.6.6.exe">
-<img src="https://img.shields.io/badge/🪟_Windows_10/11-v26.6.6-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-Setup-26.6.7.exe">
+<img src="https://img.shields.io/badge/🪟_Windows_10/11-v26.6.7-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows" />
 </a>
 
-<big><strong>Deplao-Setup-26.6.6.exe</strong></big>
+<big><strong>Deplao-Setup-26.6.7.exe</strong></big>
 
 </td>
 <td align="center" width="50%">
 
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.6-arm64.dmg">
-<img src="https://img.shields.io/badge/🍎_macOS_M1+-v26.6.6-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.7-arm64.dmg">
+<img src="https://img.shields.io/badge/🍎_macOS_M1+-v26.6.7-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon" />
 </a>
 
-<big><strong>Deplao-26.6.6-arm64.dmg</strong></big>
+<big><strong>Deplao-26.6.7-arm64.dmg</strong></big>
 
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
 
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.6.AppImage">
-<img src="https://img.shields.io/badge/🐧_Ubuntu_Linux-v26.6.6-e95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Download Ubuntu" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.7.AppImage">
+<img src="https://img.shields.io/badge/🐧_Ubuntu_Linux-v26.6.7-e95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Download Ubuntu" />
 </a>
 
-<big><strong>Deplao-26.6.6.AppImage</strong></big><br>
-<big>chạy mọi distro — <code>chmod +x</code> là dùng được</big>
+<big><strong>Deplao-26.6.7.AppImage</strong></big><br>
+<big>chạy mọi distro - <code>chmod +x</code> là dùng được</big>
 
 </td>
 <td align="center" width="50%">
 
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.6.dmg">
-<img src="https://img.shields.io/badge/🍎_macOS_Intel-v26.6.6-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.7.dmg">
+<img src="https://img.shields.io/badge/🍎_macOS_Intel-v26.6.7-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel" />
 </a>
 
-<big><strong>Deplao-26.6.6.dmg</strong></big>
+<big><strong>Deplao-26.6.7.dmg</strong></big>
 
 </td>
 </tr>
@@ -286,7 +286,7 @@ mindmap
 
 ```mermaid
 flowchart TB
-    subgraph BOSS["🖥️ Máy BOSS — Local Workspace"]
+    subgraph BOSS["🖥️ Máy BOSS - Local Workspace"]
         BZ("📱 Zalo / FB\nAccounts")
         BSV("🔧 Services\nCRM · ERP · AI · Workflow")
         BSD[("🗄️ SQLite DB\n+ Media Files")]
@@ -298,7 +298,7 @@ flowchart TB
         WAN("🌍 Tunnel / VPN\ntruy cập từ xa")
     end
 
-    subgraph EMP["💻 Nhân Viên — Remote Workspace"]
+    subgraph EMP["💻 Nhân Viên - Remote Workspace"]
         EA("📲 Deplao App\nEmployee Mode")
         EP("🔐 Permission Filter\nerp · crm · workflow · ...")
         EU("👁️ UI\nchỉ thấy TK được gán")
@@ -348,7 +348,7 @@ flowchart LR
     WA & WB & WC -.-|"mỗi WS = DB riêng"| DB
 ```
 
-> Mỗi **Workspace** có DB + media folder độc lập — đổi hoặc di chuyển sang ổ đĩa khác không mất dữ liệu.
+> Mỗi **Workspace** có DB + media folder độc lập - đổi hoặc di chuyển sang ổ đĩa khác không mất dữ liệu.
 
 ---
 
@@ -367,17 +367,17 @@ Nếu nhìn nhanh, có thể hiểu Deplao là:
 
 ## ✨ Điểm nổi bật
 
-- 👤 **Đa tài khoản Zalo** — đăng nhập không giới hạn tài khoản, chuyển đổi qua lại nhanh
-- 💬 **Hộp thư tập trung** — chế độ gộp tài khoản giúp gom và xử lý hội thoại từ nhiều tài khoản trong một giao diện duy nhất
-- 👥 **CRM & Campaign** — quản lý liên hệ, nhãn, ghi chú nội bộ, chăm sóc khách cũ. Quét thành viên nhóm ẩn, nhóm chưa tham gia để tìm khách mới.
-- ⚙️ **Workflow tự động hóa** — kéo-thả Trigger → Node → Action hoặc dùng AI tạo quy trình, chạy nền 24/7 không cần code
-- 🤖 **AI Assistant** — hỗ trợ gợi ý câu trả lời, chat trực tiếp trong hội thoại. Còn giúp phân loại tin nhắn, trả lời khách hàng 24/7.
-- 🔗 **Tích hợp ngoài** — POS, vận chuyển, thanh toán, Google Sheets, Telegram, Discord, Email, HTTP Request... Kết hợp sử dụng khi chat hoặc workflow
-- 📈 **Báo cáo & phân tích** — theo dõi tin nhắn, liên hệ, nhãn, nhân viên, chiến dịch, workflow, AI.
-- 🗂️ **ERP nội bộ** — task, lịch làm việc, notes và phối hợp vận hành nội bộ ngay trong cùng hệ thống
-- 🧑‍💼 **Workspace boss ↔ nhân viên** — kết nối qua **LAN hoặc WAN** (Cloudflare Tunnel), phân quyền chi tiết và theo dõi hiệu suất từng nhân viên
-- 🔒 **Proxy per-account** — gán Proxy riêng cho từng tài khoản Zalo trước khi đăng nhập
-- 🔐 **Dữ liệu lưu cục bộ** — ưu tiên quyền kiểm soát dữ liệu và bảo mật trên máy người dùng
+- 👤 **Đa tài khoản Zalo** - đăng nhập không giới hạn tài khoản, chuyển đổi qua lại nhanh
+- 💬 **Hộp thư tập trung** - chế độ gộp tài khoản giúp gom và xử lý hội thoại từ nhiều tài khoản trong một giao diện duy nhất
+- 👥 **CRM & Campaign** - quản lý liên hệ, nhãn, ghi chú nội bộ, chăm sóc khách cũ. Quét thành viên nhóm ẩn, nhóm chưa tham gia để tìm khách mới.
+- ⚙️ **Workflow tự động hóa** - kéo-thả Trigger → Node → Action hoặc dùng AI tạo quy trình, chạy nền 24/7 không cần code
+- 🤖 **AI Assistant** - hỗ trợ gợi ý câu trả lời, chat trực tiếp trong hội thoại. Còn giúp phân loại tin nhắn, trả lời khách hàng 24/7.
+- 🔗 **Tích hợp ngoài** - POS, vận chuyển, thanh toán, Google Sheets, Telegram, Discord, Email, HTTP Request... Kết hợp sử dụng khi chat hoặc workflow
+- 📈 **Báo cáo & phân tích** - theo dõi tin nhắn, liên hệ, nhãn, nhân viên, chiến dịch, workflow, AI.
+- 🗂️ **ERP nội bộ** - task, lịch làm việc, notes và phối hợp vận hành nội bộ ngay trong cùng hệ thống
+- 🧑‍💼 **Workspace boss ↔ nhân viên** - kết nối qua **LAN hoặc WAN** (Cloudflare Tunnel), phân quyền chi tiết và theo dõi hiệu suất từng nhân viên
+- 🔒 **Proxy per-account** - gán Proxy riêng cho từng tài khoản Zalo trước khi đăng nhập
+- 🔐 **Dữ liệu lưu cục bộ** - ưu tiên quyền kiểm soát dữ liệu và bảo mật trên máy người dùng
 
 
 ### Xem nhanh giao diện Deplao

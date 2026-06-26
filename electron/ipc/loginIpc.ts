@@ -101,7 +101,7 @@ export function registerLoginIpc(mainWindow: BrowserWindow | null) {
         }
     });
 
-    // ─── Đăng nhập Cookies/IMEI (legacy — 3 ô) ───────────────────────────
+    // ─── Đăng nhập Cookies/IMEI (legacy - 3 ô) ───────────────────────────
     ipcMain.handle('login:cookies', async (_event, { imei, cookies, userAgent }) => {
         try {
             if (!imei || !cookies || !userAgent) {
@@ -234,7 +234,7 @@ export function registerLoginIpc(mainWindow: BrowserWindow | null) {
                     isConnected: isFB
                         ? !!(fbUuid && FacebookConnectionManager.get(fbUuid)?.isConnected())
                         : ConnectionManager.getConnection(acc.zalo_id) !== undefined,
-                    // For FB accounts, zalo_id IS the facebook_id now — expose for display
+                    // For FB accounts, zalo_id IS the facebook_id now - expose for display
                     ...(isFB ? { facebook_id: acc.zalo_id } : {}),
                 };
             });
@@ -260,7 +260,7 @@ export function registerLoginIpc(mainWindow: BrowserWindow | null) {
                     await FacebookConnectionManager.disconnect(fbAcc.id).catch(() => {});
                     const { secureDelete } = require('../../src/services/secure/SecureSettingsService');
                     secureDelete(`fb_cookie_${fbAcc.id}`);
-                    // Không gọi deleteFBAccount ở đây — deleteAccountData sẽ xử lý FB tables
+                    // Không gọi deleteFBAccount ở đây - deleteAccountData sẽ xử lý FB tables
                 }
             } else {
                 // Zalo cleanup

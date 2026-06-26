@@ -198,7 +198,7 @@ export default function TopBar() {
         <span className="text-blue-400 font-bold text-sm">Deplao</span>
         <span className="text-gray-500 text-xs">v{APP_VERSION}</span>
 
-        {/* Workspace switcher — only shows when multiple workspaces exist */}
+        {/* Workspace switcher - only shows when multiple workspaces exist */}
         <WorkspaceSwitcher />
 
         {/* Employee mode indicator */}
@@ -223,7 +223,7 @@ export default function TopBar() {
         className="flex items-center"
         style={{ WebkitAppRegion: 'no-drag' } as any}
       >
-        {/* Tải tin nhắn cũ (toàn phiên đăng nhập) — ẩn với nhân viên */}
+        {/* Tải tin nhắn cũ (toàn phiên đăng nhập) - ẩn với nhân viên */}
         {activeAccountId && empMode !== 'employee' && (
           <button
             onClick={handleRequestOldMessages}
@@ -256,7 +256,7 @@ export default function TopBar() {
             <button
               onClick={handleUpdateClick}
               className="w-9 h-9 flex items-center justify-center text-orange-400 hover:bg-orange-500/20 hover:text-orange-300 transition-colors relative"
-              title={`Cập nhật v${updateInfo!.version} ${isMac ? '— Chọn bản tải' : '— Nhấn để cập nhật'}`}
+              title={`Cập nhật v${updateInfo!.version} ${isMac ? '- Chọn bản tải' : '- Nhấn để cập nhật'}`}
             >
               {/* Arrow-down-circle icon */}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -372,7 +372,7 @@ export default function TopBar() {
         <button
           onClick={() => ipc.shell?.openExternal(SUPPORT_GITHUB_URL)}
           className="w-9 h-9 flex items-center justify-center text-gray-400 hover:bg-gray-700 hover:text-yellow-400 transition-colors relative group/gh"
-          title={"⭐ Star Deplao trên GitHub\nDự án mã nguồn mở — Ủng hộ team bằng cách ghé thăm và thả sao nhé!"}
+          title={"⭐ Star Deplao trên GitHub\nDự án mã nguồn mở - Ủng hộ team bằng cách ghé thăm và thả sao nhé!"}
         >
           <span className="relative">
             {/* GitHub icon */}
@@ -391,7 +391,7 @@ export default function TopBar() {
 
 
 
-        {/* Lock screen button — only visible when lock screen is enabled */}
+        {/* Lock screen button - only visible when lock screen is enabled */}
         {lockScreenEnabled && (
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('lockScreen:lock'))}

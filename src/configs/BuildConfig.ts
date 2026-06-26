@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Build configuration — committed to repository (open-source safe).
+// Build configuration - committed to repository (open-source safe).
 // Works in both Electron (Node.js) and Vite renderer (browser) contexts.
 // In renderer, Vite replaces process.env.* at build time via define in vite.config.ts.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -11,10 +11,10 @@ const _nodeEnv: string =
 const _buildTarget: string =
   (typeof process !== 'undefined' ? (process.env?.BUILD_TARGET ?? process.env?.NODE_ENV) : undefined) ?? 'production';
 
-/** true only in development builds — DevTools open */
+/** true only in development builds - DevTools open */
 export const IS_DEV_BUILD: boolean   = _nodeEnv !== 'production';
 
-/** Allow DevTools to open — only in development */
+/** Allow DevTools to open - only in development */
 export const SHOW_DEV_TOOLS: boolean = _nodeEnv !== 'production';
 
 /** Build target: 'development' | 'staging' | 'production' */

@@ -28,6 +28,7 @@ import { registerLockScreenIpc } from './ipc/lockScreenIpc';
 import WorkspaceManager from '../src/utils/WorkspaceManager';
 import HttpConnectionManager from '../src/services/http/HttpConnectionManager';
 import WorkflowEngineService from '../src/services/workflow/WorkflowEngineService';
+import WebhookGatewayService from '../src/services/workflow/WebhookGatewayService';
 import IntegrationRegistry from '../src/services/integrations/IntegrationRegistry';
 import EventBroadcaster from '../src/services/event/EventBroadcaster';
 import CRMQueueService from '../src/services/crm/CRMQueueService';
@@ -154,7 +155,7 @@ app.commandLine.appendSwitch('disable-features', 'Autofill');
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   // Đã có instance đang chạy → focus instance đó rồi thoát
-  // ⚡ FIX: app.quit() là async — code phía dưới vẫn chạy tiếp nếu không exit ngay.
+  // ⚡ FIX: app.quit() là async - code phía dưới vẫn chạy tiếp nếu không exit ngay.
   // Nếu không exit, instance thứ 2 vẫn đăng ký protocols, IPC handlers, tạo tray icon,
   // chạy ngầm không cửa sổ → process treo trong Task Manager.
   app.quit();
@@ -245,7 +246,7 @@ function createWindow() {
         }
       }, 1500);
     } else {
-      console.error(`[main] Renderer crashed ${crashCount} times — quitting app`);
+      console.error(`[main] Renderer crashed ${crashCount} times - quitting app`);
       isQuitting = true;
       app.quit();
     }
@@ -253,7 +254,7 @@ function createWindow() {
 
   // Window bị treo (unresponsive) → thông báo và reload
   mainWindow.on('unresponsive', () => {
-    console.warn('[main] Window unresponsive — reloading renderer');
+    console.warn('[main] Window unresponsive - reloading renderer');
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.reload();
     }
@@ -262,7 +263,7 @@ function createWindow() {
   // Load HTML thất bại (file bị thiếu, Vite dev server chưa bật, ...)
   // → window tồn tại nhưng trắng, ready-to-show vẫn fire → user thấy trắng
   mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
-    console.error(`[main] did-fail-load: ${errorCode} ${errorDescription} — ${validatedURL}`);
+    console.error(`[main] did-fail-load: ${errorCode} ${errorDescription} - ${validatedURL}`);
     // Retry sau 2s (Vite dev server có thể chưa sẵn sàng)
     if (isDev) {
       setTimeout(() => {
@@ -501,7 +502,7 @@ function registerWindowControls() {
       if (count > 0) {
         if (!currentIconIsDot) {
           currentIconIsDot = true;
-          // Overlay dot trên taskbar (Windows native API — không bị icon cache)
+          // Overlay dot trên taskbar (Windows native API - không bị icon cache)
           if (cachedOverlayDot && !cachedOverlayDot.isEmpty()) {
             mainWindow.setOverlayIcon(cachedOverlayDot, `${count} tin chưa đọc`);
           }
@@ -510,7 +511,7 @@ function registerWindowControls() {
             tray?.setImage(cachedDotIcon);
           }
         }
-        tray?.setToolTip(`Deplao — ${count} tin chưa đọc`);
+        tray?.setToolTip(`Deplao - ${count} tin chưa đọc`);
       } else {
         if (currentIconIsDot) {
           currentIconIsDot = false;
@@ -553,7 +554,7 @@ function registerWindowControls() {
     if (!mainWindow.isVisible()) mainWindow.show();
     mainWindow.setAlwaysOnTop(true);
     mainWindow.focus();
-    // Bỏ alwaysOnTop sau 200ms — chỉ cần để "kick" window lên foreground
+    // Bỏ alwaysOnTop sau 200ms - chỉ cần để "kick" window lên foreground
     setTimeout(() => { try { mainWindow?.setAlwaysOnTop(false); } catch {} }, 200);
 
     // Delay nhẹ để đảm bảo renderer sẵn sàng nhận IPC
@@ -640,7 +641,7 @@ async function startupAllWorkspaces(): Promise<void> {
       const HttpRelayService = (await import('../src/services/http/HttpRelayService')).default;
       const relay = HttpRelayService.getInstance();
       const port = ws.relayPort || 9900;
-      const res = await relay.start(port); // start() is idempotent — skips if already running
+      const res = await relay.start(port); // start() is idempotent - skips if already running
       if (res?.success) {
         console.log(`[startupAllWorkspaces] Relay started on port ${res.port} for workspace "${ws.name}"`);
       }
@@ -783,7 +784,7 @@ app.whenReady().then(async () => {
   // Cho phép OS mở app khi click link deplao:// trong trình duyệt
   //
   // ⚠️ Production: app đã đóng gói → setAsDefaultProtocolClient hoạt động đúng.
-  // ⚠️ Development: KHÔNG gọi setAsDefaultProtocolClient — dùng manual reg script
+  // ⚠️ Development: KHÔNG gọi setAsDefaultProtocolClient - dùng manual reg script
   //    (xem hướng dẫn trong agents/references/deep-link-feature.md)
   if (app.isPackaged) {
     if (!app.isDefaultProtocolClient('deplao')) {
@@ -826,7 +827,7 @@ app.whenReady().then(async () => {
   registerErpNotificationIpc();
   registerErpHrmIpc();
   registerLockScreenIpc();
-  // Auto-reconnect Facebook accounts — start ngay, không đợi 4s
+  // Auto-reconnect Facebook accounts - start ngay, không đợi 4s
   reconnectAllFBAccounts().catch(err => {
     console.error('[main] reconnectAllFBAccounts error:', err.message);
   });
@@ -860,6 +861,14 @@ app.whenReady().then(async () => {
       WorkflowEngineService.getInstance()['triggerWorkflows']('trigger.payment', data);
     });
   }, 2500);
+  // Initialize Webhook Gateway (port 9889)
+  setTimeout(() => {
+    WebhookGatewayService.getInstance().start().then(result => {
+      if (result.success) {
+        console.log('[main] WebhookGateway started on port ' + result.port);
+      }
+    });
+  }, 3000);
 
   // Initialize Tracking Service (chỉ chạy trong production build)
   setTimeout(() => {
@@ -894,11 +903,11 @@ app.whenReady().then(async () => {
       console.error('[MediaCleanup] Error:', err.message);
     }
   });
-  console.log('[MediaCleanup] Scheduler initialized — runs daily at 3:00 AM');
+  console.log('[MediaCleanup] Scheduler initialized - runs daily at 3:00 AM');
 
   // Check for updates
   if (!isDev) {
-    autoUpdater.autoDownload = true;          // tự tải nền — phù hợp app chạy 24/7
+    autoUpdater.autoDownload = true;          // tự tải nền - phù hợp app chạy 24/7
     autoUpdater.autoInstallOnAppQuit = true; // tự cài khi quit nếu đã tải xong
 
     // Check lần đầu khi khởi động và mỗi 4 giờ
@@ -1000,6 +1009,11 @@ app.on('before-quit', () => {
   } catch {}
 
   try {
+    // Dừng webhook gateway
+    WebhookGatewayService.getInstance().stop();
+  } catch {}
+
+  try {
     // Flush DB ra disk trước khi thoát
     DatabaseService.getInstance().forceFlush();
   } catch {}
@@ -1015,7 +1029,7 @@ app.on('before-quit', () => {
 // app chạy ngầm mà renderer đã chết → user thấy trắng / không hiển thị gì.
 process.on('uncaughtException', (error) => {
   console.error('[main] Uncaught exception:', error);
-  // Không crash app — log rồi tiếp tục
+  // Không crash app - log rồi tiếp tục
 });
 
 process.on('unhandledRejection', (reason) => {

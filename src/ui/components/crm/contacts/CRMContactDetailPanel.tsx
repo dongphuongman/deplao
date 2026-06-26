@@ -74,7 +74,7 @@ export default function CRMContactDetailPanel({ contact, allLabels, localLabels,
     }
   }, [activeAccountId, contact.contact_id, contact.contact_type, localLabelToggling, threadLocalLabelIds, localLabels, showNotification]);
 
-  /** Called from LocalLabelSelector — diff to find which label was toggled */
+  /** Called from LocalLabelSelector - diff to find which label was toggled */
   const handleLocalLabelChange = useCallback((newIds: number[]) => {
     const added = newIds.find(id => !threadLocalLabelIds.includes(id));
     const removed = threadLocalLabelIds.find(id => !newIds.includes(id));
@@ -238,11 +238,11 @@ export default function CRMContactDetailPanel({ contact, allLabels, localLabels,
           {contact.alias && contact.alias !== contact.display_name &&
             <p className="text-xs text-gray-400">({contact.display_name})</p>}
           {contact.phone && <p className="text-xs text-gray-500 mt-0.5"><PhoneDisplay phone={contact.phone} className="text-xs text-gray-500" /></p>}
-          <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${contact.is_friend ? 'bg-green-500/20 text-green-400' : 'bg-gray-600/50 text-gray-400'}`}>
-            {contact.is_friend ? '✓ Bạn bè' : 'Chưa kết bạn'}
-          </span>
           {/* Gender & Birthday */}
           <div className="flex items-center gap-2 mt-1.5">
+            <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${contact.is_friend ? 'bg-green-500/20 text-green-400' : 'bg-gray-600/50 text-gray-400'}`}>
+              {contact.is_friend ? '✓ Bạn bè' : 'Chưa kết bạn'}
+            </span>
             {contact.gender === 0 && <span className="text-[11px] text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded">♂ Nam</span>}
             {contact.gender === 1 && <span className="text-[11px] text-pink-400 bg-pink-400/10 px-1.5 py-0.5 rounded">♀ Nữ</span>}
             {contact.birthday && <span className="text-[11px] text-gray-400 bg-gray-600/30 px-1.5 py-0.5 rounded">🎂 {contact.birthday}</span>}
@@ -320,7 +320,7 @@ export default function CRMContactDetailPanel({ contact, allLabels, localLabels,
 
             <p className="text-xs text-gray-400 font-medium">Ghi chú</p>
 
-            {/* Tab switcher — chỉ hiện với nhóm */}
+            {/* Tab switcher - chỉ hiện với nhóm */}
             {isGroup && (
               <div className="flex rounded-lg overflow-hidden border border-gray-600 text-[11px] mb-1">
                 <button
@@ -336,12 +336,12 @@ export default function CRMContactDetailPanel({ contact, allLabels, localLabels,
               </div>
             )}
 
-            {/* Local notes — users & groups */}
+            {/* Local notes - users & groups */}
             {(!isGroup || noteTab === 'local') && (
               <NoteList notes={notes} onSave={handleSaveNote} onDelete={handleDeleteNote} />
             )}
 
-            {/* Zalo group notes — read-only, logic cũ */}
+            {/* Zalo group notes - read-only, logic cũ */}
             {isGroup && noteTab === 'zalo' && (
               <div className="space-y-2">
                 {zaloNotes.length === 0 && (

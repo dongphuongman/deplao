@@ -770,7 +770,7 @@ export default function ScanPanel({ accountId }: Props) {
             <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
           <p className="flex-1 text-[12px] text-red-700 dark:text-red-300 leading-relaxed">
-            Quét dữ liệu nên dùng <strong className="text-red-800 dark:text-red-200">tài khoản phụ</strong> — chức năng có thể bị phát hiện bởi Facebook. Tài khoản chính sẽ gặp rủi ro: dễ bị đăng xuất, checkpoint, mất ổn định.
+            Quét dữ liệu nên dùng <strong className="text-red-800 dark:text-red-200">tài khoản phụ</strong> - chức năng có thể bị phát hiện bởi Facebook. Tài khoản chính sẽ gặp rủi ro: dễ bị đăng xuất, checkpoint, mất ổn định.
           </p>
           <button
             onClick={() => {
@@ -790,7 +790,7 @@ export default function ScanPanel({ accountId }: Props) {
       {/* ── Tab bar ────────────────────────────────────────────── */}
       <div className="flex-shrink-0 bg-gray-900 border-b border-gray-700/60">
         <div className="flex items-center">
-          {/* Tabs — Max 5 hiển thị, còn lại trong menu "..." */}
+          {/* Tabs - Max 5 hiển thị, còn lại trong menu "..." */}
           <div className="flex items-center flex-1 min-w-0 pl-1">
             {(() => {
               const MAX_VISIBLE = 5;
@@ -874,7 +874,7 @@ export default function ScanPanel({ accountId }: Props) {
                 </div>
               );
             })}
-                  {/* Overflow menu — tabs ẩn nếu > MAX_VISIBLE */}
+                  {/* Overflow menu - tabs ẩn nếu > MAX_VISIBLE */}
                   {hasOverflow && (
                     <div className="relative flex-shrink-0">
                       <button
@@ -1119,12 +1119,12 @@ export default function ScanPanel({ accountId }: Props) {
 function buildFilterArgs(scanType: ScanType, filters: ScanFilters): string[] | undefined {
   const args: string[] = [];
 
-  // Group: public groups filter — giống original {"name":"public_groups","args":""}
+  // Group: public groups filter - giống original {"name":"public_groups","args":""}
   if (filters.public && scanType === 'group_keyword') {
     args.push('{"name":"public_groups","args":""}');
   }
 
-  // Post: recent posts filter — giống original {"name":"recent_posts","args":""}
+  // Post: recent posts filter - giống original {"name":"recent_posts","args":""}
   if (filters.recent && scanType === 'post_keyword') {
     args.push('{"name":"recent_posts","args":""}');
   }
@@ -1257,7 +1257,7 @@ function ActiveTabContent({
             </select>
           </div>
 
-          {/* Filters — inline with settings */}
+          {/* Filters - inline with settings */}
           {!batchMode && (
             <ScanFiltersPanel scanType={tab.scanType} filters={tab.filters} onChange={(f) => onUpdate({ filters: f })} />
           )}

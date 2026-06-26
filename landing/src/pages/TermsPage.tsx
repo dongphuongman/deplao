@@ -95,7 +95,7 @@ export default function TermsPage() {
             </p>
             <ul className="space-y-2 text-slate-400 text-sm">
               <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">•</span>
-                <span><strong className="text-white">Dữ liệu lưu cục bộ 100%:</strong> Tin nhắn, danh bạ, CRM, cài đặt — tất cả được lưu trong cơ sở dữ liệu ngay trên máy bạn</span>
+                <span><strong className="text-white">Dữ liệu lưu cục bộ 100%:</strong> Tin nhắn, danh bạ, CRM, cài đặt - tất cả được lưu trong cơ sở dữ liệu ngay trên máy bạn</span>
               </li>
               <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">•</span>
                 <span><strong className="text-white">Không có server trung gian:</strong> App kết nối trực tiếp Zalo ↔ máy bạn, không đi qua proxy của chúng tôi</span>

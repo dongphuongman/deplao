@@ -1,5 +1,5 @@
 /**
- * bankCardCache — lưu tạm dữ liệu thẻ ngân hàng khi gửi, để hiển thị UI đẹp.
+ * bankCardCache - lưu tạm dữ liệu thẻ ngân hàng khi gửi, để hiển thị UI đẹp.
  *
  * Flow:
  *  1. BankCardModal gọi cacheSentBankCard() TRƯỚC khi gửi API

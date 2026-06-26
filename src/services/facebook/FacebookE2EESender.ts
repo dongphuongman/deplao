@@ -157,7 +157,7 @@ export class FacebookE2EESender {
   }
 
   /**
-   * Gửi E2EE message đến user (convenience — tự động build JID)
+   * Gửi E2EE message đến user (convenience - tự động build JID)
    */
   public async sendToUser(
     userId: string | number,
@@ -179,7 +179,7 @@ export class FacebookE2EESender {
   }
 
   /**
-   * Reply to an E2EE event (convenience — extracts chatJid, messageId, senderJid)
+   * Reply to an E2EE event (convenience - extracts chatJid, messageId, senderJid)
    */
   public async reply(
     eventData: { chatJid?: string; id?: string; messageId?: string; senderJid?: string },

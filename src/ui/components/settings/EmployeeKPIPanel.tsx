@@ -35,7 +35,7 @@ function getDateRange(range: DateRange, customFrom?: number, customTo?: number):
 }
 
 function formatResponseTime(ms: number): string {
-    if (!ms || ms <= 0) return '—';
+    if (!ms || ms <= 0) return '-';
     if (ms < 60_000) return `${Math.round(ms / 1000)}s`;
     if (ms < 3600_000) return `${(ms / 60_000).toFixed(1)}m`;
     return `${(ms / 3600_000).toFixed(1)}h`;
@@ -124,7 +124,7 @@ export default function EmployeeKPIPanel() {
             s.conversations_handled,
             s.total_online_hours,
         ]);
-        rows.push(['TỔNG', totals.messages_sent, '—', totals.conversations_handled, totals.total_online_hours]);
+        rows.push(['TỔNG', totals.messages_sent, '-', totals.conversations_handled, totals.total_online_hours]);
 
         const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
         const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -302,7 +302,7 @@ export default function EmployeeKPIPanel() {
                                 <tr className="border-t border-gray-600 font-semibold">
                                     <td className="py-2 px-2 text-gray-300">Tổng ({stats.length} NV)</td>
                                     <td className="text-right py-2 px-2 text-blue-400 font-mono">{totals.messages_sent}</td>
-                                    <td className="text-right py-2 px-2 text-gray-500">—</td>
+                                    <td className="text-right py-2 px-2 text-gray-500">-</td>
                                     <td className="text-right py-2 px-2 text-green-400 font-mono">{totals.conversations_handled}</td>
                                     <td className="text-right py-2 px-2 text-amber-400">{totals.total_online_hours}h</td>
                                     <td></td>

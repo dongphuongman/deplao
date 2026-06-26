@@ -1,5 +1,5 @@
 /**
- * AccountMultiDropdown — dropdown chọn nhiều tài khoản với checkbox.
+ * AccountMultiDropdown - dropdown chọn nhiều tài khoản với checkbox.
  * Dùng chung cho: header filter (ConversationSettings) + modal (LabelModal, LocalMsgModal).
  */
 import React, { useState, useEffect, useRef } from 'react';

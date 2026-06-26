@@ -32,7 +32,7 @@ on:
       - 'v*'
 
 # ─── SECRETS cần cấu hình ────────────────────────────────────────────────────
-#   GH_TOKEN — GitHub Personal Access Token (repo scope)
+#   GH_TOKEN - GitHub Personal Access Token (repo scope)
 
 jobs:
   build-windows:

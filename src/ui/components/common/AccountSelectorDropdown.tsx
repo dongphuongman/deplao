@@ -17,7 +17,7 @@ interface Props {
   /**
    * Vị trí dropdown:
    * - 'down-right' (mặc định): mở xuống, căn phải
-   * - 'up-left': mở lên, căn trái — dùng trong modal để tránh tràn màn hình
+   * - 'up-left': mở lên, căn trái - dùng trong modal để tránh tràn màn hình
    */
   position?: 'down-right' | 'up-left';
   /** Trigger button chiếm toàn bộ chiều ngang */

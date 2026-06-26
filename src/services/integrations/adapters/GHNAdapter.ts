@@ -39,7 +39,7 @@ export class GHNAdapter extends IntegrationAdapter {
         timeout: 10000,
       });
       const count = res.data?.data?.shops?.length ?? 0;
-      return { success: true, message: `Kết nối GHN thành công — ${count} shop` };
+      return { success: true, message: `Kết nối GHN thành công - ${count} shop` };
     } catch (e: any) {
       return { success: false, message: `Lỗi kết nối GHN: ${e.response?.data?.message || e.message}` };
     }

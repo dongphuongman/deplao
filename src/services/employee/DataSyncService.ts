@@ -47,13 +47,13 @@ const SYNCABLE_TABLES_GLOBAL = [
     { table: 'ai_assistant_files',    tsCol: 'created_at' },
     { table: 'ai_account_assistants', tsCol: null },
     { table: 'ai_usage_logs',         tsCol: 'created_at' },
-    // Workflows — synced via custom filter (page_ids must match assigned accounts)
+    // Workflows - synced via custom filter (page_ids must match assigned accounts)
     // { table: 'workflows',          tsCol: 'updated_at' },  // MOVED to custom export
     { table: 'workflow_run_logs',     tsCol: 'started_at' },
     // Integrations
     { table: 'integrations',          tsCol: 'updated_at' },
-    // ─── ERP module (Phase 1) — shared within the workspace ────────
-    // NOTE: `erp_notifications` is intentionally NOT synced — each actor
+    // ─── ERP module (Phase 1) - shared within the workspace ────────
+    // NOTE: `erp_notifications` is intentionally NOT synced - each actor
     // manages their own inbox locally to avoid noisy cross-device fan-out.
     { table: 'erp_projects',          tsCol: 'updated_at' },
     { table: 'erp_tasks',             tsCol: 'updated_at' },
@@ -93,7 +93,7 @@ const PRIVACY_FILTERED_ERP_TABLES = new Set([
     'erp_note_shares',
 ]);
 
-/** Account info to sync (no imei/user_agent/cookies — employee doesn't need login credentials) */
+/** Account info to sync (no imei/user_agent/cookies - employee doesn't need login credentials) */
 const ACCOUNT_SAFE_COLUMNS = 'zalo_id, full_name, avatar_url, phone, is_business, is_active, last_seen, listener_active';
 
 export interface SyncPayload {
@@ -112,7 +112,7 @@ interface ProgressCallback {
 }
 
 /**
- * DataSyncService — Handles DB sync between Boss and Employee machines.
+ * DataSyncService - Handles DB sync between Boss and Employee machines.
  *
  * Boss side: exports filtered data for employee's assigned zaloIds.
  * Employee side: imports data into local DB.
@@ -192,7 +192,7 @@ class DataSyncService {
             }
         }
 
-        // Workflows — filter by page_ids matching assigned accounts
+        // Workflows - filter by page_ids matching assigned accounts
         this.exportWorkflowsFiltered(db, zaloIds, tables);
 
         if (employeeId) this.appendPrivateErpTables(tables, employeeId);
@@ -219,7 +219,7 @@ class DataSyncService {
             zaloIds
         );
 
-        // Export zaloId-filtered tables — only rows with timestamp > sinceTs
+        // Export zaloId-filtered tables - only rows with timestamp > sinceTs
         for (const spec of SYNCABLE_TABLES_BY_ZALO) {
             try {
                 let rows: any[];
@@ -229,7 +229,7 @@ class DataSyncService {
                         [...zaloIds, sinceTs]
                     );
                 } else {
-                    // No timestamp column — full re-export for this table
+                    // No timestamp column - full re-export for this table
                     rows = db.query<any>(
                         `SELECT * FROM ${spec.table} WHERE ${spec.zaloCol} IN (${placeholders})`,
                         zaloIds
@@ -243,7 +243,7 @@ class DataSyncService {
             }
         }
 
-        // Global tables — only changed rows
+        // Global tables - only changed rows
         for (const spec of SYNCABLE_TABLES_GLOBAL) {
             if (employeeId && PRIVACY_FILTERED_ERP_TABLES.has(spec.table)) continue;
             try {
@@ -264,7 +264,7 @@ class DataSyncService {
             }
         }
 
-        // Workflows — filter by page_ids matching assigned accounts
+        // Workflows - filter by page_ids matching assigned accounts
         this.exportWorkflowsFiltered(db, zaloIds, tables, sinceTs);
 
         if (employeeId) this.appendPrivateErpTables(tables, employeeId);
@@ -418,7 +418,7 @@ class DataSyncService {
             const filtered = allWorkflows.filter(wf => {
                 const pageIdsRaw: string = wf.page_ids || wf.page_id || '';
                 const ids = pageIdsRaw.split(',').filter(Boolean);
-                // Global workflows (no page_ids) — always include
+                // Global workflows (no page_ids) - always include
                 if (ids.length === 0) return true;
                 // Include if any page_id matches assigned accounts
                 return ids.some(id => zaloSet.has(id));
@@ -550,7 +550,7 @@ class DataSyncService {
                     db.exec(`INSERT OR REPLACE INTO ${tableName} (${colList}) VALUES ${valueStrings}`);
                     inserted += batch.length;
                 } catch (err: any) {
-                    // Batch failed — fallback to row-by-row for this batch
+                    // Batch failed - fallback to row-by-row for this batch
                     Logger.warn(`[DataSyncService] Batch insert failed for ${tableName}[${i}-${i + batch.length}]: ${err.message}. Falling back to row-by-row.`);
                     for (const row of batch) {
                         try {

@@ -1,5 +1,5 @@
 /**
- * IntegrationQuickPanel — Side panel thao tác tích hợp nhanh
+ * IntegrationQuickPanel - Side panel thao tác tích hợp nhanh
  * Hiển thị bên phải khung chat (giống ConversationInfo panel).
  * Cho phép tra cứu đơn, sản phẩm, vận chuyển, tạo đơn hàng... trực tiếp khi đang chat.
  * Nếu chưa cấu hình → hiện hướng dẫn + nút đi tới trang Tích hợp.
@@ -214,7 +214,7 @@ const ACTIONS_BY_TYPE: Record<string, QuickActionDef[]> = {
   ],
 };
 
-// ─── DEV MODE — Fake data for UI testing ──────────────────────────────────────
+// ─── DEV MODE - Fake data for UI testing ──────────────────────────────────────
 
 const DEV_MODE = IS_DEV_BUILD && false; // ← Đổi thành false khi deploy
 const DEV_DEBUG = IS_DEV_BUILD;
@@ -408,7 +408,7 @@ function normalizeCustomerForDisplay(customer: any) {
 
   return {
     id: firstNonEmptyString(customer?.id, customer?.customerId, customer?.customer_id, customer?.fb_id),
-    name: firstNonEmptyString(customer?.name, customer?.fullName, customer?.contactName, customer?.username) || '—',
+    name: firstNonEmptyString(customer?.name, customer?.fullName, customer?.contactName, customer?.username) || '-',
     phone: extractPhoneValue(
       customer?.contactNumber,
       customer?.phone,
@@ -461,7 +461,7 @@ function normalizeOrderItem(item: any) {
       item?.variation_name,
       item?.product_name,
       item?.sku,
-    ) || '—',
+    ) || '-',
     code: firstNonEmptyString(
       item?.code,
       item?.sku,
@@ -533,7 +533,7 @@ function normalizeOrderStatus(rawStatus: any, numericStatus: any): { text: strin
     ? 'Đang xử lý'
     : numericStatus != null
     ? `#${numericStatus}`
-    : '—';
+    : '-';
 
   if (['completed', 'complete', 'delivered'].includes(normalizedKey) || numericStatus === 1) {
     return { text, color: 'bg-green-900/50 text-green-400' };
@@ -568,7 +568,7 @@ function normalizeOrderForDisplay(order: any) {
 
     const nhanhStatus = NHANH_STATUS_MAP[info?.status as number];
     const statusResult = nhanhStatus ?? {
-      text: info?.status != null ? `#${info.status}` : '—',
+      text: info?.status != null ? `#${info.status}` : '-',
       color: 'bg-gray-700 text-gray-400',
     };
 
@@ -744,7 +744,7 @@ function normalizeProductForDisplay(product: any) {
       nestedProduct?.name,
       nestedProduct?.fullName,
       nestedProduct?.title,
-    ) || '—',
+    ) || '-',
     code: firstNonEmptyString(
       product?.code,
       product?.sku,
@@ -759,7 +759,7 @@ function normalizeProductForDisplay(product: any) {
   };
 }
 
-// ─── OrderCard — expandable order detail ─────────────────────────────────────
+// ─── OrderCard - expandable order detail ─────────────────────────────────────
 function OrderCard({ o }: { o: any }) {
   const [expanded, setExpanded] = React.useState(false);
   const normalized = normalizeOrderForDisplay(o);
@@ -792,13 +792,13 @@ function OrderCard({ o }: { o: any }) {
         className={`w-full px-3 py-2 text-left ${hasDetail ? 'hover:bg-gray-700/60 transition-colors' : ''}`}
       >
         <div className="flex items-center justify-between mb-0.5">
-          <p className="text-xs font-semibold text-white font-mono">#{normalized.code || '—'}</p>
+          <p className="text-xs font-semibold text-white font-mono">#{normalized.code || '-'}</p>
           <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${normalized.statusColor}`}>
             {normalized.statusText}
           </span>
         </div>
         <div className="flex items-center justify-between gap-1">
-          <p className="text-[11px] text-gray-400 truncate">{normalized.customerSummary || '—'}</p>
+          <p className="text-[11px] text-gray-400 truncate">{normalized.customerSummary || '-'}</p>
           <div className="flex items-center gap-1 flex-shrink-0">
             <span className="text-xs font-semibold text-blue-300">{normalized.total.toLocaleString('vi-VN')}đ</span>
             {hasDetail && (
@@ -935,7 +935,7 @@ function OrderCard({ o }: { o: any }) {
   );
 }
 
-// ─── ProductCard — with image thumbnail ──────────────────────────────────────
+// ─── ProductCard - with image thumbnail ──────────────────────────────────────
 function ProductCard({ p }: { p: any }) {
   const normalized = normalizeProductForDisplay(p);
   const img = normalized.image;
@@ -987,9 +987,9 @@ function formatResult(_action: string, data: any): React.ReactNode {
           return (
             <div key={i} className="bg-gray-700/50 rounded-lg px-3 py-2 border border-gray-600/30">
               <p className="text-xs font-medium text-white">{customer.name}</p>
-              <p className="text-[11px] text-gray-400">{compactJoin([customer.phone, customer.email], ' · ') || '—'}</p>
+              <p className="text-[11px] text-gray-400">{compactJoin([customer.phone, customer.email], ' · ') || '-'}</p>
               <p className="text-[10px] text-gray-500">
-                ID: {customer.id || '—'} · Đơn: {customer.orderCount ?? '—'}
+                ID: {customer.id || '-'} · Đơn: {customer.orderCount ?? '-'}
                 {customer.purchasedAmount > 0 ? ` · Mua: ${customer.purchasedAmount.toLocaleString('vi-VN')}đ` : ''}
               </p>
               {customer.address && <p className="text-[10px] text-gray-500 mt-1 leading-snug">📍 {customer.address}</p>}
@@ -1000,7 +1000,7 @@ function formatResult(_action: string, data: any): React.ReactNode {
     );
   }
 
-  // Orders — dùng OrderCard expandable
+  // Orders - dùng OrderCard expandable
   if (data.orders !== undefined || data.order !== undefined) {
     const orders: any[] = firstNonEmptyArray(data.orders, data.data?.orders, data.result?.orders, data.response?.orders);
     const normalizedOrders = orders.length > 0 ? orders : (data.order ? [data.order] : []);
@@ -1013,7 +1013,7 @@ function formatResult(_action: string, data: any): React.ReactNode {
     );
   }
 
-  // Products — dùng ProductCard có ảnh
+  // Products - dùng ProductCard có ảnh
   if (data.products !== undefined) {
     const products: any[] = data.products || [];
     if (!products.length) return <span className="text-yellow-400 text-xs">⚠️ Không tìm thấy sản phẩm</span>;
@@ -1032,9 +1032,9 @@ function formatResult(_action: string, data: any): React.ReactNode {
       <div className="space-y-1.5">
         {rows.slice(0, 12).map((row: any, i: number) => (
           <div key={i} className="bg-gray-700/50 rounded-lg px-3 py-2 border border-gray-600/30">
-            <p className="text-xs font-medium text-white">{row.ProvinceName || row.DistrictName || row.WardName || row.name || '—'}</p>
+            <p className="text-xs font-medium text-white">{row.ProvinceName || row.DistrictName || row.WardName || row.name || '-'}</p>
             <p className="text-[11px] text-gray-400 font-mono">
-              ID: {row.ProvinceID || row.DistrictID || row.WardCode || row.id || '—'}
+              ID: {row.ProvinceID || row.DistrictID || row.WardCode || row.id || '-'}
             </p>
           </div>
         ))}
@@ -1053,7 +1053,7 @@ function formatResult(_action: string, data: any): React.ReactNode {
           <div key={i} className="bg-gray-700/50 rounded-lg px-3 py-2 border border-gray-600/30">
             <p className="text-xs font-medium text-white">{svc.short_name || svc.name || `Service #${svc.service_id || i + 1}`}</p>
             <p className="text-[11px] text-gray-400 font-mono">
-              service_id: {svc.service_id ?? '—'} · service_type_id: {svc.service_type_id ?? '—'}
+              service_id: {svc.service_id ?? '-'} · service_type_id: {svc.service_type_id ?? '-'}
             </p>
           </div>
         ))}
@@ -1066,8 +1066,8 @@ function formatResult(_action: string, data: any): React.ReactNode {
     const t = data.tracking || {};
     return (
       <div className="bg-gray-700/60 rounded-lg px-3 py-2 space-y-1">
-        <p className="text-sm font-medium text-white">Mã: {t.order_code || t.label || data.orderCode || data.trackingCode || '—'}</p>
-        <p className="text-xs text-blue-300">{data.status || t.status || t.status_text || '—'}</p>
+        <p className="text-sm font-medium text-white">Mã: {t.order_code || t.label || data.orderCode || data.trackingCode || '-'}</p>
+        <p className="text-xs text-blue-300">{data.status || t.status || t.status_text || '-'}</p>
         {(t.updated_date || data.updatedDate) && <p className="text-[11px] text-gray-400">Cập nhật: {t.updated_date || data.updatedDate}</p>}
       </div>
     );
@@ -1082,12 +1082,12 @@ function formatResult(_action: string, data: any): React.ReactNode {
         {txs.slice(0, 5).map((tx: any, i: number) => (
           <div key={i} className="bg-gray-700/60 rounded-lg px-3 py-2">
             <div className="flex justify-between">
-              <span className="text-xs text-gray-400">{tx.when || tx.transactionDate || tx.created_at || '—'}</span>
+              <span className="text-xs text-gray-400">{tx.when || tx.transactionDate || tx.created_at || '-'}</span>
               <span className={`text-xs font-medium ${(tx.in || tx.amount || 0) > 0 ? 'text-green-400' : 'text-red-400'}`}>
                 +{(tx.in || tx.amount || 0).toLocaleString('vi-VN')}đ
               </span>
             </div>
-            <p className="text-[11px] text-gray-300 truncate">{tx.description || tx.memo || tx.content || '—'}</p>
+            <p className="text-[11px] text-gray-300 truncate">{tx.description || tx.memo || tx.content || '-'}</p>
           </div>
         ))}
       </div>
@@ -1111,7 +1111,7 @@ function formatResult(_action: string, data: any): React.ReactNode {
     return (
       <div className="bg-green-900/30 border border-green-700/40 rounded-lg px-3 py-2">
         <p className="text-sm font-medium text-green-300">✅ Tạo đơn thành công!</p>
-        <p className="text-xs text-green-400">Mã đơn: {o.code || o.id || o.orderId || '—'}</p>
+        <p className="text-xs text-green-400">Mã đơn: {o.code || o.id || o.orderId || '-'}</p>
       </div>
     );
   }
@@ -1125,7 +1125,7 @@ function formatResult(_action: string, data: any): React.ReactNode {
   );
 }
 
-// ─── Main Component — Side Panel ──────────────────────────────────────────────
+// ─── Main Component - Side Panel ──────────────────────────────────────────────
 
 interface Props {
   onClose: () => void;
@@ -1366,10 +1366,10 @@ export default function IntegrationQuickPanel({ onClose, contextPhone, contextNa
             </div>
           </div>
         ) : (
-          /* ── Main layout — sidebar ẩn khi đã chọn action ──── */
+          /* ── Main layout - sidebar ẩn khi đã chọn action ──── */
           <div className="flex-1 flex min-h-0 overflow-hidden">
 
-            {/* Left sidebar — icon-only compact list (ẩn khi đã chọn action) */}
+            {/* Left sidebar - icon-only compact list (ẩn khi đã chọn action) */}
             {showSidebar && (
               <div className="w-12 flex-shrink-0 border-r border-gray-700/60 bg-gray-900/80 flex flex-col items-center py-2 gap-1">
                 {integrations.map(intg => {
@@ -1404,7 +1404,7 @@ export default function IntegrationQuickPanel({ onClose, contextPhone, contextNa
               </div>
             )}
 
-            {/* Right content — full width khi đã chọn action */}
+            {/* Right content - full width khi đã chọn action */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
               {/* ── Action grid (chưa chọn action) ─────────────── */}

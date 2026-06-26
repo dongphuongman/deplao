@@ -36,7 +36,7 @@ function resolveInternalId(accountId: string): string {
 }
 
 /**
- * Luôn resolve numeric Facebook ID — dùng làm tên thư mục lưu media.
+ * Luôn resolve numeric Facebook ID - dùng làm tên thư mục lưu media.
  * Không fallback về internal UUID: nếu service null hoặc chưa init,
  * tra DB để lấy facebook_id thật.
  */
@@ -60,7 +60,7 @@ async function getFBServiceOrReconnect(internalId: string): Promise<FacebookServ
   let service = FacebookConnectionManager.get(internalId);
   if (service) return service;
 
-  Logger.warn(`[facebookIpc] Service ${internalId} not in ConnectionManager — attempting auto-reconnect...`);
+  Logger.warn(`[facebookIpc] Service ${internalId} not in ConnectionManager - attempting auto-reconnect...`);
   const account = DatabaseService.getInstance().getFBAccount(internalId);
   if (!account) return null;
 
@@ -118,7 +118,7 @@ export function registerFacebookIpc(): void {
     const existing = DatabaseService.getInstance().getFBAccounts()
       .find((a: any) => a.facebook_id === fbId);
     if (existing) {
-      Logger.log(`[facebookIpc] _addFBAccountCommon — account ${fbId} đã tồn tại, xoá cũ và thêm lại`);
+      Logger.log(`[facebookIpc] _addFBAccountCommon - account ${fbId} đã tồn tại, xoá cũ và thêm lại`);
       await FacebookConnectionManager.disconnect(existing.id).catch(() => {});
       secureDelete(fbCookieKey(existing.id));
       DatabaseService.getInstance().deleteFBAccount(existing.id);
@@ -149,7 +149,7 @@ export function registerFacebookIpc(): void {
       status: 'disconnected',
     });
 
-    // Also sync to unified accounts table — use fbId as zalo_id (for license matching)
+    // Also sync to unified accounts table - use fbId as zalo_id (for license matching)
     DatabaseService.getInstance()['run'](
       `INSERT INTO accounts (zalo_id, full_name, avatar_url, phone, is_business, imei, user_agent, cookies, is_active, channel, proxy_id, created_at)
        VALUES (?, ?, ?, '', 0, '', '', '', 1, 'facebook', ?, datetime('now'))
@@ -159,7 +159,7 @@ export function registerFacebookIpc(): void {
       [fbId, name, avatarUrl, proxyId ?? null]
     );
 
-    // 5. Connect (with proxy) — getOrCreate đã tự động connect
+    // 5. Connect (with proxy) - getOrCreate đã tự động connect
     await FacebookConnectionManager.getOrCreate(accountId, cookie, proxyId);
 
     const account = DatabaseService.getInstance().getFBAccount(accountId);
@@ -203,7 +203,7 @@ export function registerFacebookIpc(): void {
         params.username, params.password, params.twoFASecret, httpsAgent
       );
 
-      // 2FA challenge — yêu cầu UI cung cấp twoFASecret
+      // 2FA challenge - yêu cầu UI cung cấp twoFASecret
       if (loginResult.error?.error_subcode === 1348162) {
         return {
           success: false,
@@ -223,7 +223,7 @@ export function registerFacebookIpc(): void {
         };
       }
 
-      // 2. Thành công — tạo account với cookie vừa lấy được
+      // 2. Thành công - tạo account với cookie vừa lấy được
       const cookie = loginResult.success.setCookies;
       if (!cookie) {
         return { success: false, error: 'Đăng nhập thành công nhưng không lấy được cookie.' };
@@ -603,7 +603,7 @@ export function registerFacebookIpc(): void {
             }
 
             // Save message to DB with localPath in attachments
-            // body = null for media messages — DB's saveFBMessage auto-generates displayContent
+            // body = null for media messages - DB's saveFBMessage auto-generates displayContent
             DatabaseService.getInstance().saveFBMessage({
               id: result.messageId,
               account_id: internalId,
@@ -900,7 +900,7 @@ export function registerFacebookIpc(): void {
         ...(params.replyToMessageId ? { replyToMessageId: params.replyToMessageId } : {}),
       });
 
-      // 3. Save to DB — MQTT echo may have already inserted with partial attachments (race),
+      // 3. Save to DB - MQTT echo may have already inserted with partial attachments (race),
       //    so save first then force-UPDATE attachments to ensure all images are stored.
       if (result.success && result.messageId) {
         try {
@@ -991,7 +991,7 @@ export function registerFacebookIpc(): void {
               if (result.success) success = true;
             } catch {}
           } else {
-            // Group message (non-numeric thread ID) — try bridge sendReaction
+            // Group message (non-numeric thread ID) - try bridge sendReaction
             try {
               const result = await service.sendBridgeReaction(msg.thread_id, params.messageId, params.emoji);
               if (result.success) success = true;
@@ -1195,7 +1195,7 @@ export function registerFacebookIpc(): void {
         params.replyToSenderJid || '',
       );
 
-      // Save sent message to DB — strip @msgr JID from chatJid để nhất quán
+      // Save sent message to DB - strip @msgr JID from chatJid để nhất quán
       // với handleE2EEMessage (dùng stripped numeric ID làm thread_id)
       if (result.success && result.messageId) {
         try {
@@ -1257,7 +1257,7 @@ export function registerFacebookIpc(): void {
       if (!service) return { success: false, error: 'Tài khoản chưa kết nối. Vui lòng kết nối lại Facebook.' };
 
       if (params.enable) {
-        // E2EE is auto-started during connect — manual reconnect nếu cần
+        // E2EE is auto-started during connect - manual reconnect nếu cần
         await service.disconnect();
         await service.connect();
       }
@@ -1281,7 +1281,7 @@ export function registerFacebookIpc(): void {
       await service.sendTyping(params.threadId, params.isTyping, params.isGroup || false);
       return { success: true };
     } catch (err: any) {
-      // Typing is best-effort — no error returned
+      // Typing is best-effort - no error returned
       return { success: true };
     }
   });

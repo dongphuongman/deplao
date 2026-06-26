@@ -121,10 +121,10 @@ export default function WorkspaceSettings() {
             <div className="rounded-xl bg-blue-600/10 border border-blue-600/20 p-3 text-xs text-blue-300 space-y-1">
                 <p className="font-medium">💡 Hướng dẫn</p>
                 <p className="text-blue-500">
-                    • <strong>Local workspace</strong>: Chạy trực tiếp trên máy này — kết nối Zalo trực tiếp, có thể bật relay server cho nhân viên.
+                    • <strong>Local workspace</strong>: Chạy trực tiếp trên máy này - kết nối Zalo trực tiếp, có thể bật relay server cho nhân viên.
                 </p>
                 <p className="text-blue-500">
-                    • <strong>Remote workspace</strong>: Nhân viên — nhập IP, Port, tên đăng nhập và mật khẩu (do quản lý cấp) để kết nối tới boss.
+                    • <strong>Remote workspace</strong>: Nhân viên - nhập IP, Port, tên đăng nhập và mật khẩu (do quản lý cấp) để kết nối tới boss.
                 </p>
                 <p className="text-blue-500">
                     • <strong>Tối đa 5 workspace</strong>. Dữ liệu mỗi workspace hoàn toàn độc lập.
@@ -250,7 +250,7 @@ function CreateWorkspaceForm({ onCreated, onCancel }: { onCreated: () => void; o
     const [name, setName] = useState('');
     const [type, setType] = useState<'local' | 'remote'>('local');
     const [icon, setIcon] = useState('');
-    // Remote fields — user-friendly
+    // Remote fields - user-friendly
     const [ip, setIp] = useState('');
     const [port, setPort] = useState('9900');
     const [username, setUsername] = useState('');
@@ -283,7 +283,7 @@ function CreateWorkspaceForm({ onCreated, onCancel }: { onCreated: () => void; o
                 setLoginStep('logging-in');
                 const loginRes = await ipc.workspace?.loginRemote(bossUrl, username.trim(), password);
                 if (!loginRes?.success) {
-                    showNotification(loginRes?.error || 'Đăng nhập thất bại — kiểm tra lại thông tin', 'error');
+                    showNotification(loginRes?.error || 'Đăng nhập thất bại - kiểm tra lại thông tin', 'error');
                     setSaving(false);
                     setLoginStep('idle');
                     return;
@@ -308,13 +308,13 @@ function CreateWorkspaceForm({ onCreated, onCancel }: { onCreated: () => void; o
                     if (res.workspace?.id && loginRes.token) {
                         await ipc.workspace?.connectRemote(res.workspace.id, bossUrl, loginRes.token);
                     }
-                    showNotification(`Workspace "${name}" — đã kết nối thành công!`, 'success');
+                    showNotification(`Workspace "${name}" - đã kết nối thành công!`, 'success');
                     onCreated();
                 } else {
                     showNotification(res?.error || 'Tạo workspace thất bại', 'error');
                 }
             } else {
-                // Local workspace — simple create
+                // Local workspace - simple create
                 const res = await ipc.workspace?.create({
                     name: name.trim(),
                     type,
@@ -380,7 +380,7 @@ function CreateWorkspaceForm({ onCreated, onCancel }: { onCreated: () => void; o
                         <input
                             value={ip}
                             onChange={e => setIp(e.target.value)}
-                            placeholder="IP Boss — 192.168.1.100"
+                            placeholder="IP Boss - 192.168.1.100"
                             className="flex-1 text-xs bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500"
                         />
                         <input
@@ -452,7 +452,7 @@ function EditWorkspaceForm({ workspace, connectionStatus, onSaved, onCancel }: {
         if (!url) return { ip: '', port: '9900' };
         try {
             const parsed = new URL(url);
-            // Tunnel URL (https:// or non-standard hostname) — preserve full URL
+            // Tunnel URL (https:// or non-standard hostname) - preserve full URL
             if (parsed.protocol === 'https:' || parsed.hostname.includes('.')) {
                 // Return the full URL as the "ip" so the user can see and edit it
                 // Port field will be hidden when ip is a full URL

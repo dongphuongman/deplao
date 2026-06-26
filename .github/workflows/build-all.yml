@@ -1,4 +1,4 @@
-# ─── Build Deplao — Windows + macOS cùng lúc ─────────────────────────────────
+# ─── Build Deplao - Windows + macOS cùng lúc ─────────────────────────────────
 # Workflow tổng hợp: trigger cả 2 job song song, publish lên cùng 1 Release tag
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -32,11 +32,11 @@ on:
       - 'v*'
 
 # ─── SECRETS cần cấu hình ────────────────────────────────────────────────────
-#   GH_TOKEN — GitHub Personal Access Token (repo scope)
+#   GH_TOKEN - GitHub Personal Access Token (repo scope)
 
 jobs:
   # ═══════════════════════════════════════════════════════════════════════════
-  # Resolve tag một lần — chia sẻ cho cả 2 job build
+  # Resolve tag một lần - chia sẻ cho cả 2 job build
   # ═══════════════════════════════════════════════════════════════════════════
   resolve-tag:
     runs-on: ubuntu-latest
@@ -116,7 +116,7 @@ jobs:
           fail_on_unmatched_files: false
 
   # ═══════════════════════════════════════════════════════════════════════════
-  # macOS (arm64 — Apple Silicon)
+  # macOS (arm64 - Apple Silicon)
   # ═══════════════════════════════════════════════════════════════════════════
   build-mac-arm64:
     needs: resolve-tag
@@ -166,7 +166,7 @@ jobs:
           fail_on_unmatched_files: false
 
   # ═══════════════════════════════════════════════════════════════════════════
-  # Ubuntu/Linux (x64 — AppImage + deb)
+  # Ubuntu/Linux (x64 - AppImage + deb)
   # ═══════════════════════════════════════════════════════════════════════════
   build-ubuntu:
     needs: resolve-tag
@@ -212,7 +212,7 @@ jobs:
           NODE_ENV: production
           BUILD_TARGET: production
 
-      - name: 📦 Build Linux app (x64 — AppImage + deb)
+      - name: 📦 Build Linux app (x64 - AppImage + deb)
         run: npx electron-builder --linux --x64 --publish never
 
       - name: 🚀 Publish Linux → GitHub Releases

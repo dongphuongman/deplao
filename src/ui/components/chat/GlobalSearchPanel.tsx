@@ -96,6 +96,8 @@ function parsePreview(content: string): string {
     const par = (() => { try { return typeof p?.params === 'string' ? JSON.parse(p.params) : (p?.params || {}); } catch { return {}; } })();
     if (p?.title && (par?.fileSize || par?.fileExt || par?.fileUrl || p?.normalUrl)) return `📂 ${p.title}`;
     if (p?.href || p?.thumb || par?.rawUrl || par?.hd) return '[Hình ảnh]';
+    // Location check: has latitude/longitude in params
+    if (par?.latitude || par?.longitude) return p?.description ? `📍 ${p.description}` : '📍 [Vị trí]';
     if (p?.title) return p.title;
     return '[Đính kèm]';
   } catch { 

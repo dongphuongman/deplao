@@ -10,9 +10,9 @@
 
 ---
 
-> A multi-account Zalo & Facebook desktop app with integrated CRM, ERP, POS, Workflow automation and AI Assistant — helping sales, customer care teams and marketing operate centrally on Zalo and Facebook in one single application.
+> A multi-account Zalo & Facebook desktop app with integrated CRM, ERP, POS, Workflow automation and AI Assistant - helping sales, customer care teams and marketing operate centrally on Zalo and Facebook in one single application.
 
-[![Version](https://img.shields.io/badge/version-26.6.6-22c55e)](#)
+[![Version](https://img.shields.io/badge/version-26.6.7-22c55e)](#)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-3b82f6)](#-runtime-requirements)
 [![Electron](https://img.shields.io/badge/Electron-41-47848f?logo=electron&logoColor=white)](#)
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)](#)
@@ -41,41 +41,41 @@
 <tr>
 <td align="center" width="50%">
 
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-Setup-26.6.6.exe">
-<img src="https://img.shields.io/badge/🪟_Windows_10/11-v26.6.6-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-Setup-26.6.7.exe">
+<img src="https://img.shields.io/badge/🪟_Windows_10/11-v26.6.7-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows" />
 </a>
 
-<big><strong>Deplao-Setup-26.6.6.exe</strong></big>
+<big><strong>Deplao-Setup-26.6.7.exe</strong></big>
 
 </td>
 <td align="center" width="50%">
 
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.6-arm64.dmg">
-<img src="https://img.shields.io/badge/🍎_macOS_M1+-v26.6.6-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.7-arm64.dmg">
+<img src="https://img.shields.io/badge/🍎_macOS_M1+-v26.6.7-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Apple Silicon" />
 </a>
 
-<big><strong>Deplao-26.6.6-arm64.dmg</strong></big>
+<big><strong>Deplao-26.6.7-arm64.dmg</strong></big>
 
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
 
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.6.AppImage">
-<img src="https://img.shields.io/badge/🐧_Ubuntu_Linux-v26.6.6-e95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Download Ubuntu" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.7.AppImage">
+<img src="https://img.shields.io/badge/🐧_Ubuntu_Linux-v26.6.7-e95420?style=for-the-badge&logo=ubuntu&logoColor=white" alt="Download Ubuntu" />
 </a>
 
-<big><strong>Deplao-26.6.6.AppImage</strong></big><br>
-<big>works on any distro — <code>chmod +x</code> & run</big>
+<big><strong>Deplao-26.6.7.AppImage</strong></big><br>
+<big>works on any distro - <code>chmod +x</code> & run</big>
 
 </td>
 <td align="center" width="50%">
 
-<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.6.dmg">
-<img src="https://img.shields.io/badge/🍎_macOS_Intel-v26.6.6-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel" />
+<a href="https://github.com/babyvibe/deplao-builder/releases/latest/download/Deplao-26.6.7.dmg">
+<img src="https://img.shields.io/badge/🍎_macOS_Intel-v26.6.7-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS Intel" />
 </a>
 
-<big><strong>Deplao-26.6.6.dmg</strong></big>
+<big><strong>Deplao-26.6.7.dmg</strong></big>
 
 </td>
 </tr>
@@ -141,12 +141,12 @@ sudo dpkg -i Deplao_*_amd64.deb
 </details>
 
 <p align="center">
-  <img src="./assets/deplao-overview-map.svg" alt="Deplao — centralized desktop workspace for Zalo sales and customer care" width="960" />
+  <img src="./assets/deplao-overview-map.svg" alt="Deplao - centralized desktop workspace for Zalo sales and customer care" width="960" />
 </p>
 
 ## 🛠️ Tech Stack
 
-- **Core library:** zca-js — https://github.com/RFS-ADRENO/zca-js, fbchat-v2 (Facebook E2EE bridge Go)
+- **Core library:** zca-js - https://github.com/RFS-ADRENO/zca-js, fbchat-v2 (Facebook E2EE bridge Go)
 - **AI Gateway:** 9router
 - **Languages:** TypeScript, JavaScript, SQL, HTML, CSS
 - **Desktop:** Electron, React, Vite
@@ -245,7 +245,7 @@ mindmap
 
 ```mermaid
 flowchart TB
-    subgraph BOSS["🖥️ Boss Machine — Local Workspace"]
+    subgraph BOSS["🖥️ Boss Machine - Local Workspace"]
         BZ("📱 Zalo / FB\nAccounts")
         BSV("🔧 Services\nCRM · ERP · AI · Workflow")
         BSD[("🗄️ SQLite DB\n+ Media Files")]
@@ -257,7 +257,7 @@ flowchart TB
         WAN("🌍 Tunnel / VPN\nremote access")
     end
 
-    subgraph EMP["💻 Employee Machine — Remote Workspace"]
+    subgraph EMP["💻 Employee Machine - Remote Workspace"]
         EA("📲 Deplao App\nEmployee Mode")
         EP("🔐 Permission Filter\nerp · crm · workflow · ...")
         EU("👁️ UI\nassigned accounts only")
@@ -352,25 +352,25 @@ npm run production
 
 At a glance, Deplao is:
 
-- **Zalo operations hub** — multi-account, unified inbox, fast reply
-- **Customer management layer** — CRM, labels, interaction history, campaigns
-- **Automation layer** — workflow, AI, background triggers and actions
-- **Business integration layer** — POS, shipping, APIs and external tools
-- **Internal management layer** — reports, ERP, permissions, employee workspaces
+- **Zalo operations hub** - multi-account, unified inbox, fast reply
+- **Customer management layer** - CRM, labels, interaction history, campaigns
+- **Automation layer** - workflow, AI, background triggers and actions
+- **Business integration layer** - POS, shipping, APIs and external tools
+- **Internal management layer** - reports, ERP, permissions, employee workspaces
 
 ## ✨ Highlights
 
-- 👤 **Multi-account Zalo** — unlimited accounts, quick switching
-- 💬 **Unified inbox** — merged mode combines conversations from all accounts in one view
-- 👥 **CRM & Campaigns** — manage contacts, labels, internal notes, re-engage existing customers; scan hidden group members to find new leads
-- ⚙️ **Workflow automation** — drag-and-drop Trigger → Node → Action, or use AI to build flows — runs 24/7 without code
-- 🤖 **AI Assistant** — reply suggestions, in-chat AI, auto-classify and respond to customers around the clock
-- 🔗 **External integrations** — POS, shipping, payments, Google Sheets, Telegram, Discord, Email, HTTP Request — usable in chat and workflow
-- 📈 **Reports & analytics** — track messages, contacts, labels, employees, campaigns, workflows, AI usage
-- 🗂️ **Internal ERP** — tasks, calendar, notes and team operations in the same system
-- 🧑‍💼 **Boss ↔ Employee workspace** — connect over **LAN or WAN** (Cloudflare Tunnel), granular permissions, per-employee performance tracking
-- 🔒 **Per-account proxy** — assign an independent HTTP/HTTPS/SOCKS5 proxy to each Zalo account before login
-- 🔐 **Local-first data** — all data stays on the user's machine
+- 👤 **Multi-account Zalo** - unlimited accounts, quick switching
+- 💬 **Unified inbox** - merged mode combines conversations from all accounts in one view
+- 👥 **CRM & Campaigns** - manage contacts, labels, internal notes, re-engage existing customers; scan hidden group members to find new leads
+- ⚙️ **Workflow automation** - drag-and-drop Trigger → Node → Action, or use AI to build flows - runs 24/7 without code
+- 🤖 **AI Assistant** - reply suggestions, in-chat AI, auto-classify and respond to customers around the clock
+- 🔗 **External integrations** - POS, shipping, payments, Google Sheets, Telegram, Discord, Email, HTTP Request - usable in chat and workflow
+- 📈 **Reports & analytics** - track messages, contacts, labels, employees, campaigns, workflows, AI usage
+- 🗂️ **Internal ERP** - tasks, calendar, notes and team operations in the same system
+- 🧑‍💼 **Boss ↔ Employee workspace** - connect over **LAN or WAN** (Cloudflare Tunnel), granular permissions, per-employee performance tracking
+- 🔒 **Per-account proxy** - assign an independent HTTP/HTTPS/SOCKS5 proxy to each Zalo account before login
+- 🔐 **Local-first data** - all data stays on the user's machine
 
 ### Screenshots
 
@@ -452,7 +452,7 @@ Screens are ordered by typical usage flow: dashboard → chat → CRM → workfl
 - Online shops and sales teams closing deals via Zalo
 - SMEs that need multiple staff handling the inbox simultaneously
 - Marketing agencies or freelancers managing multiple client accounts
-- Spas, clinics, education, F&B — any business that needs recurring customer care
+- Spas, clinics, education, F&B - any business that needs recurring customer care
 - Teams wanting to combine chat, CRM, workflow, AI and ERP in one desktop app
 
 ## 🧩 Core feature groups
@@ -463,13 +463,13 @@ Screens are ordered by typical usage flow: dashboard → chat → CRM → workfl
 - Merge accounts into a single unified inbox
 - Search by name, nickname, phone number
 - Quick filters: unread, unanswered, labels, conversation status
-- **Per-account proxy**: assign an independent HTTP/HTTPS/SOCKS5 proxy to each Zalo account before login — fully isolated IPs across accounts
+- **Per-account proxy**: assign an independent HTTP/HTTPS/SOCKS5 proxy to each Zalo account before login - fully isolated IPs across accounts
 
 ### 2) Full-featured chat
 - Send text, images, video, files
 - Emoji, stickers, reply, mention members
 - Polls, group notes, reminders, contact cards
-- Quick messages — save templates and trigger by keyword
+- Quick messages - save templates and trigger by keyword
 - Unlimited message pinning, media and attachment management
 
 ### 3) CRM & customer care
@@ -477,7 +477,7 @@ Screens are ordered by typical usage flow: dashboard → chat → CRM → workfl
 - Store phone, gender, birthday, internal notes
 - Create and manage Zalo labels bi-directionally
 - Filter contacts by multiple criteria for targeted outreach
-- Create campaigns: mass message, add friend, invite to group — with real-time progress
+- Create campaigns: mass message, add friend, invite to group - with real-time progress
 
 ### 4) Workflow automation
 - No-code drag-and-drop workflow builder
@@ -502,7 +502,7 @@ Screens are ordered by typical usage flow: dashboard → chat → CRM → workfl
 ### 7) 🤖 AI Assistant
 - Smart reply suggestions in Zalo and Facebook conversations
 - Real-time Q&A with AI directly in the chat window
-- Create workflows using plain natural language commands — no drag-and-drop needed
+- Create workflows using plain natural language commands - no drag-and-drop needed
 - Use AI action nodes in workflows to build 24/7 auto-reply chatbots
 - Multi-platform AI support: OpenAI, Claude, Gemini and 9Router (local AI gateway)
 
@@ -511,7 +511,7 @@ Screens are ordered by typical usage flow: dashboard → chat → CRM → workfl
 Deplao prioritizes a local-first architecture:
 
 - All messages, contacts, CRM data, settings and media are stored on the user's machine
-- Login via QR Code — no Zalo password stored; cookies are encrypted on-device
+- Login via QR Code - no Zalo password stored; cookies are encrypted on-device
 - Users can move the storage directory to another drive at any time
 - Ideal for teams that require strict internal data control
 
